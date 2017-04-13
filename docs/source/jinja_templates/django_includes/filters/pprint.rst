@@ -1,7 +1,6 @@
 .. templatefilter:: pprint
 
-``pprint``
-----------
+.. function:: pprint
 
-A wrapper around :func:`pprint.pprint` -- for debugging, really.
-
+    A wrapper around :func:`pprint.pprint` -- for debugging, really.
+    

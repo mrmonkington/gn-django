@@ -26,8 +26,6 @@ reference documentation *should* provide an exhaustive reference of:
 - context processors - what they are, and how to use them
 - custom template loaders
 
-.. include:: filters.rst
-
 Filters reference
 -----------------
 
@@ -39,278 +37,67 @@ Vanilla Jinja Filters
 Django Filters (from django-jinja)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: addslashes(value)
+.. include:: django_includes/filters/addslashes.rst
 
-    Adds slashes before quotes. Useful for escaping strings in CSV, for example.
-    
-    For example::
-    
-        {{ value|addslashes }}
-    
-    If ``value`` is ``"I'm using Django"``, the output will be
-    ``"I\'m using Django"``.
+.. include:: django_includes/filters/capfirst.rst
 
-.. function:: capfirst(value)
+.. include:: django_includes/filters/escapejs.rst
 
-    Capitalizes the first character of the value. If the first character is not
-    a letter, this filter has no effect.
-    
-    For example::
-    
-        {{ value|capfirst }}
-    
-    If ``value`` is ``"django"``, the output will be ``"Django"``.
+.. include:: django_includes/filters/floatformat.rst
 
-.. function:: escapejs(value)
+.. include:: django_includes/filters/iriencode.rst
 
-    Escapes characters for use in JavaScript strings. This does *not* make the
-    string safe for use in HTML, but does protect you from syntax errors when using
-    templates to generate JavaScript/JSON.
-    
-    For example::
-    
-        {{ value|escapejs }}
-    
-    If ``value`` is ``"testing\r\njavascript \'string" <b>escaping</b>"``,
-    the output will be ``"testing\\u000D\\u000Ajavascript \\u0027string\\u0022 \\u003Cb\\u003Eescaping\\u003C/b\\u003E"``.
+.. include:: django_includes/filters/linenumbers.rst
 
-.. function:: floatformat(value)
+.. include:: django_includes/filters/make_list.rst
 
-    When used without an argument, rounds a floating-point number to one decimal
-    place -- but only if there's a decimal part to be displayed. For example:
-    
-    ============  ===========================  ========
-    ``value``     Template                     Output
-    ============  ===========================  ========
-    ``34.23234``  ``{{ value|floatformat }}``  ``34.2``
-    ``34.00000``  ``{{ value|floatformat }}``  ``34``
-    ``34.26000``  ``{{ value|floatformat }}``  ``34.3``
-    ============  ===========================  ========
-    
-    If used with a numeric integer argument, ``floatformat`` rounds a number to
-    that many decimal places. For example:
-    
-    ============  =============================  ==========
-    ``value``     Template                       Output
-    ============  =============================  ==========
-    ``34.23234``  ``{{ value|floatformat:3 }}``  ``34.232``
-    ``34.00000``  ``{{ value|floatformat:3 }}``  ``34.000``
-    ``34.26000``  ``{{ value|floatformat:3 }}``  ``34.260``
-    ============  =============================  ==========
-    
-    Particularly useful is passing 0 (zero) as the argument which will round the
-    float to the nearest integer.
-    
-    ============  ================================  ==========
-    ``value``     Template                          Output
-    ============  ================================  ==========
-    ``34.23234``  ``{{ value|floatformat:"0" }}``   ``34``
-    ``34.00000``  ``{{ value|floatformat:"0" }}``   ``34``
-    ``39.56000``  ``{{ value|floatformat:"0" }}``   ``40``
-    ============  ================================  ==========
-    
-    If the argument passed to ``floatformat`` is negative, it will round a number
-    to that many decimal places -- but only if there's a decimal part to be
-    displayed. For example:
-    
-    ============  ================================  ==========
-    ``value``     Template                          Output
-    ============  ================================  ==========
-    ``34.23234``  ``{{ value|floatformat:"-3" }}``  ``34.232``
-    ``34.00000``  ``{{ value|floatformat:"-3" }}``  ``34``
-    ``34.26000``  ``{{ value|floatformat:"-3" }}``  ``34.260``
-    ============  ================================  ==========
-    
-    Using ``floatformat`` with no argument is equivalent to using ``floatformat``
-    with an argument of ``-1``.
+.. include:: django_includes/filters/slugify.rst
 
+.. include:: django_includes/filters/stringformat.rst
 
-.. function:: iriencode(value)
+.. include:: django_includes/filters/truncatechars.rst
 
-    Converts an IRI (Internationalized Resource Identifier) to a string that is
-    suitable for including in a URL. This is necessary if you're trying to use
-    strings containing non-ASCII characters in a URL.
-    
-    It's safe to use this filter on a string that has already gone through the
-    :tfilter:`urlencode` filter.
-    
-    For example::
-    
-        {{ value|iriencode }}
-    
-    If ``value`` is ``"?test=1&me=2"``, the output will be ``"?test=1&amp;me=2"``.
+.. include:: django_includes/filters/truncatechars_html.rst
 
+.. include:: django_includes/filters/truncatewords.rst
 
-.. function:: linenumbers(value)
+.. include:: django_includes/filters/truncatewords_html.rst
 
-    Displays text with line numbers.
-    
-    For example::
-    
-        {{ value|linenumbers }}
-    
-    If ``value`` is::
-    
-        one
-        two
-        three
-    
-    the output will be::
-    
-        1. one
-        2. two
-        3. three
+.. include:: django_includes/filters/urlizetrunc.rst
 
+.. include:: django_includes/filters/ljust.rst
 
-.. function:: makelist(value)
+.. include:: django_includes/filters/cut.rst
 
-    Returns the value turned into a list. For a string, it's a list of characters.
-    For an integer, the argument is cast to a string before creating a list.
-    
-    For example::
-    
-        {{ value|make_list }}
-    
-    If ``value`` is the string ``"Joel"``, the output would be the list
-    ``['J', 'o', 'e', 'l']``. If ``value`` is ``123``, the output will be the
-    list ``['1', '2', '3']``.
+.. include:: django_includes/filters/linebreaksbr.rst
 
+.. include:: django_includes/filters/linebreaks.rst
 
-.. function:: slugify(s)
+.. include:: django_includes/filters/striptags.rst
 
-    Converts to ASCII. Converts spaces to hyphens. Removes characters that aren't
-    alphanumerics, underscores, or hyphens. Converts to lowercase. Also strips
-    leading and trailing whitespace.
-    
-    For example::
-    
-        {{ value|slugify }}
-    
-    If ``value`` is ``"Joel is a slug"``, the output will be ``"joel-is-a-slug"``.
+.. include:: django_includes/filters/add.rst
 
+.. include:: django_includes/filters/date.rst
 
-.. function:: stringformat(s, format)
+.. include:: django_includes/filters/time.rst
 
-    Formats the variable according to the argument, a string formatting specifier.
-    This specifier uses the :ref:`old-string-formatting` syntax, with the exception
-    that the leading "%" is dropped.
-    
-    For example::
-    
-        {{ value|stringformat("E") }}
-    
-    If ``value`` is ``10``, the output will be ``1.000000E+01``.
+.. include:: django_includes/filters/timesince.rst
 
+.. include:: django_includes/filters/timeuntil.rst
 
-.. function:: truncatechars(s, length)
+.. include:: django_includes/filters/default_if_none.rst
 
-    Truncates a string if it is longer than the specified number of characters.
-    Truncated strings will end with a translatable ellipsis sequence ("...").
-    
-    **Argument:** Number of characters to truncate to
-    
-    For example::
-    
-        {{ value|truncatechars(9) }}
-    
-    If ``value`` is ``"Joel is a slug"``, the output will be ``"Joel i..."``.
+.. include:: django_includes/filters/divisibleby.rst
 
+.. include:: django_includes/filters/yesno.rst
 
-.. function:: truncatechars_html(s, length)
+.. include:: django_includes/filters/pluralize.rst
 
-    Similar to :tfilter:`truncatechars`, except that it is aware of HTML tags. Any
-    tags that are opened in the string and not closed before the truncation point
-    are closed immediately after the truncation.
-    
-    For example::
-    
-        {{ value|truncatechars_html(9) }}
-    
-    If ``value`` is ``"<p>Joel is a slug</p>"``, the output will be
-    ``"<p>Joel i...</p>"``.
+.. include:: django_includes/filters/localtime.rst
 
-    Newlines in the HTML content will be preserved.
+.. include:: django_includes/filters/utc.rst
 
-
-.. function:: truncatewords(s, words)
-
-    Truncates a string after a certain number of words.
-
-    **Argument:** Number of words to truncate after
-    
-    For example::
-    
-        {{ value|truncatewords(2) }}
-    
-    If ``value`` is ``"Joel is a slug"``, the output will be ``"Joel is ..."``.
-    
-    Newlines within the string will be removed.
-
-
-.. function:: truncatewords_html(s, words)
-
-    Similar to :tfilter:`truncatewords`, except that it is aware of HTML tags. Any
-    tags that are opened in the string and not closed before the truncation point,
-    are closed immediately after the truncation.
-    
-    This is less efficient than :tfilter:`truncatewords`, so should only be used
-    when it is being passed HTML text.
-    
-    For example::
-    
-        {{ value|truncatewords_html:2 }}
-    
-    If ``value`` is ``"<p>Joel is a slug</p>"``, the output will be
-    ``"<p>Joel is ...</p>"``.
-    
-    Newlines in the HTML content will be preserved.
-
-
-.. function:: urlizetrunc(s, length)
-
-    Converts URLs and email addresses into clickable links just like urlize_, but
-    truncates URLs longer than the given character limit.
-    
-    **Argument:** Number of characters that link text should be truncated to,
-    including the ellipsis that's added if truncation is necessary.
-    
-    For example::
-    
-        {{ value|urlizetrunc:15 }}
-    
-    If ``value`` is ``"Check out www.djangoproject.com"``, the output would be
-    ``'Check out <a href="http://www.djangoproject.com"
-    rel="nofollow">www.djangopr...</a>'``.
-    
-    As with urlize_, this filter should only be applied to plain text.
-
-
-.. function:: ljust(s, size)
-
-    Left-aligns the value in a field of a given width.
-
-    **Argument:** field size
-    
-    For example::
-    
-        "{{ value|ljust:"10" }}"
-    
-    If ``value`` is ``Django``, the output will be ``"Django    "``.
-
-
-.. function:: rjust(s, size)
-
-    Right-aligns the value in a field of a given width.
-
-    **Argument:** field size
-    
-    For example::
-    
-        "{{ value|rjust:"10" }}"
-    
-    If ``value`` is ``Django``, the output will be ``"    Django"``.
-
-
+.. include:: django_includes/filters/timezone.rst
 
 
 Tests reference
