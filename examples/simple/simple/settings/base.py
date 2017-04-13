@@ -58,6 +58,13 @@ TEMPLATES = [
         "BACKEND": "gn_django.template.backend.Jinja2",
         "APP_DIRS": True,
         "OPTIONS": {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'gn_django.template.context_processors.settings',
+            ],
         }
     },
     {
@@ -70,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'gn_django.template.context_processors.settings',
             ],
         },
     },

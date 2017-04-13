@@ -19,12 +19,12 @@ the documentation here: http://jinja.pocoo.org/docs/2.9/templates/.
 The following reference documentation assumes that you know the general syntax
 of jinja.  gn-django offers an extended jinja library and the following 
 reference documentation *should* provide an exhaustive reference of: 
-- filters 
-- globals 
-- tests
-- extensions
-- context processors - what they are, and how to use them
-- custom template loaders
+    - filters 
+    - globals 
+    - tests
+    - extensions
+    - context processors - what they are, and how to use them
+    - custom template loaders
 
 Filters reference
 -----------------
@@ -99,6 +99,17 @@ Django Filters (from django-jinja)
 
 .. include:: django_includes/filters/timezone.rst
 
+.. include:: django_includes/filters/apnumber.rst
+
+.. include:: django_includes/filters/intcomma.rst
+
+.. include:: django_includes/filters/intword.rst
+
+.. include:: django_includes/filters/naturalday.rst
+
+.. include:: django_includes/filters/naturaltime.rst
+
+.. include:: django_includes/filters/ordinal.rst
 
 Tests reference
 ---------------
@@ -201,6 +212,31 @@ Globals reference
 
     **new in Jinja 2.1**
 
+.. function:: url(name, **url_kwargs)
+
+    Url reversal function which allows templates to refer to named Urls.
+
+    Reverse urls in templates::
+
+        {{ url('ns:name', pk=obj.pk) }}
+    
+    This approach is very flexible, because we do not need additional options 
+    to set a result if executing url in one variable. With jinja2 you can use 
+    the set template tag for it::
+
+        {% set myurl=url("ns:name", pk=obj.pk) %}
+
+
+.. function:: static(filename)
+
+    To link to static files that are saved in ``STATIC_ROOT`` the 
+    `static` global is used. If the `django.contrib.staticfiles`
+    app is installed, the tag will serve files using ``url()`` method of the
+    storage specified by the ``STATICFILES_STORAGE`` setting. For example::
+
+        {{ static("js/lib/foo.js") }}
+    
+
 Extensions reference
 --------------------
 
@@ -291,7 +327,3 @@ Example::
     {% endautoescape %}
 
 After an `endautoescape` the behavior is reverted to what it was before.
-
-Context processors
-------------------
-

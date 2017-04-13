@@ -14,7 +14,8 @@ to use when building django applications and sites at Gamer Network.
    :caption: Jinja Templates
 
    jinja_templates/how_to_set_up_jinja
-   jinja_templates/using_jinja_templates
+   jinja_templates/writing_jinja_templates
+   jinja_templates/extending_jinja
 
 
 

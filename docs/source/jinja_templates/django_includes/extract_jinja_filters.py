@@ -33,6 +33,12 @@ all_filters = [
     "localtime",
     "utc",
     "timezone",
+    "apnumber",
+    "intcomma",
+    "intword",
+    "naturalday",
+    "naturaltime",
+    "ordinal",
 ]
 all_filters_regex = "(?:" + "|".join(all_filters) + ")"
 
@@ -47,7 +53,7 @@ custom_processors = {'yesno': process_yesno}
 
 def process_docs_text(tag_name, docs):
     # Replace the titles with function definitions
-    title_regex = "``" + tag_name + "``\n(?:---+|~~~+)\n"
+    title_regex = "``" + tag_name + "``\n(?:---+|~~~+|===+)\n"
     replacement = ".. function:: " + tag_name + "\n"
     docs = re.sub(title_regex, replacement, docs)
     # Indent the subsequent body
@@ -65,6 +71,10 @@ def process_docs_text(tag_name, docs):
 builtins_rst = ""
 with open("_django_builtins.rst", "r") as f:
     builtins_rst = f.read()
+
+with open("_django_humanize_filters.rst", "r") as f:
+    builtins_rst += '\n'
+    builtins_rst += f.read()
 
 tag_matches = re.findall("\.\. (?:templatetag|templatefilter)\:\: .*\n", builtins_rst)
 filter_docs = {}
