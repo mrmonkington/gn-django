@@ -55,10 +55,9 @@ ROOT_URLCONF = 'simple.urls'
 
 TEMPLATES = [
     {
-        "BACKEND": "django_jinja.backend.Jinja2",
+        "BACKEND": "gn_django.template.backend.Jinja2",
         "APP_DIRS": True,
         "OPTIONS": {
-            "match_extension": ".jinja",
         }
     },
     {
