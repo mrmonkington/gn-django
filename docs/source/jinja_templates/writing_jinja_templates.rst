@@ -23,7 +23,6 @@ reference documentation *should* provide an exhaustive reference of:
     - globals 
     - tests
     - extensions
-    - context processors - what they are, and how to use them
     - custom template loaders
 
 Filters reference

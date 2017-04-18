@@ -6,6 +6,7 @@ from django.utils.text import slugify
 import jinja2
 from django_jinja.backend import Jinja2 as DjangoJinja2
 from django_jinja import builtins as dj_jinja_builtins
+from django_jinja.contrib._humanize.templatetags._humanize import ordinal, intcomma, intword, apnumber, naturalday, naturaltime
 
 from .extensions import SpacelessExtension
 from .globals import random
@@ -32,11 +33,14 @@ class Jinja2(DjangoJinja2):
         base_extensions = self.get_base_extensions()
         options['extensions'] = base_extensions + options.pop('extensions', [])
         base_filters = self.get_base_filters()
-        options['filters'] = base_filters + options.pop('filters', [])
+        base_filters.update(options.pop('filters', {}))
+        options['filters'] = base_filters
         base_tests = self.get_base_tests()
-        options['tests'] = base_tests + options.pop('tests', [])
+        base_tests.update(options.pop('tests', {}))
+        options['tests'] = base_tests
         base_globals = self.get_base_globals()
-        options['globals'] = base_globals + options.pop('globals', [])
+        base_globals.update(options.pop('globals', {}))
+        options['globals'] = base_globals
         params['OPTIONS'] = options
         super(Jinja2, self).__init__(params)
 
@@ -48,7 +52,14 @@ class Jinja2(DjangoJinja2):
         Returns:
             iterable of filters
         """
-        base_filters = []
+        base_filters = {
+            'ordinal': ordinal,
+            'intcomma': intcomma,
+            'intword': intword,
+            'apnumber': apnumber,
+            'naturalday': naturalday,
+            'naturaltime': naturaltime,
+        }
         return base_filters
 
     def get_base_globals(self):
@@ -59,7 +70,7 @@ class Jinja2(DjangoJinja2):
         Returns:
             iterable of globals
         """
-        base_globals = []
+        base_globals = {}
         return base_globals
 
     def get_base_tests(self):
@@ -70,7 +81,7 @@ class Jinja2(DjangoJinja2):
         Returns:
             iterable of tests
         """
-        base_tests = []
+        base_tests = {}
         return base_tests
 
     def get_base_extensions(self):
