@@ -18,6 +18,12 @@ def environment(**options):
     return env
 
 class Jinja2(DjangoJinja2):
+    """
+    An overridable Jinja2 backend.
+
+    This offers hooks to override the default set of filters, globals, tests
+    and extensions available in the Jinja2 templating environment.
+    """
     
     def __init__(self, params):
         params = params.copy()
@@ -25,11 +31,57 @@ class Jinja2(DjangoJinja2):
         options['environment'] = options.pop('environment', "gn_django.template.backend.environment")
         base_extensions = self.get_base_extensions()
         options['extensions'] = base_extensions + options.pop('extensions', [])
+        base_filters = self.get_base_filters()
+        options['filters'] = base_filters + options.pop('filters', [])
+        base_tests = self.get_base_tests()
+        options['tests'] = base_tests + options.pop('tests', [])
+        base_globals = self.get_base_globals()
+        options['globals'] = base_globals + options.pop('globals', [])
+        params['OPTIONS'] = options
         super(Jinja2, self).__init__(params)
 
+    def get_base_filters(self):
+        """
+        Default filters that should be included for all jinja templates
+        rendered from gn-django.
+
+        Returns:
+            iterable of filters
+        """
+        base_filters = []
+        return base_filters
+
+    def get_base_globals(self):
+        """
+        Default globals that should be included for all jinja templates
+        rendered from gn-django.
+
+        Returns:
+            iterable of globals
+        """
+        base_globals = []
+        return base_globals
+
+    def get_base_tests(self):
+        """
+        Default tests that should be included for all jinja templates
+        rendered from gn-django.
+
+        Returns:
+            iterable of tests
+        """
+        base_tests = []
+        return base_tests
+
     def get_base_extensions(self):
+        """
+        Default extensions that should be included for all jinja templates
+        rendered from gn-django.
+
+        Returns:
+            iterable of extensions
+        """
         base_extensions = dj_jinja_builtins.DEFAULT_EXTENSIONS
-        # NOTE: Add more custom extensions here
         base_extensions.append(SpacelessExtension)
         return base_extensions
 

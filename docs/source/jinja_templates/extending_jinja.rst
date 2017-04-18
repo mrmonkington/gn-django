@@ -87,4 +87,17 @@ Here's an example::
 Extending globals, filters and tests provided by gn-django
 ----------------------------------------------------------
 
+In addition to registering globals, filters and tests for specific django 
+projects/applications it's possible to extend the defaults provided by the
+gn-django library.
 
+This can be achieved by extending the ``Jinja2`` class in ``gn_django.template.backend``.
+``get_base_extensions()``, ``get_base_filters()``, ``get_base_tests()`` and
+``get_base_globals()`` can all be extended to supplement the default make up
+of gn_django's template environment.  
+There is no default list of context processors, since adding global context
+for the template rendering environment should be done intentionally due to the
+possible collisions with context variables provided by views.
+
+**Note:** Any additions made here will be introduced to all Gamer Network django
+projects - so they should be generic enough for that to make sense.
