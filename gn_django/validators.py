@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-from gn_django.video.youtube import get_youtube_id
+from gn_django.video import youtube
 import re
 
 class YoutubeValidator(URLValidator):
@@ -18,7 +18,7 @@ class YoutubeValidator(URLValidator):
             * `ValidatorError`
         """
         super(YoutubeValidator, self).__call__(value)
-        if get_youtube_id(value):
+        if youtube.get_id(value):
             return value
         raise ValidationError('%s is not a valid Youtube URL' % value)
 
@@ -33,8 +33,8 @@ class GamerNetworkImageValidator(URLValidator):
         super(GamerNetworkImageValidator, self).__call__(with_protocol)
 
         patterns = [
-            r'^(http)?s?\:?\/\/cdn.gamer\-network.net/',
-            r'^(http)?s?\:?\/\/images.eurogamer.net/',
+            r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.gamer\-network.net/',
+            r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.eurogamer.net/',
         ]
 
         for p in patterns:
