@@ -26,6 +26,8 @@ To use context processors, specify them in the jinja backend of your
     }
 
 
+.. _registering-jinja-per-application-globals-filters:
+
 Registering per-application globals and filters
 -----------------------------------------------
 
@@ -83,6 +85,8 @@ Here's an example::
     from .myextensions  import MyExtension
     library.extension(MyExtension)
 
+
+.. _extending-jinja-globals-filters:
 
 Extending globals, filters and tests provided by gn-django
 ----------------------------------------------------------
