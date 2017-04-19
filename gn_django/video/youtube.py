@@ -43,4 +43,8 @@ def get_thumb(url, type = 'mqdefault'):
                                   * `2` - Small thumb (second)
                                   * `3` - Small thumb (third)
     """
-    return 'http://i3.ytimg.com/vi/%s/%s.jpg' % (get_id(url), type)
+    vid = get_id(url)
+
+    if vid:
+        return 'http://i3.ytimg.com/vi/%s/%s.jpg' % (get_id(url), type)
+    return None
