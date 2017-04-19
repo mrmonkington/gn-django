@@ -9,5 +9,8 @@ projects. For general usage, see the `official Django documentation <https://doc
 Reference
 ---------
 
+.. _youtube-validator:
 .. include:: includes/validators/youtube.rst
+
+.. gnimage-validator:
 .. include:: includes/validators/gnimage.rst
