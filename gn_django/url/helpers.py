@@ -1,3 +1,5 @@
+import re
+
 def strip_protocol(url):
     """
     Strip protocol from URL to make it protocol relative
