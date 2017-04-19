@@ -92,7 +92,7 @@ class Jinja2(DjangoJinja2):
         Returns:
             iterable of extensions
         """
-        base_extensions = dj_jinja_builtins.DEFAULT_EXTENSIONS
+        base_extensions = dj_jinja_builtins.DEFAULT_EXTENSIONS.copy()
         base_extensions.append(SpacelessExtension)
         return base_extensions
 

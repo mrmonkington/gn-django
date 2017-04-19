@@ -11,6 +11,9 @@ In your project's ``settings.py``, add the following to the top of the
         "BACKEND": "gn_django.template.backend.Jinja2",
         "APP_DIRS": True,
         "OPTIONS": {
+            # Try to use jinja when rendering any template, not just one with a
+            # particular file extension
+            'match_extension': None,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

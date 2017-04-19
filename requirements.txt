@@ -1,1 +1,3 @@
-django-jinja
+-e .
+coverage
+flake8
