@@ -17,6 +17,12 @@ to use when building django applications and sites at Gamer Network.
    jinja_templates/writing_jinja_templates
    jinja_templates/extending_jinja
 
+.. toctree::
+    :maxdepth: 2
+    :caption: ORM extensions
+
+    orm_extensions/fields
+    orm_extensions/validators
 
 
 Indices and tables
@@ -25,4 +31,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
