@@ -24,6 +24,13 @@ to use when building django applications and sites at Gamer Network.
     orm_extensions/fields
     orm_extensions/validators
 
+.. toctree::
+    :maxdepth: 2
+    :caption: Libraries
+
+    libraries/url
+    libraries/video
+
 
 Indices and tables
 ==================
