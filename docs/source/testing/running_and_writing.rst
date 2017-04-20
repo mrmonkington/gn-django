@@ -11,7 +11,7 @@ Tests can be run with simply ``do tests`` in the gn-django root.  This will trig
 ``tests/`` directory.
 
 **NOTE:** You need a virtualenv active which has the requisite requirements 
-installed from ``requirements.txt``.
+installed from the project root's ``requirements.txt``.
 
 To run just a subset of tests, you can trigger them in the normal django way, e.g::
     
