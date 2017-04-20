@@ -7,7 +7,7 @@ import jinja2
 from django_jinja.backend import Jinja2 as DjangoJinja2
 from django_jinja import builtins as dj_jinja_builtins
 
-from .extensions import SpacelessExtension
+from .extensions import SpacelessExtension, IncludeWithExtension
 from .globals import random
 
 def environment(**options):
@@ -18,7 +18,7 @@ def environment(**options):
     return env
 
 class Jinja2(DjangoJinja2):
-    
+
     def __init__(self, params):
         params = params.copy()
         options = params.get("OPTIONS", {})
@@ -31,5 +31,5 @@ class Jinja2(DjangoJinja2):
         base_extensions = dj_jinja_builtins.DEFAULT_EXTENSIONS
         # NOTE: Add more custom extensions here
         base_extensions.append(SpacelessExtension)
+        base_extensions.append(IncludeWithExtension)
         return base_extensions
-
