@@ -31,29 +31,17 @@ class IncludeWithExtension(Extension):
     tags = set(['include_with'])
 
     def parse(self, parser):
-        ctx_ref = nodes.ContextReference()
-        ctx_ref['foo'] = 'bar'
         first = next(parser.stream)
-        template = first.value
-        lineno = first.lineno
-        lineno = next(parser.stream).lineno
-        node = nodes.Include(template, False, True, lineno=lineno)
+        # template = nodes.Const(next(parser.stream).value)
+        template = next(parser.stream).value
         cvars = {'stuff': {'key': 'value'}}
         # cvars = self._get_context_vars(parser)
-        context = runtime.Context(self.environment, {}, 'name', {})
-        context.vars = cvars
-        print(cvars)
-        print(context)
-        print(parser.stream)
+        node = nodes.Const(self.environment.get_template(template).render(cvars))
+        print(node)
+        return nodes.Output([node])
 
-        return nodes.CallBlock(node)
-        # if parser.stream.current.test('name:ignore') and parser.stream.look().test('name:missing'):
-        #     node.ignore_missing = True
-        #     parser.stream.skip(2)
-        # else:
-        #     node.ignore_missing = False
-        return parser.parse_import_context(node, True)
 
+    # Future reference, WithExtension is defined im jinja2.ext
     def _get_context_vars(self, parser):
         current = None
         template = None
@@ -73,28 +61,19 @@ class IncludeWithExtension(Extension):
                         current = None
                 except exceptions.TemplateSyntaxError as e:
                     break
+                except nodes.Impossible as e:
+                    print('IMPOSSIBLE')
+                    print(t)
+                    continue
         except exceptions.TemplateSyntaxError as e:
             pass
 
-        return nodes.Include(template, False, True, lineno=lineno)
         return context
 
 
-        # print('balls lightyear')
-        # args = [parser.parse_expression()]
-        #
-        # if parser.stream.skip_if('comma'):
-        #     exp = parser.parse_expression()
-        #     args.append(exp)
-        # elif parser.steam.skip_if('assign'):
-        #     exp = parser.parse_expression()
-        #     print(exp)
-        # else:
-        #     args.append(nodes.Const(None))
-        #
-        # print(parser.stream)
-        # context = parser.parse_include()
-        # print(context)
 
-    def _include_with(self, caller):
-        return caller()
+    def _gninclude_with(self, include='', caller=None):
+        print("HII")
+        #print(include)
+        return ''
+        return parser.parse_import_context(include, '')
