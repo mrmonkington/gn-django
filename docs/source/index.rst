@@ -19,6 +19,12 @@ to use when building django applications and sites at Gamer Network.
    jinja_templates/why_jinja_not_django
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Testing
+
+   testing/running_and_writing
+
 
 Indices and tables
 ==================

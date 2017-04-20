@@ -23,4 +23,3 @@ In your project's ``settings.py``, add the following to the top of the
             ],
         }
     },
-
