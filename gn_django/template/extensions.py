@@ -30,16 +30,15 @@ class IncludeWithExtension(Extension):
 
     tags = set(['include_with'])
     valid_tags = [
-        'comma',
-        'assign',
-        'colon',
-        'lbrace',
-        'rbrace',
-        'lparen',
-        'rparen',
-        'lbracket',
-        'rbracket',
-        'data',
+        'comma',     # ','
+        'assign',    # '='
+        'colon',     # ':'
+        'lbrace',    # '{'
+        'rbrace',    # '}'
+        'lparen',    # '('
+        'rparen',    # ')'
+        'lbracket',  # '['
+        'rbracket',  # ']'
     ]
 
     def parse(self, parser):
