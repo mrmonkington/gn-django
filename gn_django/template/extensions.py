@@ -29,51 +29,49 @@ class SpacelessExtension(Extension):
 class IncludeWithExtension(Extension):
 
     tags = set(['include_with'])
+    valid_tags = [
+        'comma',
+        'assign',
+        'colon',
+        'lbrace',
+        'rbrace',
+        'lparen',
+        'rparen',
+        'lbracket',
+        'rbracket',
+        'data',
+    ]
 
     def parse(self, parser):
         first = next(parser.stream)
-        # template = nodes.Const(next(parser.stream).value)
         template = next(parser.stream).value
-        cvars = {'stuff': {'key': 'value'}}
-        # cvars = self._get_context_vars(parser)
+        cvars = self._get_context_vars(parser)
         node = nodes.Const(self.environment.get_template(template).render(cvars))
-        print(node)
         return nodes.Output([node])
 
-
-    # Future reference, WithExtension is defined im jinja2.ext
     def _get_context_vars(self, parser):
         current = None
-        template = None
         context = {}
         eval_ctx = nodes.EvalContext(self.environment)
-        try:
-            for token in parser.stream:
-                try:
-                    t = parser.parse_expression()
-                    if template == None and isinstance(t, nodes.Const):
-                        template = t.value
-                        lineno = t.lineno
-                    elif current == None and isinstance(t, nodes.Name):
-                        current = t.name
-                    elif current:
-                        context[current] = t.as_const(eval_ctx)
+        while not parser.stream.closed:
+            try:
+                old = parser.stream.current
+                if old.type == 'block_end':
+                    return context
+                if parser.stream.skip_if('name'):
+                    # Rewind and parse the name
+                    parser.stream.current = old
+                    token = parser.parse_expression()
+                    current = token.name
+                else:
+                    try:
+                        token = parser.parse_expression()
+                        context[current] = token.as_const(eval_ctx)
                         current = None
-                except exceptions.TemplateSyntaxError as e:
-                    break
-                except nodes.Impossible as e:
-                    print('IMPOSSIBLE')
-                    print(t)
-                    continue
-        except exceptions.TemplateSyntaxError as e:
-            pass
-
-        return context
-
-
-
-    def _gninclude_with(self, include='', caller=None):
-        print("HII")
-        #print(include)
-        return ''
-        return parser.parse_import_context(include, '')
+                    except AttributeError:
+                        pass
+            except exceptions.TemplateSyntaxError as e:
+                if not parser.stream.current.type in self.valid_tags:
+                    raise e
+                else:
+                    parser.stream.skip()
