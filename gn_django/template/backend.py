@@ -1,7 +1,11 @@
+import weakref
+
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.utils.text import slugify
+from django.utils import six
+from django.utils.module_loading import import_string
 
 import jinja2
 from django_jinja.backend import Jinja2 as DjangoJinja2
@@ -11,11 +15,41 @@ from django_jinja.contrib._humanize.templatetags._humanize import ordinal, intco
 from .extensions import SpacelessExtension
 from .globals import random
 
+class Environment(jinja2.Environment):
+    """
+    """
+    def __init__(self, **kwargs):
+        self.template_cache_key_cb = kwargs.pop('template_cache_key_cb', None)
+        super(Environment, self).__init__(**kwargs)
+
+    def get_template_cache_key(self, template_name):
+        cache_key = (weakref.ref(self.loader), template_name)
+        if self.template_cache_key_cb:
+            if isinstance(self.template_cache_key_cb, six.string_types):
+                self.template_cache_key_cb = import_string(self.template_cache_key_cb)
+            cache_key = self.template_cache_key_cb(self.loader, template_name)
+        return cache_key
+
+    @jinja2.utils.internalcode
+    def _load_template(self, name, globals):
+        if self.loader is None:
+            raise TypeError('no loader for this environment specified')
+        cache_key = self.get_template_cache_key(name)
+        if self.cache is not None:
+            template = self.cache.get(cache_key)
+            if template is not None and (not self.auto_reload or
+                                         template.is_up_to_date):
+                return template
+        template = self.loader.load(self, name, globals)
+        if self.cache is not None:
+            self.cache[cache_key] = template
+        return template
+
 def environment(**options):
     """
     Base jinja2 environment.
     """
-    env = jinja2.Environment(**options)
+    env = Environment(**options)
     return env
 
 class Jinja2(DjangoJinja2):
