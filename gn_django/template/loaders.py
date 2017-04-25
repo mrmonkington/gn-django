@@ -39,14 +39,14 @@ class HierarchyLoader(BaseLoader):
 
     Allows three formats of template lookup:
 
-    - `<loader>_parent:base.html` - ancestor lookup - this will attempt to find
+    * `<loader>_parent:base.html` - ancestor lookup - this will attempt to find
        the closest ancestor template that matches below the named loader
        in the loader hierarchy.
 
-    - `<loader>:base.html` - directed lookup - this will attempt to find the `base.html`
+    * `<loader>:base.html` - directed lookup - this will attempt to find the `base.html`
        template from the specified named loader in the loader hierarchy.
 
-    - `base.html` - sequential lookup - this will attempt to find the `base.html`
+    * `base.html` - sequential lookup - this will attempt to find the `base.html`
        template by trying all of the loaders in the loader hierarchy, sequentially.
        Note: If the other two methods fail, sequential lookup is the fallback.
 
@@ -208,7 +208,8 @@ class HierarchyLoader(BaseLoader):
             pass
         # Should the loading mode fail, fallback to using sequential loading
         if not template_source and loading_mode != 'sequential':
-            template_source = self.get_sequential_source(environment, template, tried)
+            sequential_name = template.split(':')[-1]
+            template_source = self.get_sequential_source(environment, sequential_name, tried)
 
         # Return the template source if we managed to look it up successfully,
         # or raise a DjangoTemplateNotFound exception

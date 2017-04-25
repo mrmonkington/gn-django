@@ -30,8 +30,12 @@ def get_namespace_for_site_domain():
     domain.
     """
     if not hasattr(settings, "SITE_DOMAIN_NAMESPACE_MAPPER"):
-        raise Exception("get_namespace_for_site_domain function can only be called \
-            SITE_DOMAIN_NAMESPACE_MAPPER is defined in the settings.")
+        raise Exception("get_namespace_for_site_domain function can only be called if SITE_DOMAIN_NAMESPACE_MAPPER is defined in the settings.")
 
     site_domain = get_current_site_domain()
-    return settings.SITE_DOMAIN_NAMESPACE_MAPPER[site_domain]
+    if site_domain == None:
+        return None
+    try:
+        return settings.SITE_DOMAIN_NAMESPACE_MAPPER[site_domain]
+    except KeyError:
+        raise KeyError("SITE_DOMAIN_NAMESPACE_MAPPER setting has no key '%s'" % site_domain)
