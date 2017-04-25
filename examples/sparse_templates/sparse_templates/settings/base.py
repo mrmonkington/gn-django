@@ -53,9 +53,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'sparse_templates.urls'
 
-from gn_django.template.loaders import get_static_namespace_loader
+from gn_django.template.loaders import get_static_hierarchy_loader
 TEMPLATE_BASE = os.path.join(BASE_DIR, 'templates')
-loader = get_static_namespace_loader([
+loader = get_static_hierarchy_loader([
     ('eurogamer_net', os.path.join(TEMPLATE_BASE, 'eurogamer_net')),
     ('eurogamer', os.path.join(TEMPLATE_BASE, 'eurogamer')),
     ('core', os.path.join(TEMPLATE_BASE, 'core')),

@@ -17,12 +17,33 @@ from .globals import random
 
 class Environment(jinja2.Environment):
     """
+    Custom Jinja Environment class for gn django projects.
+
+    This provides an override for generating template cache keys - the cache
+    is used in preference to the template loader.  By default, keys are a 
+    combination of loader reference and template name.
+
+    Extra kwargs:
+      * `template_cache_key_cb` - a callback function for generating a template
+        cache key.  When this is present, this is used instead of the default
+        cache key behaviour.
+
+    *NOTE*: This class has some duplication from jinja2.Environment which is
+    currently unavoidable as there's no overridable hook just for generating
+    template cache keys: https://github.com/pallets/jinja/blob/bbe0a4174c2846487bef4328b309fddd8638da39/jinja2/environment.py#L798
     """
+
     def __init__(self, **kwargs):
         self.template_cache_key_cb = kwargs.pop('template_cache_key_cb', None)
         super(Environment, self).__init__(**kwargs)
 
     def get_template_cache_key(self, template_name):
+        """
+        Generates a cache key for the given template name.
+
+        This will use `template_cache_key_cb` if it is present on the object
+        instance.
+        """
         cache_key = (weakref.ref(self.loader), template_name)
         if self.template_cache_key_cb:
             if isinstance(self.template_cache_key_cb, six.string_types):
@@ -34,6 +55,8 @@ class Environment(jinja2.Environment):
     def _load_template(self, name, globals):
         if self.loader is None:
             raise TypeError('no loader for this environment specified')
+        # TODO: Maybe see if we can merge a PR in to the jinja project which
+        # provides `get_template_cache_key` for override
         cache_key = self.get_template_cache_key(name)
         if self.cache is not None:
             template = self.cache.get(cache_key)
