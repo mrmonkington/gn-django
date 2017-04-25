@@ -1,0 +1,9 @@
+{% block comments_header %}
+<h2>It's comments time</h2>
+{% endblock %}
+
+<ul>
+    {% for i in range(10) %}
+    <li>Comment {{i}}</li>
+    {% endfor %}
+</ul>
