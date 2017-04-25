@@ -22,62 +22,74 @@ class JinjaOrigin(object):
         self.name = name
 
 
-class NamespaceLoader(BaseLoader):
+class HierarchyLoader(BaseLoader):
     """
     A loader that is a combination of the PrefixLoader and ChoiceLoader.
-    If there's a prefix, use that loader, otherwise go through all Loaders until
-    a match is found.
+    This allows us to define a hierarchy of template directories such that a 
+    template defined in the most specific part of the hierarchy is loaded in
+    preference to a template in the least specific part of the hierarchy.  This
+    enables very granular overrides of templates and finer control of template 
+    loading through various lookup modes determined by prefixing the template
+    name.
 
-    Takes an OrderedDict loader mapping with keys of loader names and values
-    of instantiated `Loader` objects.  This mapping should be in order of most
-    specific (concrete) template to least specific (parent/base) template.
+    Takes an OrderedDict loader hierarchy with keys as loader names and values
+    as instantiated `Loader` objects.  This mapping should be in order of most
+    specific (concrete) template directory to least specific (parent/base) 
+    template directory.
 
     Allows three formats of template lookup:
 
-    - `app_parent:base.html` - dynamic lookup - this will attempt to find
-       the closest ancestor template that matches below the loader named `app`
-       in the loader mapping.
+    - `<loader>_parent:base.html` - ancestor lookup - this will attempt to find
+       the closest ancestor template that matches below the named loader
+       in the loader hierarchy.
 
-    - `core:base.html` - directed lookup - this will attempt to find the `base.html`
-       template in the loader called `core` in the loader mapping.
+    - `<loader>:base.html` - directed lookup - this will attempt to find the `base.html`
+       template from the specified named loader in the loader hierarchy.
 
     - `base.html` - sequential lookup - this will attempt to find the `base.html`
-       template by trying all of the loaders in the loader mapping, sequentially.
+       template by trying all of the loaders in the loader hierarchy, sequentially.
        Note: If the other two methods fail, sequential lookup is the fallback.
 
-    Say that we have a loader mapping as follows:
+    Say that we have a loader hierarchy as follows:
         ```
         loaders = OrderedDict({
+            'eurogamer_net': Loader(),
             'eurogamer': Loader(),
-            'editorial': Loader(),
             'core': Loader(),
         })
-        choice_loader = NamespaceLoader(loaders)
+        hierarchy_loader = HierarchyLoader(loaders)
 
-        choice_loader.get_source(env, 'editorial_parent:base.html')
+        hierarchy_loader.get_source(env, 'eurogamer_parent:base.html')
         ```
         Will yield `base.html` from the `'core'` loader and will
         otherwise try to find it sequentially from eurogamer to core.
 
         ```
-        choice_loader.get_source(env, 'core:foo.html')
+        hierarchy_loader.get_source(env, 'core:foo.html')
         ```
         Will yield `foo.html` from the `'core'` loader if it exists and will
         otherwise try to find it sequentially from eurogamer to core.
 
         ```
-        choice_loader.get_source(env, 'bar.html')
+        hierarchy_loader.get_source(env, 'bar.html')
         ```
-        Will find `bar.html` by querying the loaders sequentially from eurogamer
+        Will find `bar.html` by querying the loaders sequentially from eurogamer_net
         to core.
     """
 
-    def __init__(self, mapping, delimiter=':'):
-        if not isinstance(mapping, OrderedDict):
-            raise Exception("NamespaceLoader must be called with a \
+    def __init__(self, hierarchy, delimiter=':'):
+        if not isinstance(hierarchy, OrderedDict):
+            raise Exception("HierarchyLoader must be called with a \
                 collections.OrderedDict type of mapping")
-        self.mapping = mapping
+        self.hierarchy = hierarchy
         self.delimiter = delimiter
+
+    def identify_loading_mode(self, template_name):
+        if self.delimiter in template_name and "_parent:" in template_name:
+            return "ancestor"
+        if self.delimiter in template_name:
+            return "directed"
+        return "sequential"
 
     def get_ancestor_loader_names(self, child):
         """
@@ -85,20 +97,26 @@ class NamespaceLoader(BaseLoader):
         most distant.
         """
         # Get a list of loader keys
-        all_loaders = list(self.mapping)
+        all_loaders = list(self.hierarchy)
         try:
             child_index = all_loaders.index(child)
         except ValueError:
             raise TemplateNotFound()
         return all_loaders[child_index+1:]
 
-    def get_parent_template(self, environment, template, tried):
+    def get_ancestor_source(self, environment, template, tried):
         """
-        Given a template identifier of format `<app>_parent:foo.html` find the
+        Given a template identifier of format `<loader>_parent:foo.html` find the
         template by going through the loaders above it sequentially until it is
         found.
 
+        Args:
+          * `environment` - the jinja environment object
+          * `template` - the template name to look up
+          * `tried` - ref to iterable of tried paths
+
         Raises `TemplateNotFound`
+        Returns an instantiated template
         """
         try:
             prefix, template_name = template.split(self.delimiter, 1)
@@ -108,9 +126,11 @@ class NamespaceLoader(BaseLoader):
             child = prefix.split("_parent", 1)[0]
         except ValueError:
             raise TemplateNotFound(template)
+        # Work out a flat list of the loader's ancestry to iterate through
         loader_ancestry = self.get_ancestor_loader_names(child)
+        # For each loader in the ancestry, try to get the template and return it
         for loader_name in loader_ancestry:
-            loader = self.mapping[loader_name]
+            loader = self.hierarchy[loader_name]
             try:
                 return loader.get_source(environment, template_name)
             except TemplateNotFound:
@@ -119,35 +139,44 @@ class NamespaceLoader(BaseLoader):
                 tried.append([origin, "Source does not exist"])
                 continue
         raise TemplateNotFound(template)
-        
-    def get_loader(self, template):
+
+    def get_directed_source(self, environment, template, tried):
+        """
+        Given a template identifier of format `<loader>:foo.html` find the
+        template by looking up the specified loader in the loader hierarchy and 
+        retrieving it from there.
+
+        Args:
+          * `environment` - the jinja environment object
+          * `template` - the template name to look up
+          * `tried` - ref to iterable of tried paths
+
+        Raises `TemplateNotFound`
+        Returns an instantiated template
+        """
         try:
-            prefix, name = template.split(self.delimiter, 1)
+            loader_name, template_name = template.split(self.delimiter, 1)
         except ValueError:
             raise TemplateNotFound(template)
         try:
-            loader = self.mapping[prefix]
+            loader = self.hierarchy[loader_name]
         except (KeyError):
             raise TemplateNotFound(template)
-        return loader, name
+        return loader.get_source(environment, template_name)
 
-    def get_source(self, environment, template):
-        # Try to find the parent template if it exists
-        tried = []
-        if self.delimiter in template and "_parent:" in template:
-            try:
-                return self.get_parent_template(environment, template, tried)
-            except TemplateNotFound:
-                pass
-        # Try to load from a named loader if the template string is prefixed with one
-        if self.delimiter in template:
-            loader, name = self.get_loader(template)
-            try:
-                return loader.get_source(environment, name)
-            except TemplateNotFound:
-                pass
-        # Otherwise, go through the all template loaders until we find one that matches
-        for loader_name, loader in self.mapping.items():
+    def get_sequential_source(self, environment, template, tried):
+        """
+        Given a template name, find the template by going through the loader
+        ancestry sequentially from most specific to least specific.
+
+        Args:
+          * `environment` - the jinja environment object
+          * `template` - the template name to look up
+          * `tried` - ref to iterable of tried paths
+
+        Returns an instantiated template or None if it could not be found
+        """
+        for loader_name, loader in self.hierarchy.items():
             try:
                 return loader.get_source(environment, template)
             except TemplateNotFound:
@@ -155,48 +184,150 @@ class NamespaceLoader(BaseLoader):
                 origin = JinjaOrigin(loader, loader_path)
                 tried.append([origin, "Source does not exist"])
                 continue
-        raise DjangoTemplateNotFound(template, tried=tried)
+        return None
+        
+    def get_source(self, environment, template):
+        """
+        Get the template source for a given template identifier.  An appropriate
+        loader is used based on whether the template identifier indicates 
+        sequential, ancestor or directed lookup modes.
 
+        Args:
+          * `environment` - the jinja environment object
+          * `template` - the template name to look up
+        """
+        # Identify the loading mode from the template identifier
+        loading_mode = self.identify_loading_mode(template)
+        loading_method = getattr(self, "get_%s_source" % loading_mode)
+        tried = []
+        template_source = None
+        # Attempt to use the identified loading mode to get the template source
+        try:
+            template_source = loading_method(environment, template, tried)
+        except TemplateNotFound:
+            pass
+        # Should the loading mode fail, fallback to using sequential loading
+        if not template_source and loading_mode != 'sequential':
+            template_source = self.get_sequential_source(environment, template, tried)
+
+        # Return the template source if we managed to look it up successfully,
+        # or raise a DjangoTemplateNotFound exception
+        if template_source:
+            return template_source
+        else:
+            raise DjangoTemplateNotFound(template, tried=tried)
+            
     def list_templates(self):
         result = []
-        for prefix, loader in iteritems(self.mapping):
+        for prefix, loader in iteritems(self.hierarchy):
             for template in loader.list_templates():
                 result.append(prefix + self.delimiter + template)
         return result
 
-def get_static_namespace_loader(directories):
+def get_static_hierarchy_loader(directories):
+    """
+    Helper to instantiate a `HierarchyLoader` from a hierarchy of named directories.
+
+    Args:
+      * `directories` - iterable of pairs - The loader hierarchy to create; this
+        should specify the name and directory for each loader in the
+        hierarchy.  If we have "eurogamer_net", "eurogamer" and core in order of
+        most to least specific, we should have the following:
+        ```
+            directories = (
+                ("eurogamer_net", '/path/to/eurogamer_net'),
+                ("eurogamer", '/path/to/eurogamer'),
+                ("core", '/path/to/core'),
+            )
+        ```
+
+    Returns an instantiated `HierarchyLoader()` object
+    """
     template_loaders = OrderedDict()
     for app_name, template_dir in directories:
         template_loaders[app_name] = FileSystemLoader(template_dir)
-    return NamespaceLoader(template_loaders)
+    return HierarchyLoader(template_loaders)
 
 
-class MultiNamespaceLoader(BaseLoader):
+class MultiHierarchyLoader(BaseLoader):
+    """
+    A loader composed of one or more `HierarchyLoader` objects.  The chosen
+    hierarchy to use when loading a given template is determined by a callback
+    function which is parameterised at object instantiation.
 
-    def __init__(self, get_active_namespace_cb, mapping, delimiter=':'):
-        self.get_active_namespace_cb = get_active_namespace_cb
-        self.mapping = mapping
+    Args:
+      * `get_active_hierarchy_cb` - function/import string - import string of the function 
+        to call to determine the hierarchy loader which is active right now.
+      * `hierarchies` - mapping - mapping of hierarchy names to instantiated
+        `HierarchyLoader` objects
+    """
+
+    def __init__(self, get_active_hierarchy_cb, hierarchies, delimiter=':'):
+        self.get_active_hierarchy_cb = get_active_hierarchy_cb
+        self.hierarchies = hierarchies
         self.delimiter = delimiter
 
     def get_loader(self):
-        if isinstance(self.get_active_namespace_cb, six.string_types):
-            self.get_active_namespace_cb = import_string(self.get_active_namespace_cb)
-        namespace = self.get_active_namespace_cb()
-        return self.mapping[namespace]
+        # Call the active hierarchy callback to determine the hierarchy loader
+        # which is active right now
+        if isinstance(self.get_active_hierarchy_cb, six.string_types):
+            self.get_active_hierarchy_cb = import_string(self.get_active_hierarchy_cb)
+        hierarchy = self.get_active_hierarchy_cb()
+        return self.hierarchies[hierarchy]
 
     def get_source(self, environment, template):
+        # Determine the currently active loader and get the template source from it
         current_loader = self.get_loader()
         return current_loader.get_source(environment, template)
 
     def list_templates(self):
         result = []
-        for prefix, loader in iteritems(self.mapping):
+        for prefix, loader in iteritems(self.hierarchies):
             for template in loader.list_templates():
                 result.append(prefix + self.delimiter + template)
         return result
 
-def get_multi_namespace_loader(get_active_namespace_cb, namespaces):
+def get_multi_hierarchy_loader(get_active_hierarchy_cb, hierarchies):
+    """
+    Helper to instantiate a `MultiHierarchyLoader` from many named template 
+    directory hierarchies.
+
+    Args:
+      * `get_active_hierarchy_cb` - function/import string -  function 
+        to call to determine the name of the hierarchy loader which is active 
+        at any time.
+      * `hierarchy` - iterable of pairs - The loader hierarchies to create.
+        Each pair should specify the hierarchy name and template hierarchy for
+        all template hierarchies to create.
+        e.g.
+        ```
+            hierarchies = (
+                ('eurogamer_net', (
+                    ('eurogamer_net', os.path.join(TEMPLATE_BASE, 'eurogamer_net')),
+                    ('eurogamer', os.path.join(TEMPLATE_BASE, 'eurogamer')),
+                    ('core', os.path.join(TEMPLATE_BASE, 'core')),
+                )),
+                ('eurogamer_de', (
+                    ('eurogamer_de', os.path.join(TEMPLATE_BASE, 'eurogamer_de')),
+                    ('eurogamer', os.path.join(TEMPLATE_BASE, 'eurogamer')),
+                    ('core', os.path.join(TEMPLATE_BASE, 'core')),
+                )),
+                ('vg247_com', (
+                    ('vg247_com', os.path.join(TEMPLATE_BASE, 'vg247_com')),
+                    ('vg247', os.path.join(TEMPLATE_BASE, 'vg247')),
+                    ('core', os.path.join(TEMPLATE_BASE, 'core')),
+                )),
+                ('vg247_pl', (
+                    ('vg247_pl', os.path.join(TEMPLATE_BASE, 'vg247_pl')),
+                    ('vg247', os.path.join(TEMPLATE_BASE, 'vg247')),
+                    ('core', os.path.join(TEMPLATE_BASE, 'core')),
+                )),
+            )
+        ```
+
+    Returns an instantiated `MultiHierarchyLoader()` object
+    """
     template_loaders = {}
-    for namespace_name, directories in namespaces:
-        template_loaders[namespace_name] = get_static_namespace_loader(directories)
-    return MultiNamespaceLoader(get_active_namespace_cb, template_loaders)
+    for hierarchy_name, directories in hierarchies:
+        template_loaders[hierarchy_name] = get_static_hierarchy_loader(directories)
+    return MultiHierarchyLoader(get_active_hierarchy_cb, template_loaders)

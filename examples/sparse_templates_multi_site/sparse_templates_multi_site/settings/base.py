@@ -54,9 +54,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'sparse_templates_multi_site.urls'
 
-from gn_django.template.loaders import get_multi_namespace_loader
+from gn_django.template.loaders import get_multi_hierarchy_loader
 TEMPLATE_BASE = os.path.join(BASE_DIR, 'templates')
-loader = get_multi_namespace_loader(
+loader = get_multi_hierarchy_loader(
     "gn_django.site_domain.site_domains.get_namespace_for_site_domain",
     (
         ('eurogamer_net', (
