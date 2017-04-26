@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.template.exceptions import TemplateDoesNotExist
 
 from gn_django.template.backend import Jinja2
-from gn_django.template.loaders import HierarchyLoader, get_static_hierarchy_loader
+from gn_django.template.loaders import HierarchyLoader, get_hierarchy_loader
 from gn_django.template.loaders import MultiHierarchyLoader, get_multi_hierarchy_loader
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -339,13 +339,13 @@ class TestLoaderBuilders(TestCase):
         template_base = os.path.join(BASE_DIR, "test_files", "sparse_templates")
         return os.path.join(template_base, dirname)
 
-    def test_get_static_hierarchy_loader(self):
+    def test_get_hierarchy_loader(self):
         expected_hierarchy = OrderedDict((
             ("eurogamer_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
             ("eurogamer", FileSystemLoader(self.get_template_dir("eurogamer"))),
             ("core", FileSystemLoader(self.get_template_dir("core"))),
         ))
-        loader = get_static_hierarchy_loader((
+        loader = get_hierarchy_loader((
             ('eurogamer_net', self.get_template_dir('eurogamer_net')),
             ('eurogamer', self.get_template_dir('eurogamer')),
             ('core', self.get_template_dir('core')),
