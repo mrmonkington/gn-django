@@ -25,33 +25,33 @@ class JinjaOrigin(object):
 class HierarchyLoader(BaseLoader):
     """
     A loader that is a combination of the PrefixLoader and ChoiceLoader.
-    This allows us to define a hierarchy of template directories such that a 
+    This allows us to define a hierarchy of template loaders such that a 
     template defined in the most specific part of the hierarchy is loaded in
     preference to a template in the least specific part of the hierarchy.  This
     enables very granular overrides of templates and finer control of template 
     loading through various lookup modes determined by prefixing the template
     name.
 
-    Takes an OrderedDict loader hierarchy with keys as loader names and values
+    Takes an ``OrderedDict`` loader hierarchy with keys as loader names and values
     as instantiated `Loader` objects.  This mapping should be in order of most
-    specific (concrete) template directory to least specific (parent/base) 
-    template directory.
+    specific (concrete) template loader to least specific (parent/base) 
+    template loader.
 
     Allows three formats of template lookup:
 
-    * `<loader>_parent:base.html` - ancestor lookup - this will attempt to find
-       the closest ancestor template that matches below the named loader
-       in the loader hierarchy.
+      * ``<loader>_parent:base.html`` - ancestor lookup - this will attempt to find
+        the closest ancestor template that matches below the named loader
+        in the loader hierarchy.
 
-    * `<loader>:base.html` - directed lookup - this will attempt to find the `base.html`
-       template from the specified named loader in the loader hierarchy.
+      * ``<loader>:base.html`` - namespace lookup - this will attempt to find the `base.html`
+        template from the specified named loader in the loader hierarchy.
 
-    * `base.html` - sequential lookup - this will attempt to find the `base.html`
-       template by trying all of the loaders in the loader hierarchy, sequentially.
-       Note: If the other two methods fail, sequential lookup is the fallback.
+      * ``base.html`` - sequential lookup - this will attempt to find the `base.html`
+        template by trying all of the loaders in the loader hierarchy, sequentially.
+        Note: If the other two methods fail, sequential lookup is the fallback.
 
-    Say that we have a loader hierarchy as follows:
-        ```
+    Say that we have a loader hierarchy as follows::
+
         loaders = OrderedDict({
             'eurogamer_net': Loader(),
             'eurogamer': Loader(),
@@ -60,21 +60,19 @@ class HierarchyLoader(BaseLoader):
         hierarchy_loader = HierarchyLoader(loaders)
 
         hierarchy_loader.get_source(env, 'eurogamer_parent:base.html')
-        ```
-        Will yield `base.html` from the `'core'` loader and will
-        otherwise try to find it sequentially from eurogamer to core.
 
-        ```
+    Will yield `base.html` from the `'core'` loader and will
+    otherwise try to find it sequentially from eurogamer to core::
+
         hierarchy_loader.get_source(env, 'core:foo.html')
-        ```
-        Will yield `foo.html` from the `'core'` loader if it exists and will
-        otherwise try to find it sequentially from eurogamer to core.
 
-        ```
+    Will yield `foo.html` from the `'core'` loader if it exists and will
+    otherwise try to find it sequentially from the ``eurogamer`` loader to ``core``::
+
         hierarchy_loader.get_source(env, 'bar.html')
-        ```
-        Will find `bar.html` by querying the loaders sequentially from eurogamer_net
-        to core.
+
+    Will find `bar.html` by querying the loaders sequentially from ``eurogamer_net``
+    to ``core``.
     """
 
     def __init__(self, hierarchy, delimiter=':'):
@@ -88,7 +86,7 @@ class HierarchyLoader(BaseLoader):
         if self.delimiter in template_name and "_parent:" in template_name:
             return "ancestor"
         if self.delimiter in template_name:
-            return "directed"
+            return "namespace"
         return "sequential"
 
     def get_ancestor_loader_names(self, child):
@@ -140,7 +138,7 @@ class HierarchyLoader(BaseLoader):
                 continue
         raise TemplateNotFound(template)
 
-    def get_directed_source(self, environment, template, tried):
+    def get_namespace_source(self, environment, template, tried):
         """
         Given a template identifier of format `<loader>:foo.html` find the
         template by looking up the specified loader in the loader hierarchy and 
@@ -190,7 +188,7 @@ class HierarchyLoader(BaseLoader):
         """
         Get the template source for a given template identifier.  An appropriate
         loader is used based on whether the template identifier indicates 
-        sequential, ancestor or directed lookup modes.
+        sequential, ancestor or namespace lookup modes.
 
         Args:
           * `environment` - the jinja environment object
@@ -225,7 +223,7 @@ class HierarchyLoader(BaseLoader):
                 result.append(prefix + self.delimiter + template)
         return result
 
-def get_static_hierarchy_loader(directories):
+def get_hierarchy_loader(directories):
     """
     Helper to instantiate a `HierarchyLoader` from a hierarchy of named directories.
 
@@ -252,7 +250,7 @@ def get_static_hierarchy_loader(directories):
 
 class MultiHierarchyLoader(BaseLoader):
     """
-    A loader composed of one or more `HierarchyLoader` objects.  The chosen
+    A loader composed of one or more ``HierarchyLoader`` objects.  The chosen
     hierarchy to use when loading a given template is determined by a callback
     function which is parameterised at object instantiation.
 
@@ -260,7 +258,7 @@ class MultiHierarchyLoader(BaseLoader):
       * `get_active_hierarchy_cb` - function/import string - import string of the function 
         to call to determine the hierarchy loader which is active right now.
       * `hierarchies` - mapping - mapping of hierarchy names to instantiated
-        `HierarchyLoader` objects
+        ``HierarchyLoader`` objects
     """
 
     def __init__(self, get_active_hierarchy_cb, hierarchies, delimiter=':'):
@@ -290,7 +288,7 @@ class MultiHierarchyLoader(BaseLoader):
 
 def get_multi_hierarchy_loader(get_active_hierarchy_cb, hierarchies):
     """
-    Helper to instantiate a `MultiHierarchyLoader` from many named template 
+    Helper to instantiate a ``MultiHierarchyLoader`` from many named template 
     directory hierarchies.
 
     Args:
@@ -326,9 +324,9 @@ def get_multi_hierarchy_loader(get_active_hierarchy_cb, hierarchies):
             )
         ```
 
-    Returns an instantiated `MultiHierarchyLoader()` object
+    Returns an instantiated ``MultiHierarchyLoader()`` object
     """
     template_loaders = {}
     for hierarchy_name, directories in hierarchies:
-        template_loaders[hierarchy_name] = get_static_hierarchy_loader(directories)
+        template_loaders[hierarchy_name] = get_hierarchy_loader(directories)
     return MultiHierarchyLoader(get_active_hierarchy_cb, template_loaders)

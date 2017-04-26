@@ -1,3 +1,5 @@
+.. _package-site:
+
 Site 
 ====
 
@@ -36,7 +38,7 @@ There's a few things that should be considered when writing code that uses
     ``SiteFromDomainMiddleware`` class will not be able to use site features.
 
 It's possible that in future, we could alternatively identify the
-current site by inspecting the requested URL e.g. ``auth.gamer-network.net/eurogamer/...``
+current site by inspecting the requested URL e.g. ``auth.gamer-network.net/eurogamer/*``
 
 Steps
 ~~~~~
@@ -72,8 +74,12 @@ Reference
 .. automodule:: gn_django.site
    :members:
 
+.. _site-from-domain-middleware:
+
 .. automodule:: gn_django.site.middleware
    :members:
 
-.. automodule:: gn_django.site.middleware
+.. _site-template:
+
+.. automodule:: gn_django.site.template
    :members:
