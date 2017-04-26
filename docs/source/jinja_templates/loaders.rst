@@ -187,11 +187,15 @@ to ``core``.
 Using the MultiHierarchyLoader in conjunction with the site package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Note**: This worked example is runnable in ``examples/sparse_inheritance_multi_site/``.
+**Note:** This worked example is runnable in ``examples/sparse_inheritance_multi_site/``.
 
-As mentioned, the :ref:`multi-hierarchy-loader` is for use when your deployable django project will service
- multiple concrete sites.
-This might be achieved by domain separation - e.g. ``"auth.eurogamer.net"`` and ``"auth.vg247.com"``.  Or it might be achieved by URL path separation - e.g. ``"auth.gamer-network.net/eurogamer_net/"`` and ``auth.gamer-network.net/vg247_com/``.  Right now, only domain separation has been implemented with use of :ref:`the site package<package-site>`.
+As mentioned, the :ref:`multi-hierarchy-loader` is for use when your deployable 
+django project will service multiple concrete sites.
+This might be achieved by domain separation - e.g. ``"auth.eurogamer.net"`` and 
+``"auth.vg247.com"``.  Or it might be achieved by URL path separation - e.g. 
+``"auth.gamer-network.net/eurogamer_net/"`` and ``auth.gamer-network.net/vg247_com/``. 
+Right now, only domain separation has been implemented with use of 
+:ref:`the site package<package-site>`.
 
 The instantiated :ref:`multi-hierarchy-loader` should be passed to the jinja backend
 in the ``TEMPLATES`` django setting.
