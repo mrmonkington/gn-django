@@ -82,7 +82,8 @@ loader = get_multi_hierarchy_loader(
     )
 )
 
-SITE_DOMAIN_MAPPER = {
+#STATIC_SITE_DOMAIN = "vg247.com"
+SITE_DOMAINS = {
     "127.0.0.1": "eurogamer.net",
     "eurogamer.net.local": "eurogamer.net",
     "eurogamer.de.local": "eurogamer.de",
@@ -90,7 +91,7 @@ SITE_DOMAIN_MAPPER = {
     "vg247.pl.local": "vg247.pl",
 }
 
-SITE_DOMAIN_NAMESPACE_MAPPER = {
+SITE_NAMESPACES = {
     "eurogamer.net": "eurogamer_net",
     "eurogamer.de": "eurogamer_de",
     "vg247.com": "vg247_com",
