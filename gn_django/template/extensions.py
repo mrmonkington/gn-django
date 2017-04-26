@@ -1,4 +1,4 @@
-from jinja2 import nodes, exceptions, runtime
+from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
 import copy
 
@@ -39,16 +39,36 @@ class IncludeWithExtension(Extension):
         'rparen',    # ')'
         'lbracket',  # '['
         'rbracket',  # ']'
+        'data'
     ]
 
     def parse(self, parser):
         first = next(parser.stream)
         template = next(parser.stream).value
         cvars = self._get_context_vars(parser)
+        print(cvars)
         node = nodes.Const(self.environment.get_template(template).render(cvars))
         return nodes.Output([node])
 
     def _get_context_vars(self, parser):
+        # Argument parsing copied from https://github.com/coffin/coffin/blob/master/coffin/common.py#L164
+        stream = parser.stream
+        args = []
+        kwargs = []
+        eval_ctx = nodes.EvalContext(self.environment)
+        c = nodes.ContextReference()
+        while not stream.current.test_any('block_end'):
+            stream.skip_if('comma')
+            if stream.current.test('name') and stream.look().test('assign'):
+                print('here')
+                key = nodes.Const(next(stream).value)
+                stream.skip()
+                value = parser.parse_expression()
+                kwargs.append(nodes.Pair(key, value, lineno=key.lineno))
+
+        return kwargs
+
+
         current = None
         context = {}
         eval_ctx = nodes.EvalContext(self.environment)
@@ -61,11 +81,18 @@ class IncludeWithExtension(Extension):
                     # Rewind and parse the name
                     parser.stream.current = old
                     token = parser.parse_expression()
-                    current = token.name
+                    if current == None:
+                        current = token.name
+                    else:
+                        # print('%s' % token)
+                        context[current] = nodes.Const([self.call_method('_render', [token, nodes.ContextReference()])]).set_lineno(parser.stream.current.lineno).as_const()
+                        # context[current] = self._render(token)
+                        # context[current] = nodes.CallBlock([self.call_method('_render', [nodes.Name('msg', 'load')])], [], [], []).set_lineno(token.lineno)
+                        current = None
                 else:
                     try:
                         token = parser.parse_expression()
-                        context[current] = token.as_const(eval_ctx)
+                        context[current] = token.as_const('load')
                         current = None
                     except AttributeError:
                         pass
@@ -74,3 +101,9 @@ class IncludeWithExtension(Extension):
                     raise e
                 else:
                     parser.stream.skip()
+        return context
+
+    def _render(self, node, context, caller):
+        # print('%s' % node)
+
+        return context[node.name]
