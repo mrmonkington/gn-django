@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'gn_django.site_domain.middleware.SiteDomainMiddleware',
+    'gn_django.site.middleware.SiteFromDomainMiddleware',
 ]
 
 ROOT_URLCONF = 'sparse_templates_multi_site.urls'
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'sparse_templates_multi_site.urls'
 from gn_django.template.loaders import get_multi_hierarchy_loader
 TEMPLATE_BASE = os.path.join(BASE_DIR, 'templates')
 loader = get_multi_hierarchy_loader(
-    "gn_django.site_domain.site_domains.get_namespace_for_site_domain",
+    "gn_django.site.get_namespace_for_site",
     (
         ('eurogamer_net', (
             ('eurogamer_net', os.path.join(TEMPLATE_BASE, 'eurogamer_net')),
@@ -111,7 +111,7 @@ TEMPLATES = [
                 'gn_django.template.context_processors.settings',
             ],
             'loader': loader,
-            'template_cache_key_cb': 'gn_django.site_domain.template.get_template_cache_key_with_site_domain',
+            'template_cache_key_cb': 'gn_django.site.template.get_template_cache_key_with_site',
         }
     },
     {
