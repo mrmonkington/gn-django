@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from .site import get_current_site, set_current_site, clear_current_site
+from . import get_current_site, set_current_site, clear_current_site
 
 class SiteFromDomainMiddleware:
     """

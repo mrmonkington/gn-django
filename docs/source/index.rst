@@ -21,9 +21,9 @@ to use when building django applications and sites at Gamer Network.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Libraries
+   :caption: Packages
 
-   libraries/site_domain
+   packages/site
 
 .. toctree::
    :maxdepth: 2
