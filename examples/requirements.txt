@@ -1,1 +1,2 @@
+# Install gn-django in editable mode
 -e ../

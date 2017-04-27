@@ -1,6 +1,6 @@
 from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
-import copy
+import re
 
 class SpacelessExtension(Extension):
     """
