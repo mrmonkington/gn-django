@@ -1,1 +1,2 @@
 django-jinja
+Jinja2==2.9.6

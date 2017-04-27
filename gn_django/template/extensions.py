@@ -29,28 +29,28 @@ class SpacelessExtension(Extension):
 class IncludeWithExtension(Extension):
 
     tags = set(['include_with'])
-    valid_tags = [
-        'comma',     # ','
-        'assign',    # '='
-        'colon',     # ':'
-        'lbrace',    # '{'
-        'rbrace',    # '}'
-        'lparen',    # '('
-        'rparen',    # ')'
-        'lbracket',  # '['
-        'rbracket',  # ']'
-        'data'
-    ]
 
     def parse(self, parser):
-        first = next(parser.stream)
-        template = next(parser.stream).value
-        cvars = self._get_context_vars(parser)
-        print(cvars)
-        node = nodes.Const(self.environment.get_template(template).render(cvars))
-        return nodes.Output([node])
 
-    def _get_context_vars(self, parser):
+        # First part will be 'include_with' tag, but also contains line number which
+        # we use
+        first = next(parser.stream)
+
+        # Second part is the template name
+        template = parser.parse_expression()
+
+        # Grab the context variables
+        cvars = self._get_params(parser)
+
+        ctx = nodes.ContextReference()
+        call = self.call_method('_return_include', [template, cvars, ctx], lineno=first.lineno)
+
+        return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
+
+    def _return_include(self, template, cvars, ctx, caller):
+        return self.environment.get_template(template).render(cvars)
+
+    def _get_params(self, parser):
         # Argument parsing copied from https://github.com/coffin/coffin/blob/master/coffin/common.py#L164
         stream = parser.stream
         args = []
@@ -60,50 +60,15 @@ class IncludeWithExtension(Extension):
         while not stream.current.test_any('block_end'):
             stream.skip_if('comma')
             if stream.current.test('name') and stream.look().test('assign'):
-                print('here')
                 key = nodes.Const(next(stream).value)
                 stream.skip()
                 value = parser.parse_expression()
                 kwargs.append(nodes.Pair(key, value, lineno=key.lineno))
 
+        kwargs = nodes.Dict(kwargs)
+
         return kwargs
 
-
-        current = None
-        context = {}
-        eval_ctx = nodes.EvalContext(self.environment)
-        while not parser.stream.closed:
-            try:
-                old = parser.stream.current
-                if old.type == 'block_end':
-                    return context
-                if parser.stream.skip_if('name'):
-                    # Rewind and parse the name
-                    parser.stream.current = old
-                    token = parser.parse_expression()
-                    if current == None:
-                        current = token.name
-                    else:
-                        # print('%s' % token)
-                        context[current] = nodes.Const([self.call_method('_render', [token, nodes.ContextReference()])]).set_lineno(parser.stream.current.lineno).as_const()
-                        # context[current] = self._render(token)
-                        # context[current] = nodes.CallBlock([self.call_method('_render', [nodes.Name('msg', 'load')])], [], [], []).set_lineno(token.lineno)
-                        current = None
-                else:
-                    try:
-                        token = parser.parse_expression()
-                        context[current] = token.as_const('load')
-                        current = None
-                    except AttributeError:
-                        pass
-            except exceptions.TemplateSyntaxError as e:
-                if not parser.stream.current.type in self.valid_tags:
-                    raise e
-                else:
-                    parser.stream.skip()
-        return context
-
-    def _render(self, node, context, caller):
-        # print('%s' % node)
-
-        return context[node.name]
+    def _get_var(self, context, name, caller):
+        var = context[name]
+        return var
