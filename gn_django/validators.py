@@ -27,17 +27,23 @@ class GamerNetworkImageValidator(URLValidator):
     Extension of the `URLValidator` class. Validates that an image URL links
     to a the Gamer Network CDN
     """
+    
+    patterns = [
+        r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.gamer\-network.net/',
+        r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.eurogamer.net/',
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super(GamerNetworkImageValidator, self).__init__(*args, **kwargs)
+        if kwargs.get('patterns', False):
+            self.patterns = kwargs['patterns']
+
     def __call__(self, value):
         # URL validator will protocol relative URLs, so append protocol and validate that
         with_protocol = re.sub(r'^//', 'http://', value)
         super(GamerNetworkImageValidator, self).__call__(with_protocol)
 
-        patterns = [
-            r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.gamer\-network.net/',
-            r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.eurogamer.net/',
-        ]
-
-        for p in patterns:
+        for p in self.patterns:
             p = re.compile(p)
             if re.match(p, value):
                 return value

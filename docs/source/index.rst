@@ -26,10 +26,10 @@ to use when building django applications and sites at Gamer Network.
 
 .. toctree::
     :maxdepth: 2
-    :caption: Libraries
+    :caption: Packages
 
-    libraries/url
-    libraries/video
+    packages/url
+    packages/video
 
 
 Indices and tables
