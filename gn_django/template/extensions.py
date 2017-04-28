@@ -34,7 +34,7 @@ class IncludeWithExtension(Extension):
 
         # First part will be 'include_with' tag, but also contains line number which
         # we use
-        first = next(parser.stream)
+        first = parser.parse_expression()
 
         # Second part is the template name
         template = parser.parse_expression()
@@ -43,32 +43,29 @@ class IncludeWithExtension(Extension):
         cvars = self._get_params(parser)
 
         ctx = nodes.ContextReference()
-        call = self.call_method('_return_include', [template, cvars, ctx], lineno=first.lineno)
+        call = self.call_method('_render', [template, cvars, ctx], lineno=first.lineno)
 
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
-    def _return_include(self, template, cvars, ctx, caller):
+    def _render(self, template, cvars, ctx, caller):
         return self.environment.get_template(template).render(cvars)
 
     def _get_params(self, parser):
-        # Argument parsing copied from https://github.com/coffin/coffin/blob/master/coffin/common.py#L164
+        # Argument parsing adapted from https://github.com/coffin/coffin/blob/master/coffin/common.py#L164
         stream = parser.stream
-        args = []
         kwargs = []
         eval_ctx = nodes.EvalContext(self.environment)
-        c = nodes.ContextReference()
         while not stream.current.test_any('block_end'):
-            stream.skip_if('comma')
+            if kwargs:
+                stream.expect('comma')
             if stream.current.test('name') and stream.look().test('assign'):
                 key = nodes.Const(next(stream).value)
                 stream.skip()
                 value = parser.parse_expression()
                 kwargs.append(nodes.Pair(key, value, lineno=key.lineno))
+        if not kwargs:
+            parser.fail('`include_with` tag must have parameters. Use `include` instead', lineno=stream.current.lineno)
 
         kwargs = nodes.Dict(kwargs)
 
         return kwargs
-
-    def _get_var(self, context, name, caller):
-        var = context[name]
-        return var
