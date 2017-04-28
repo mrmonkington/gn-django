@@ -9,3 +9,9 @@ class Home(TemplateView):
     def get_context_data(self):
         return {'msg': helpers.super_helper()}
 
+class Include(TemplateView):
+
+    template_name = "include.html"
+
+    def get_context_data(self):
+        return {'msg': helpers.super_helper()}
