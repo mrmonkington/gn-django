@@ -82,9 +82,15 @@ def get(view_label):
         try:
             return _registry[app][view_name](*args, **kwargs)
         except KeyError:
-            print(_registry)
-            raise
+            raise KeyError("No class based view is registered for the label '%s'.  Is the app in INSTALLED_APPS?" % view_label)
     return _get_view
 
+def register_views():
+    """
+    Go through all INSTALLED_APPS' ``registered_views.py`` modules and register
+    the views.
+    """
+    autodiscover_modules('registered_views')
+
 # Avoid a circular import by popping this at the bottom
-autodiscover_modules('registered_views')
+register_views()

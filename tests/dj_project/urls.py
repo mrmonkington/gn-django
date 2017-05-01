@@ -20,8 +20,13 @@ from django.views.generic import TemplateView
 
 from .views import DomainView
 
+from gn_django.view import view_registry
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^home', TemplateView.as_view(template_name="about.html"), name="home"),
     url(r'^site', DomainView.as_view()),
+    url(r'^archive', view_registry.get('core:ArchiveView')),
+    url(r'^about', view_registry.get('core:AboutView')),
+    url(r'^article', view_registry.get('content:ArticleView')),
 ]
