@@ -2,7 +2,8 @@
 
 set -e
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Get the absolute path to the gn-django site-package bin directory
+DIR=`python -c "import gn_django, os; print(os.path.join(os.path.dirname(gn_django.__file__), 'bin'))"`
 
 if [ $1 = "startproject" ]; then
     PROJECT_NAME=$2
@@ -15,11 +16,16 @@ if [ $1 = "startproject" ]; then
         PROJECT_DIR=./$PROJECT_NAME
     fi
 
+    cd $PROJECT_DIR
+    # copy over the pull request template
+    cp -r $DIR/startproject/_github .github
+    # copy over the generic gitignore
+    cp $DIR/startproject/_gitignore .gitignore
+
     # By default, django creates a project directory named as the project name 
     # - so you end up with polls/polls/ for a project called "polls".
     # This renames that directory to "project" and does a recursive find/replace
     # within python files to rewrite references
-    cd $PROJECT_DIR
     mv $PROJECT_NAME project
     find . -name "*.py" -exec sed -i'' -e "s/$PROJECT_NAME/project/g" {} +
 

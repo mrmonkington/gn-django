@@ -17,4 +17,5 @@ setup(
     ],
     include_package_data=True,
     packages = ['gn_django'],
+    scripts = ['gn_django/bin/gn_django'],
 )
