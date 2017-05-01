@@ -9,6 +9,14 @@ Welcome to gn-django's documentation!
 gn-django is a supporting library which is a collection of tools and patterns
 to use when building django applications and sites at Gamer Network.
 
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Building GN Django projects
+
+   django_projects/starting_a_project
+   django_projects/environment_overridable_settings
+
 .. toctree::
    :maxdepth: 2
    :caption: Jinja Templates

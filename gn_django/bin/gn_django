@@ -34,6 +34,7 @@ if [ $1 = "startproject" ]; then
     mv project/settings.py project/settings/base.py
     cp $DIR/startproject/settings__init__.py project/settings/__init__.py
     cp $DIR/startproject/settings_local.py project/settings/local.py
+    cp $DIR/startproject/settings_local.py project/settings/example_local.py
     # Use the rewriter script to set sensible default settings which use
     # our base dependencies
     python $DIR/startproject/settings_rewriter.py project/settings/base.py
