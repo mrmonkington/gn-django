@@ -106,4 +106,5 @@ possible collisions with context variables provided by views.
 **Note:** Any additions made here will be introduced to all Gamer Network django
 projects - so they should be generic enough for that to make sense.
 
+.. _writing-include-with-ext:
 .. include:: jinja_extensions/case_study_include_with.rst

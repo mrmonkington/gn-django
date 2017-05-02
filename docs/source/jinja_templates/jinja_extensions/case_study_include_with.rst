@@ -1,6 +1,3 @@
-.. _writing-include-with-ext:
-
-
 Case Study: Writing the 'Include With' Jinja extension
 ------------------------------------------------------
 
