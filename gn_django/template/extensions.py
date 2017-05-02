@@ -27,11 +27,15 @@ class SpacelessExtension(Extension):
         return re.sub(r'>\s+<', '><', caller().strip())
 
 class IncludeWithExtension(Extension):
+    """
+    Includes a template with an explicitly declared context.
+    Usage:
+        ``{% include_with 'sometemplate.j2' foo='bar', hello=['world'] %}``
+    """
 
     tags = set(['include_with'])
 
     def parse(self, parser):
-
         # First part will be 'include_with' tag, but also contains line number which
         # we use
         first = parser.parse_expression()
@@ -40,15 +44,33 @@ class IncludeWithExtension(Extension):
         template = parser.parse_expression()
 
         # Grab the context variables
-        cvars = self._get_params(parser)
+        context = self._get_params(parser)
         call = self.call_method('_render', [template, cvars], lineno=first.lineno)
 
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
-    def _render(self, template, cvars, caller):
-        return self.environment.get_template(template).render(cvars)
+    def _render(self, template, context, caller):
+        """
+        Render the template with context variables
+
+        Params:
+            - `template` - The name of the template to render
+            - `context` - The context to pass to the template
+            - `caller` - Required by Jinja2
+
+        Returns:
+            - The parsed template
+        """
+        return self.environment.get_template(template).render(context)
 
     def _get_params(self, parser):
+        """
+        Parses the statement to collect the parameters given
+
+        Returns:
+            - `nodes.Dict` - A dictionary node containing instances of `nodes.Pair` representing
+                the key/value pairs in the context
+        """
         # Argument parsing adapted from https://github.com/coffin/coffin/blob/master/coffin/common.py#L164
         stream = parser.stream
         kwargs = []
