@@ -45,7 +45,7 @@ class IncludeWithExtension(Extension):
 
         # Grab the context variables
         context = self._get_params(parser)
-        call = self.call_method('_render', [template, cvars], lineno=first.lineno)
+        call = self.call_method('_render', [template, context], lineno=first.lineno)
 
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
