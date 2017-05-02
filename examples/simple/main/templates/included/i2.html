@@ -1,5 +1,10 @@
 <h2>Second include:</h2>
-<p>Dictionary: {{ foo.foo }}</p>
+<p>Dictionary:</p>
+<ul>
+  {% for k in foo.keys() %}
+    <li>{{ k }}: {{ foo[k] }}</li>
+  {% endfor %}
+</ul>
 <p>Tuple:</p>
 <ul>
   {% for bae in baes %}
