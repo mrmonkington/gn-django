@@ -4,7 +4,7 @@ from gn_django import helpers
 
 class Home(TemplateView):
 
-    template_name = "home.html"
+    template_name = "home.j2"
 
     def get_context_data(self):
         return {'msg': helpers.super_helper()}
@@ -12,4 +12,4 @@ class Home(TemplateView):
 
 class Article(TemplateView):
 
-    template_name = "article.html"
+    template_name = "article.j2"

@@ -2,7 +2,7 @@ from django.views.generic import TemplateView
 
 class ArchiveView(TemplateView):
 
-    template_name = "archive.html"
+    template_name = "archive.j2"
 
     def get_context_data(self):
         return {
@@ -11,7 +11,7 @@ class ArchiveView(TemplateView):
 
 class AboutView(TemplateView):
 
-    template_name = "about.html"
+    template_name = "about.j2"
 
     def get_context_data(self):
         return {

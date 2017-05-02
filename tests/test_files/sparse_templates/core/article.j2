@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.j2" %}
 
 {% block page %}
     {% block title %}
@@ -7,5 +7,5 @@
     
     <p>Here's an article body</p>
     
-    {% include "widgets/comments.html" %}
+    {% include "widgets/comments.j2" %}
 {% endblock %}

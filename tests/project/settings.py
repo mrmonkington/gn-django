@@ -59,7 +59,6 @@ TEMPLATES = [
         "BACKEND": "gn_django.template.backend.Jinja2",
         'DIRS': [os.path.join(BASE_DIR, 'project', 'templates')],
         "OPTIONS": {
-            'match_extension': None,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

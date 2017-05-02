@@ -178,16 +178,16 @@ class TestHierarchyLoader(TestCase):
 
         # Test that the loader falls back to the least specific template
         # in the hierarchy
-        t = jinja.get_template("base.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/base.html"))
+        t = jinja.get_template("base.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("core/base.j2"))
 
         # Test that the loader picks up a template in the middle of the hierarchy
-        t = jinja.get_template("article.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer/article.html"))
+        t = jinja.get_template("article.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer/article.j2"))
 
         # Test that the loader picks up a template at the top of the hierarchy
-        t = jinja.get_template("widgets/comments.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer_net/widgets/comments.html"))
+        t = jinja.get_template("widgets/comments.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer_net/widgets/comments.j2"))
 
     def test_get_template_ancestor(self):
         # Get a handle on the template engine
@@ -195,17 +195,17 @@ class TestHierarchyLoader(TestCase):
         jinja = Jinja2(jinja_config)
 
         # Test that the loader can find parent templates from immediate ancestors
-        t = jinja.get_template("eurogamer_net_parent:article.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer/article.html"))
+        t = jinja.get_template("eurogamer_net_parent:article.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer/article.j2"))
 
         # Test that the loader can find parent templates from non-immediate ancestors
-        t = jinja.get_template("eurogamer_net_parent:base.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/base.html"))
+        t = jinja.get_template("eurogamer_net_parent:base.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("core/base.j2"))
 
         # Test that the loader can find parent templates when the template name
         # collides with a template available in the child namespace
-        t = jinja.get_template("eurogamer_net_parent:widgets/comments.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/widgets/comments.html"))
+        t = jinja.get_template("eurogamer_net_parent:widgets/comments.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("core/widgets/comments.j2"))
 
     def test_get_template_directed(self):
         # Get a handle on the template engine
@@ -213,10 +213,10 @@ class TestHierarchyLoader(TestCase):
         jinja = Jinja2(jinja_config)
 
         # Test that the loader can find templates from a directed identifier
-        t = jinja.get_template("core:article.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/article.html"))
-        t = jinja.get_template("eurogamer_net:widgets/comments.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer_net/widgets/comments.html"))
+        t = jinja.get_template("core:article.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("core/article.j2"))
+        t = jinja.get_template("eurogamer_net:widgets/comments.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("eurogamer_net/widgets/comments.j2"))
 
     def test_get_template_missing(self):
         # Get a handle on the template engine
@@ -224,16 +224,16 @@ class TestHierarchyLoader(TestCase):
         jinja = Jinja2(jinja_config)
 
         # Test that the loader raises an error when the template does not exist
-        self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("wibble.html"))
-        self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("core:wibble.html"))
-        self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("eurogamer_parent:wibble.html"))
+        self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("wibble.j2"))
+        self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("core:wibble.j2"))
+        self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("eurogamer_parent:wibble.j2"))
 
         # Test that the loader defaults to sequential lookup when a template 
         # does not exist in either directed/ancestor mode
-        t = jinja.get_template("eurogamer_net_parent:home.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/home.html"))
-        t = jinja.get_template("eurogamer:home.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/home.html"))
+        t = jinja.get_template("eurogamer_net_parent:home.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("core/home.j2"))
+        t = jinja.get_template("eurogamer:home.j2")
+        self.assertEquals(t.template.filename, self.get_template_dir("core/home.j2"))
 
 
 class TestMultiHierarchyLoader(TestCase):
@@ -302,31 +302,31 @@ class TestMultiHierarchyLoader(TestCase):
 
     def test_get_template_sequential(self):
         test_cases = (
-            ('eurogamer_net', 'base.html', self.get_template_dir('core/base.html')),
-            ('eurogamer_net', 'widgets/comments.html', self.get_template_dir('eurogamer_net/widgets/comments.html')),
-            ('eurogamer_de', 'base.html', self.get_template_dir('core/base.html')),
-            ('eurogamer_de', 'article.html', self.get_template_dir('eurogamer/article.html')),
-            ('vg247_com', 'base.html', self.get_template_dir('core/base.html')),
+            ('eurogamer_net', 'base.j2', self.get_template_dir('core/base.j2')),
+            ('eurogamer_net', 'widgets/comments.j2', self.get_template_dir('eurogamer_net/widgets/comments.j2')),
+            ('eurogamer_de', 'base.j2', self.get_template_dir('core/base.j2')),
+            ('eurogamer_de', 'article.j2', self.get_template_dir('eurogamer/article.j2')),
+            ('vg247_com', 'base.j2', self.get_template_dir('core/base.j2')),
         )
         self.run_test_cases(test_cases)
 
     def test_get_template_ancestor(self):
         test_cases = (
-            ('eurogamer_net', 'eurogamer_net_parent:base.html', self.get_template_dir('core/base.html')),
-            ('eurogamer_net', 'eurogamer_net_parent:article.html', self.get_template_dir('eurogamer/article.html')),
-            ('eurogamer_de', 'eurogamer_de_parent:base.html', self.get_template_dir('core/base.html')),
-            ('eurogamer_de', 'eurogamer_de_parent:article.html', self.get_template_dir('eurogamer/article.html')),
-            ('vg247_com', 'vg247_parent:base.html', self.get_template_dir('core/base.html')),
+            ('eurogamer_net', 'eurogamer_net_parent:base.j2', self.get_template_dir('core/base.j2')),
+            ('eurogamer_net', 'eurogamer_net_parent:article.j2', self.get_template_dir('eurogamer/article.j2')),
+            ('eurogamer_de', 'eurogamer_de_parent:base.j2', self.get_template_dir('core/base.j2')),
+            ('eurogamer_de', 'eurogamer_de_parent:article.j2', self.get_template_dir('eurogamer/article.j2')),
+            ('vg247_com', 'vg247_parent:base.j2', self.get_template_dir('core/base.j2')),
         )
         self.run_test_cases(test_cases)
 
     def test_get_template_directed(self):
         test_cases = (
-            ('eurogamer_net', 'core:base.html', self.get_template_dir('core/base.html')),
-            ('eurogamer_net', 'eurogamer:article.html', self.get_template_dir('eurogamer/article.html')),
-            ('eurogamer_de', 'core:base.html', self.get_template_dir('core/base.html')),
-            ('eurogamer_de', 'eurogamer:article.html', self.get_template_dir('eurogamer/article.html')),
-            ('vg247_com', 'core:home.html', self.get_template_dir('core/home.html')),
+            ('eurogamer_net', 'core:base.j2', self.get_template_dir('core/base.j2')),
+            ('eurogamer_net', 'eurogamer:article.j2', self.get_template_dir('eurogamer/article.j2')),
+            ('eurogamer_de', 'core:base.j2', self.get_template_dir('core/base.j2')),
+            ('eurogamer_de', 'eurogamer:article.j2', self.get_template_dir('eurogamer/article.j2')),
+            ('vg247_com', 'core:home.j2', self.get_template_dir('core/home.j2')),
         )
         self.run_test_cases(test_cases)
 

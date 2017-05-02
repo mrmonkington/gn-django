@@ -4,9 +4,7 @@ Using Jinja templates
 Here's how the official jinja documentation describes itself:
 
     "A Jinja template is simply a text file. 
-    Jinja can generate any text-based format (HTML, XML, CSV, LaTeX, etc.). A 
-    Jinja template doesn’t need to have a specific extension: .html, .xml, or 
-    any other extension is just fine.
+    Jinja can generate any text-based format (HTML, XML, CSV, LaTeX, etc.). 
 
     A template contains variables and/or expressions, which get replaced with 
     values when a template is rendered; and tags, which control the logic of 
@@ -24,6 +22,29 @@ reference documentation *should* provide an exhaustive reference of:
     - tests
     - extensions
     - custom template loaders
+
+File extension
+~~~~~~~~~~~~~~
+
+The Jinja2 project does not mandate that any particular file extension is used 
+for jinja template files.  However, the agreed standard for Gamer Network django
+projects is to use the ``.j2`` extension.
+
+By default, the gn-django jinja2 backend class (``gn_django.template.backend.Jinja2"``)
+will only be used for templates named with the ``.j2`` extension e.g. ``home.j2``.
+
+The reasons for settling on ``.j2`` are as follows:
+
+  * It allows us to use the ``match_extension`` option for the django-jinja 
+    backend.  This means that the template backend will relinquish rendering
+    for template names that do not end in ``.j2`` - so in theory we could use
+    django templating in addition to jinja if we needed to.
+  * It matches ansible - which requires that template files end with ``.j2``.
+  * Syntax highlighting can be easily set for editors, based on file extension.
+  * Generally, many open source projects use some sort of file extension for 
+    jinja templates.  ``.jinja`` is too long.  ``.html.j2`` is annoying.
+    ``.j2`` is juuust right.
+
 
 Filters reference
 -----------------
