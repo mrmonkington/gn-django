@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 
 from gn_django import helpers
+from .models import ExampleModel
 
 class Home(TemplateView):
 
@@ -14,4 +15,8 @@ class Include(TemplateView):
     template_name = "include.html"
 
     def get_context_data(self):
-        return {'msg': helpers.super_helper()}
+        return {
+            'string': 'This is a message',
+            'obj': ExampleModel('Hello World!'),
+            'parent_context': 'Parent context'
+        }

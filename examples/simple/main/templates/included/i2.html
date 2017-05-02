@@ -1,2 +1,17 @@
-{{ foo[0] }}
-{{ bar }}
+<h2>Second include:</h2>
+<p>Dictionary: {{ foo.foo }}</p>
+<p>Tuple:</p>
+<ul>
+  {% for bae in baes %}
+    <li>{{ bae }}</li>
+  {% endfor %}
+</ul>
+<p>List:</p>
+<ul>
+  {% for game in games %}
+    <li>{{ game }}</li>
+  {% endfor %}
+</ul>
+<p>Int: {{ leet }}</p>
+<p>Parent context only: {{ parent_context }}</p>
+<p>Context processor variable <code>settings</code> (not in context): {{ settings}}</p>
