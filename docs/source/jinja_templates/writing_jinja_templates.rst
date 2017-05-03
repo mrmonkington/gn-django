@@ -23,7 +23,6 @@ reference documentation *should* provide an exhaustive reference of:
     - globals 
     - tests
     - extensions
-    - context processors - what they are, and how to use them
     - custom template loaders
 
 Filters reference
@@ -327,3 +326,17 @@ Example::
     {% endautoescape %}
 
 After an `endautoescape` the behavior is reverted to what it was before.
+
+CSRF Extension
+~~~~~~~~~~~~~~
+
+This provides protection against cross site request forgeries, as described
+`in the django documentation <https://docs.djangoproject.com/en/dev/ref/csrf/>`_.
+
+Example::
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        ...
+    </form>
+

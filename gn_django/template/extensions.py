@@ -1,4 +1,7 @@
+import re
+
 from jinja2.ext import Extension
+from jinja2 import nodes
 
 class SpacelessExtension(Extension):
     """

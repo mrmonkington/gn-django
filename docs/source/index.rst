@@ -16,6 +16,7 @@ to use when building django applications and sites at Gamer Network.
    jinja_templates/how_to_set_up_jinja
    jinja_templates/writing_jinja_templates
    jinja_templates/extending_jinja
+   jinja_templates/why_jinja_not_django
 
 .. toctree::
     :maxdepth: 2
@@ -30,6 +31,12 @@ to use when building django applications and sites at Gamer Network.
 
     packages/url
     packages/video
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Testing
+
+   testing/running_and_writing
 
 
 Indices and tables
