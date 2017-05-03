@@ -115,20 +115,20 @@ My ``parse()`` method ended up very small and looked like this:
         template = parser.parse_expression()
 
         # Grab the context variables
-        cvars = self._get_params(parser)
+        context = self._get_params(parser)
 
-        call = self.call_method('_render', [template, cvars], lineno=first.lineno)
+        call = self.call_method('_render', [template, context], lineno=first.lineno)
 
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
-The ``cvars`` variable is an instance of ``nodes.Dict``, which acts as a representation
+The ``context`` variable is an instance of ``nodes.Dict``, which acts as a representation
 of a dictionary. Within this class is a `list` of ``nodes.Pair`` instances. The ``nodes.Pair``
 class is a key/value pair, which each key being a ``nodes.Const`` instance, and each
 value being either a ``nodes.Name`` instance, or a node extending ``nodes.Literal``.
 ``nodes.Literal`` objects represent a constant/hardcoded value. ``nodes.Name`` objects
 represent a reference to a variable stored in the context.
 
-When ``cvars`` is filtered through ``self.call_method()``, it is converted into a dictionary
+When ``context`` is filtered through ``self.call_method()``, it is converted into a dictionary
 of values, with ``nodes.Const`` instances becoming the hardcoded value they represent,
 and ``nodes.Name`` instances pulling the value from the context.
 
@@ -139,7 +139,7 @@ This means that if our view looks like this:
   {% set hello = 'world' %}
   {% include_with 'include.html' foo=['bar'], baz=hello %}
 
-Within the scope of the ``parse()`` method, ``cvars`` will look like this (simplified):
+Within the scope of the ``parse()`` method, ``context`` will look like this (simplified):
 
 .. code-block::
 
@@ -169,8 +169,8 @@ template using this dictionary as the context:
 
 .. code-block:: python
 
-    def _render(self, template, cvars, caller):
-        return self.environment.get_template(template).render(cvars)
+    def _render(self, template, context, caller):
+        return self.environment.get_template(template).render(context)
 
 Finally, the method returns an instance of ``nodes.CallBlock``, which acts as a
 macro to output a string returned by the `call` variable (in this case the returned
