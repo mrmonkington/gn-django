@@ -54,7 +54,6 @@ class TestYoutube(unittest.TestCase):
         """
         Test that all Youtube URL format return all Youtube thumbnail formats
         """
-
         expected = 'http://i3.ytimg.com/vi/tjrIMKo-1Ds/%s.jpg'
 
         for url in self.valid_urls:
