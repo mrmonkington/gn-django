@@ -19,9 +19,9 @@ from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
     url(r'^include', views.Include.as_view()),
-    url(r'^youtube/', views.Youtube.as_view()),
-    url(r'^protocol-stripped/', views.URLProtocol.as_view()),
-    url(r'', views.Home.as_view()),
+    url(r'^admin', admin.site.urls),
+    url(r'^youtube', views.Youtube.as_view()),
+    url(r'^protocol-stripped', views.URLProtocol.as_view()),
+    url(r'^$', views.Home.as_view()),
 ]
