@@ -32,7 +32,7 @@ class Jinja2(DjangoJinja2):
             per application.
           * ``"context_processors"`` - list of context processors which will be
             called to add some global context to all jinja template rendering.
-            Should be a list of dot-notation string python callables 
+            Should be a list of dot-notation string python callables
             e.g. ``["gn_django.template.context_processors.settings"]``
           * ``"match_extension"`` - selectively use this jinja backend when the
             template name has an extension that matches this setting.  e.g.:
@@ -50,25 +50,25 @@ class Jinja2(DjangoJinja2):
             environment callable.
           * ``"filters"`` - dictionary of extra jinja filters to include in the
             template environment.  The dictionary should have keys as filter name
-            and values as filter callable (or a string dot-notation python path 
+            and values as filter callable (or a string dot-notation python path
             of the callable)
           * ``"tests"`` - dictionary of extra jinja tests to include in the
             template environment.  The dictionary should have keys as test name
-            and values as test callable (or a string dot-notation python path 
-            of the 
+            and values as test callable (or a string dot-notation python path
+            of the
           * ``"globals"`` - dictionary of extra jinja globals to include in the
             template environment.  The dictionary should have keys as global name
-            and values as global callable (or a string dot-notation python path 
-            of the 
+            and values as global callable (or a string dot-notation python path
+            of the
           * ``"constants"`` - dictionary of extra jinja constants to include in the
             template environment.  The dictionary should have keys as constant name
             and values as constant value.
           * ``"loader"`` - the template loader to use for loading jinja templates.
             This defaults to a standard filesystem loader, but can be specified
-            as either a dot-notation python path or a fully instantiated loader 
+            as either a dot-notation python path or a fully instantiated loader
             object
     """
-    
+
     def __init__(self, params):
         """
         """
@@ -124,7 +124,9 @@ class Jinja2(DjangoJinja2):
         Returns:
             iterable of globals
         """
-        base_globals = {}
+        base_globals = {
+            'random': random,
+        }
         return base_globals
 
     def get_base_tests(self):
@@ -149,4 +151,3 @@ class Jinja2(DjangoJinja2):
         base_extensions = dj_jinja_builtins.DEFAULT_EXTENSIONS.copy()
         base_extensions.append(SpacelessExtension)
         return base_extensions
-
