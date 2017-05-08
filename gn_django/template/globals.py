@@ -1,6 +1,6 @@
-from random import randint
+from random import randint as base_randint
 
-def random(maximum=100, minimum=0):
+def randint(maximum=100, minimum=0):
     """
     Generate a random integer between `minimum` and `maximum`.
     Args:
@@ -14,4 +14,4 @@ def random(maximum=100, minimum=0):
         ``random(10, 5)``
         ``random(minimim=20, maximum=40)``
     """
-    return randint(minimum, maximum)
+    return base_randint(minimum, maximum)
