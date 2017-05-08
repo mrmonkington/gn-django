@@ -121,3 +121,40 @@ to an alias:
 
 This would import a macro called ``mormont()`` and alias it to ``mmt()``, and also import
 a macro called ``yafa()``.
+
+Includes
+--------
+
+Out of the box, Jinja's ``include`` statements are more limited that Twig's. Where Twig allows
+you to send variables to the context of the included template, with or without the wider context,
+Jinja only allows to include or exclude the entire context. To alias variables to match those
+in the context, you must use the `with` feature:
+
+.. code-block:: python
+
+  {% with foo = 'hello' %}
+    {% with bar = 'world' %}
+      {% include 'helloworld.html' with context %}
+    {% endwith %}
+  {% endwith %}
+
+Include With
+~~~~~~~~~~~~
+
+GN Django comes with a Jinja extension bringing in an ``include_with`` tag. This allows for
+the context to be easily redefined within a single statement:
+
+.. code-block:: python
+
+  {% include_with 'helloworld.html' foo='hello', bar='world' %}
+
+**Note:** This tag completely redeclares the context, so the only values that will be sent
+to ``helloworld.html`` will be ``foo`` and ``bar``. No variables declared in the view
+or in any context processors will be sent unless explicitly declared.
+
+Whitespace
+----------
+
+Jinja does not come with ``spaceless`` tags out of the box. However it has been included
+as part of the GN Django library. Jinja also supports `{%- -%}` tags to remove whitespace.
+For more information, view the `official Jinja documentation <http://jinja.pocoo.org/docs/2.9/templates/#whitespace-control>`_.
