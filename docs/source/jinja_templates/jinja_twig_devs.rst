@@ -5,7 +5,7 @@ Syntactically, Twig and Jinja (and Django templates) are all very similar - they
 ``{{ }}`` for printing, ``{% %}`` for  statements. The key differences lie in minor
 syntax details and the names of the functions and filters.
 
-For Loops
+For loops
 ---------
 
 Loops in both Twig and Jinja follow the same syntax:
@@ -42,6 +42,9 @@ Therefore, to loop through key/value pairs, you would need to do this:
     ...
   {% endfor %}
 
+The Loop Variable
+~~~~~~~~~~~~~~~~~
+
 Twig and Jinja both have a special ``loop`` variable, which holds information about the
 current iteration of the loop. However, there are a few differences between sets of information available:
 
@@ -75,3 +78,46 @@ current iteration of the loop. However, there are a few differences between sets
 | Cycle through arbitrary variables      | ``cycle(['odd', 'even'], loop.index0)``    | ``loop.cycle('odd', 'even')`` |
 | depending on the iteration             |                                            |                               |
 +----------------------------------------+--------------------------------------------+-------------------------------+
+
+If statements
+-------------
+
+If statements are largely the same in Jinja as they are in Twig, with the only major difference
+being that Jinja uses the Pythonic ``elif`` instead of ``elseif``.
+
+Macros
+------
+
+Macros are similar in Jinja to Twig, with the big exception being that Jinja macros support
+named parameters. If they exist in the same template, they do not need to be imported
+or called from ``_self``.
+
+This means that you can do this:
+
+.. code-block:: python
+
+  {% macro do_a_thing(foo='moo', bar='baz') %}
+    <p>Doing a thing with {{ foo }} and {{ bar }}</p>
+  {% endmacro %}
+
+  {{ do_a_thing('woo') }}
+  {{ do_a_thing(bar='duck') }}
+
+So the above would output:
+
+.. code-block:: html
+
+  <p>Doing a thing with woo and baz</p>
+  <p>Doing a thing with moo and duck</p>
+
+It is also possible to import specific macros from an external templates and assign them
+to an alias:
+
+.. code-block:: python
+
+  {% from 'macros.html' import mormont as mmt, yafa %}
+  {{ mmt() }}
+  {{ yafa() }}
+
+This would import a macro called ``mormont()`` and alias it to ``mmt()``, and also import
+a macro called ``yafa()``.
