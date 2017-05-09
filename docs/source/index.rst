@@ -33,6 +33,7 @@ to use when building django applications and sites at Gamer Network.
    packages/url
    packages/video
    packages/site
+   packages/view
 
 .. toctree::
    :maxdepth: 2

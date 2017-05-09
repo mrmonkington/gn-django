@@ -1,6 +1,10 @@
 from django.utils.module_loading import autodiscover_modules
 from django.views.generic.base import View
 
+from django.core.exceptions import AppRegistryNotReady
+
+from gn_django.utils import is_sphinx_autodoc_running
+
 """
 The view registry allows django apps to progressively override the class based
 view that will service a particular url.
@@ -10,7 +14,7 @@ apps' `urls.py` files.
 
 An app registers View classes to the registry in a `registered_views.py` file.
 All apps' `registered_views.py` files are included when the django application 
-is started - so long as `register_views` is called in the project's urls.py.
+is started.
 The view registry is populated in the order of `settings.INSTALLED_APPS` 
 so that subsequent apps can override the views of preceding apps - this means
 that apps lower in `INSTALLED_APPS` will override apps that are higher.
@@ -18,7 +22,6 @@ that apps lower in `INSTALLED_APPS` will override apps that are higher.
 This enables the eurogamer_net app's `content:ArticleView` to override 
 the content app's `content:ArticleView`, etc.
 """
-
 
 _registry = {}
 
@@ -90,7 +93,15 @@ def register_views():
     Go through all INSTALLED_APPS' ``registered_views.py`` modules and register
     the views.
     """
-    autodiscover_modules('registered_views')
+    try:
+        autodiscover_modules('registered_views')
+    except (AppRegistryNotReady):
+        # It's possible that we imported this module as part of the sphinx
+        # autodoc process.  In that case, app autodiscovery will fail because
+        # we're not running a django project - so avoid raising the error in that
+        # case
+        if not is_sphinx_autodoc_running():
+            raise
 
 # Avoid a circular import by popping this at the bottom
 register_views()
