@@ -1,7 +1,11 @@
+import weakref
+
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.utils.text import slugify
+from django.utils import six
+from django.utils.module_loading import import_string
 
 import jinja2
 from django_jinja.backend import Jinja2 as DjangoJinja2
@@ -11,11 +15,64 @@ from django_jinja.contrib._humanize.templatetags._humanize import ordinal, intco
 from .extensions import SpacelessExtension, IncludeWithExtension
 from .globals import random
 
+class Environment(jinja2.Environment):
+    """
+    Custom Jinja Environment class for gn django projects.
+
+    This provides an override for generating template cache keys - the cache
+    is used in preference to the template loader.  By default, keys are a 
+    combination of loader reference and template name.
+
+    Extra kwargs:
+      * `template_cache_key_cb` - a callback function for generating a template
+        cache key.  When this is present, this is used instead of the default
+        cache key behaviour.
+
+    *NOTE*: This class has some duplication from jinja2.Environment which is
+    currently unavoidable as there's no overridable hook just for generating
+    template cache keys: https://github.com/pallets/jinja/blob/bbe0a4174c2846487bef4328b309fddd8638da39/jinja2/environment.py#L798
+    """
+
+    def __init__(self, **kwargs):
+        self.template_cache_key_cb = kwargs.pop('template_cache_key_cb', None)
+        super(Environment, self).__init__(**kwargs)
+
+    def get_template_cache_key(self, template_name):
+        """
+        Generates a cache key for the given template name.
+
+        This will use `template_cache_key_cb` if it is present on the object
+        instance.
+        """
+        cache_key = (weakref.ref(self.loader), template_name)
+        if self.template_cache_key_cb:
+            if isinstance(self.template_cache_key_cb, six.string_types):
+                self.template_cache_key_cb = import_string(self.template_cache_key_cb)
+            cache_key = self.template_cache_key_cb(self.loader, template_name)
+        return cache_key
+
+    @jinja2.utils.internalcode
+    def _load_template(self, name, globals):
+        if self.loader is None:
+            raise TypeError('no loader for this environment specified')
+        # TODO: Maybe see if we can merge a PR in to the jinja project which
+        # provides `get_template_cache_key` for override
+        cache_key = self.get_template_cache_key(name)
+        if self.cache is not None:
+            template = self.cache.get(cache_key)
+            if template is not None and (not self.auto_reload or
+                                         template.is_up_to_date):
+                return template
+        template = self.loader.load(self, name, globals)
+        if self.cache is not None:
+            self.cache[cache_key] = template
+        return template
+
 def environment(**options):
     """
     Base jinja2 environment.
     """
-    env = jinja2.Environment(**options)
+    env = Environment(**options)
     return env
 
 class Jinja2(DjangoJinja2):

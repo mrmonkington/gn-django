@@ -17,24 +17,26 @@ to use when building django applications and sites at Gamer Network.
    jinja_templates/writing_jinja_templates
    jinja_templates/extending_jinja
    jinja_templates/why_jinja_not_django
-
-.. toctree::
-    :maxdepth: 2
-    :caption: ORM extensions
-
-    orm_extensions/fields
-    orm_extensions/validators
-
-.. toctree::
-    :maxdepth: 2
-    :caption: Packages
-
-    packages/url
-    packages/video
+   jinja_templates/loaders
 
 .. toctree::
    :maxdepth: 2
-   :caption: Testing
+   :caption: ORM extensions
+
+   orm_extensions/fields
+   orm_extensions/validators
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Packages
+
+   packages/url
+   packages/video
+   packages/site
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Testing in gn-django
 
    testing/running_and_writing
 
