@@ -10,7 +10,8 @@ The view registry allows django apps to progressively override the class based
 view that will service a particular url.
 
 Using the registry means we do not need to duplicate url patterns in multiple
-apps' ``urls.py`` files.
+apps' ``urls.py`` files.  Views in ``urls.py`` are referenced by a registry 
+lookup using a label as opposed to a concrete reference to a view class.
 
 An app registers ``View`` classes to the registry in a ``registered_views.py`` file.
 All apps' ``registered_views.py`` files are included when the django application 
