@@ -10,6 +10,10 @@ functionality.
 """
 
 class DjangoTemplateNotFound(TemplateNotFound):
+    """
+    Adds a `tried` attribute to our `TemplateNotFound` exception - which allows
+    django to flag the template locations that were attempted.
+    """
     
     def __init__(self, name, message=None, tried=None):
         super(DjangoTemplateNotFound, self).__init__(name, message)
@@ -75,6 +79,14 @@ class HierarchyLoader(BaseLoader):
     """
 
     def __init__(self, hierarchy, delimiter=':'):
+        """
+        Args:
+          * `hierarchy` - OrderedDict - ordered dict with keys as template
+            namespace and values as template loader, in order of most specific
+            to least specific.
+          * `delimiter` - string - the namespace delimiter string to use when
+            separating namespace from template identifier
+        """
         if not isinstance(hierarchy, OrderedDict):
             raise Exception("HierarchyLoader must be called with a \
                 collections.OrderedDict type of mapping")
@@ -82,6 +94,14 @@ class HierarchyLoader(BaseLoader):
         self.delimiter = delimiter
 
     def identify_loading_mode(self, template_name):
+        """
+        Given a template identifier string, work out the loading mode to use as
+        either ancestor, namespace or sequential.
+
+        Args:
+          * `template_name` - string - the template name to identify the loading
+            mode for.
+        """
         if self.delimiter in template_name and "_parent:" in template_name:
             return "ancestor"
         if self.delimiter in template_name:

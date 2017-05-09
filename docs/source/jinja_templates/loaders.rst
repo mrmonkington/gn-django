@@ -98,11 +98,24 @@ To use sparse template inheritance in a django project, you must use either the
 
 The :ref:`hierarchy-loader` is for use when your deployable django project is
 for one concrete site - i.e. there is a single template inheritance hierarchy 
-to resolve.
+to resolve.  In this case, we may have a ``eurogamer`` repository which has django
+apps for ``eurogamer_net``, ``eurogamer_de``, ``eurogamer_pl`` etc.  Each of 
+these different apps would have their own template directories and overridden 
+backend code - so there would need to be a separate deployment per site.  In this
+case we can use the :ref:`hierarchy-loader` because a given django deployment has
+a single static hierarchy to resolve.
 
 The :ref:`multi-hierarchy-loader` is for use when your deployable django project is
 for multiple concrete sites - i.e. there are many inheritance hierarchies that
-the loader will need to resolve.
+the loader will need to resolve. For example, the auth service will have a 
+web app frontend for setting user profiles/changing passwords etc. Each 
+instance of the auth frontend will need to be able to serve any of the 
+following domains: auth.eurogamer.net, auth.eurogamer.de, auth.usgamer.net, etc. 
+The core auth functionality between different sites is unlikely to differ 
+beyond needing feature toggles, but we do need to be able to have site-specific 
+frontends and override the templates used in a nice way.  So the 
+:ref:`multi-hierarchy-loader` is used for selecting the appropriate template 
+hierarchy to use for each request.
 
 Using the HierarchyLoader
 ~~~~~~~~~~~~~~~~~~~~~~~~~
