@@ -160,15 +160,15 @@ or in any context processors will be sent unless explicitly declared.
 Whitespace
 ----------
 
-Jinja does not come with ``spaceless`` tags out of the box. However it has been included
+Jinja does not come with ``spaceless`` tags out of the box. It has, however, been included
 as part of the GN Django library. Jinja also supports ``{%- -%}`` tags to remove whitespace.
 For more information, view the `official Jinja documentation <http://jinja.pocoo.org/docs/2.9/templates/#whitespace-control>`_.
 
 JSON Encoding
 -------------
 
-Twig duplicates PHP's own `json_encode()` function. To convert data to a JSON format in
-Jinja, you need to use the `tojson()` filter:
+Twig duplicates PHP's own ``json_encode()`` function. To convert data to a JSON format in
+Jinja, you need to use the ``tojson()`` filter:
 
 .. code-block:: python
 
