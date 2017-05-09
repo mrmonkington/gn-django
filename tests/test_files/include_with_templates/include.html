@@ -1,0 +1,12 @@
+<h1><code>include_with</code> test</h1>
+
+<h2>Parent:</h2>
+<p>Parent context only: {{ parent_context }}</p>
+<p>Out of context: {{ out_of_context }}</p>
+{%
+  include_with 'i1.html'
+  foo=obj,
+  hard='this is a hard coded message',
+  var=string
+%}
+{% include_with 'i2.html' foo={'sheep': 'baa'}, baes=('Link', 'Zelda', 'Seigmeyer'), games=['Dark Souls', 'Bloodborne'], leet=1337 %}
