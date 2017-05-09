@@ -3,7 +3,10 @@ Jinja for Twig Developers
 
 Syntactically, Twig and Jinja (and Django templates) are all very similar - they all use
 ``{{ }}`` for printing, ``{% %}`` for  statements. The key differences lie in minor
-syntax details and the names of the functions and filters.
+syntax details and the names of the expressions, functions and filters.
+
+The follow is a non-exhaustive guide to differences to be aware of when switching between Twig
+and Jinja. The full documentation for writing Jinja templates can be found `here <http://jinja.pocoo.org/docs/2.9/templates/>`_.
 
 For loops
 ---------
@@ -128,7 +131,7 @@ Includes
 Out of the box, Jinja's ``include`` statements are more limited that Twig's. Where Twig allows
 you to send variables to the context of the included template, with or without the wider context,
 Jinja only allows to include or exclude the entire context. To alias variables to match those
-in the context, you must use the `with` feature:
+in the context, you must use the cumbersome ``with`` feature:
 
 .. code-block:: python
 
@@ -137,6 +140,8 @@ in the context, you must use the `with` feature:
       {% include 'helloworld.html' with context %}
     {% endwith %}
   {% endwith %}
+
+Fortunately, we also have...
 
 Include With
 ~~~~~~~~~~~~
@@ -156,5 +161,15 @@ Whitespace
 ----------
 
 Jinja does not come with ``spaceless`` tags out of the box. However it has been included
-as part of the GN Django library. Jinja also supports `{%- -%}` tags to remove whitespace.
+as part of the GN Django library. Jinja also supports ``{%- -%}`` tags to remove whitespace.
 For more information, view the `official Jinja documentation <http://jinja.pocoo.org/docs/2.9/templates/#whitespace-control>`_.
+
+JSON Encoding
+-------------
+
+Twig duplicates PHP's own `json_encode()` function. To convert data to a JSON format in
+Jinja, you need to use the `tojson()` filter:
+
+.. code-block:: python
+
+  {{ some_data|tojson }}
