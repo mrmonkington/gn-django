@@ -21,8 +21,17 @@ to use when building django applications and sites at Gamer Network.
 
 .. toctree::
    :maxdepth: 2
+   :caption: ORM extensions
+
+   orm_extensions/fields
+   orm_extensions/validators
+
+.. toctree::
+   :maxdepth: 2
    :caption: Packages
 
+   packages/url
+   packages/video
    packages/site
 
 .. toctree::
@@ -38,4 +47,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
