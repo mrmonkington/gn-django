@@ -1,3 +1,5 @@
+.. _how-to-set-up-jinja:
+
 How to set up Jinja in a django project
 =======================================
 
@@ -21,5 +23,7 @@ In your project's ``settings.py``, add the following to the top of the
                 'django.contrib.messages.context_processors.messages',
                 'gn_django.template.context_processors.settings',
             ],
+            # Optional; custom loader - FileSystemLoader is the assumed default
+            'loader': 'path.to.your.loader'
         }
     },
