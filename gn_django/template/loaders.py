@@ -48,7 +48,6 @@ class HierarchyLoader(BaseLoader):
 
       * ``base.html`` - sequential lookup - this will attempt to find the `base.html`
         template by trying all of the loaders in the loader hierarchy, sequentially.
-        Note: If the other two methods fail, sequential lookup is the fallback.
 
     Say that we have a loader hierarchy as follows::
 
@@ -204,10 +203,6 @@ class HierarchyLoader(BaseLoader):
             template_source = loading_method(environment, template, tried)
         except TemplateNotFound:
             pass
-        # Should the loading mode fail, fallback to using sequential loading
-        if not template_source and loading_mode != 'sequential':
-            sequential_name = template.split(':')[-1]
-            template_source = self.get_sequential_source(environment, sequential_name, tried)
 
         # Return the template source if we managed to look it up successfully,
         # or raise a DjangoTemplateNotFound exception

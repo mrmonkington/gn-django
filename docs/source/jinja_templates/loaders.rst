@@ -166,7 +166,6 @@ The loader offers three formats of template lookup:
   
   * **sequential lookup** - ``base.html`` - this will attempt to find the `base.html`
     template by trying all of the loaders in the loader hierarchy, sequentially.
-    Note: If the other two methods fail, sequential lookup is the fallback.
 
 **Examples:**
 
@@ -175,14 +174,14 @@ The loader offers three formats of template lookup:
     hierarchy_loader.get_source(env, 'eurogamer_parent:base.html')
 
 Will yield `base.html` from the `'core'` loader and will
-otherwise try to find it sequentially from eurogamer to core:
+otherwise raise a `DjangoTemplateNotFoundException` if it cannot find it.
 
 .. code-block:: python
 
     hierarchy_loader.get_source(env, 'core:foo.html')
 
 Will yield `foo.html` from the `'core'` loader if it exists and will
-otherwise try to find it sequentially from the ``eurogamer`` loader to ``core``:
+otherwise raise a `DjangoTemplateNotFoundException` if it cannot find it.
 
 .. code-block:: python
 

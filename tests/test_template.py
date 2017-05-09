@@ -228,13 +228,6 @@ class TestHierarchyLoader(TestCase):
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("core:wibble.html"))
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("eurogamer_parent:wibble.html"))
 
-        # Test that the loader defaults to sequential lookup when a template 
-        # does not exist in either directed/ancestor mode
-        t = jinja.get_template("eurogamer_net_parent:home.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/home.html"))
-        t = jinja.get_template("eurogamer:home.html")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/home.html"))
-
 
 class TestMultiHierarchyLoader(TestCase):
     """
