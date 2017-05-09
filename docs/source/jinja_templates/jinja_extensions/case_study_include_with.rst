@@ -6,7 +6,7 @@ Overview
 
 This article discusses the process of developing the ``IncludeWithExtension``. The brief
 was to create an extension that would allow developers to easily include templates
-without having to use the cumbersome syntax of Jinja's own `With` feature:
+without having to use the cumbersome syntax of Jinja's own ``With`` feature:
 
 .. code-block:: python
 
@@ -25,9 +25,9 @@ an ``include_with`` tag, so the above statement would look like this:
 
   {% include_with 'somefile.html' bar='foo', world='hello' %}
 
-In this example, the *only* variables in the context for ``somefile.html`` are those
-defined in the ``include_with`` statement (as well as any automatically included by
-the context processors).
+In this example, the **only** variables in the context for ``somefile.html`` are those
+defined in the ``include_with`` statement. Any variables declared in the view or
+in context processors are excluded.
 
 Parsing the statement
 ~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +41,7 @@ The first two variables shown by the stream are the ``include_with`` tag itself
 (represented as a ``nodes.Name`` instance), and the second is the template name
 (represented as a ``nodes.Const`` instance, as it is a string). Once those two have
 been declared, we need to pull the variables from the stream with the following
-method (which is largely adapted from `this <https://github.com/coffin/coffin/blob/master/coffin/common.py#L164
+method (which is largely adapted from `this <https://github.com/coffin/coffin/blob/master/coffin/common.py#L164>
 `_):
 
 .. code-block:: python
