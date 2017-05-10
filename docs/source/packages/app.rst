@@ -56,7 +56,7 @@ To illustrate, it's best to work through an example.  Say that we have a
 
     class ContentApp(GNAppConfig):
         name = 'content'
-        view_registry = {
+        views = {
             'content:ArticleView': views.ArticleView,
         }
 
@@ -84,7 +84,7 @@ The ``eurogamer`` app is able to override that view in it's
 
     class EurogamerApp(GNAppConfig):
         name = 'eurogamer'
-        view_registry = {
+        views = {
             'content:ArticleView': views.EurogamerArticleView,
         }
 
