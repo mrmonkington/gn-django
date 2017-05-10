@@ -153,6 +153,10 @@ Globals reference
     A convenient alternative to dict literals.  ``{'foo': 'bar'}`` is the same
     as ``dict(foo='bar')``.
 
+.. function:: randint(maximum=100, minimum=0)
+
+    Generate and print a random number between the ``minimum`` and ``maximum`` value.
+
 .. class:: cycler(\*items)
 
     The cycler allows you to cycle among values similar to how `loop.cycle`
