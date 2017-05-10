@@ -262,12 +262,12 @@ class TestHierarchyLoader(TestCase):
         with self.assertRaises(Exception):
             loader = HierarchyLoader(hierarchy)
 
-    def test_init_name_has_parent_at_start(self):
+    def test_init_name_has_parent_but_its_valid(self):
         hierarchy = OrderedDict((
             ("eurogamer_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
             ("eurogamer", FileSystemLoader(self.get_template_dir("eurogamer"))),
             ("core", FileSystemLoader(self.get_template_dir("core"))),
-            ("parent_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+            ("parent_parent_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
         ))
         loader = HierarchyLoader(hierarchy)
 
