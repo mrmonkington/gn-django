@@ -1,2 +1,3 @@
 include README.md
 include gn_django/bin/startproject/*
+include gn_django/bin/startproject/_github
