@@ -6,11 +6,11 @@ creating a Gamer Network django project easy.
 
 To use it, follow these steps: 
   *  `create a >=python3.5 virtualenv <https://github.com/gamernetwork/devops/wiki/Python-Tips#virtualenv>`_ and activate it.
-  * Run ``pip install -e git://github.com/gamernetwork/gn-django.git`` to install ``gn-django`` in to the virtualenv.
+  * Run ``pip install git+ssh://git@github.com/gamernetwork/gn-django.git`` to install ``gn-django`` in to the virtualenv.
   * Now you can run ``gn_django startproject <projectname> [<path_to_project>]``.
 
 This will create a django project called ``<projectname>`` in the current directory
-(or specified directory, if you use the second argument).
+(or specified directory, if you use the second optional argument).
 
 The project is set up with the following:
 
@@ -26,7 +26,8 @@ The project is set up with the following:
 
 The default project settings include ``django-jinja`` as an installed app
 and set up a jinja template backend as :ref:`explained here <how-to-set-up-jinja>` 
-which looks for jinja2 templates in all django app directories.
+which matches jinja templates (ending with `".j2"`) in all apps' `templates/` 
+directories.
 
 The project should be runnable immediately with all setup boilerplate taken
 care of.
