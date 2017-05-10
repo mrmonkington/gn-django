@@ -11,6 +11,7 @@ from django.template.exceptions import TemplateDoesNotExist
 from gn_django.template.backend import Jinja2
 from gn_django.template.loaders import HierarchyLoader, get_hierarchy_loader
 from gn_django.template.loaders import MultiHierarchyLoader, get_multi_hierarchy_loader
+from gn_django.template.loaders import file_system_loaders
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -408,6 +409,8 @@ class TestLoaderBuilders(TestCase):
             actual_templates = loader.hierarchy[loader_name].list_templates()
             self.assertEquals(expected_templates, actual_templates)
 
+        self.assertEquals(len(file_system_loaders), 3)
+
     def test_get_multi_hierarchy_loader(self):
         expected_multi_hierarchy = {
             'eurogamer_net': HierarchyLoader(
@@ -476,3 +479,5 @@ class TestLoaderBuilders(TestCase):
             expected_templates = expected_multi_hierarchy[loader_name].list_templates()
             actual_templates = loader.hierarchies[loader_name].list_templates()
             self.assertEquals(expected_templates, actual_templates)
+
+        self.assertEquals(len(file_system_loaders), 7)
