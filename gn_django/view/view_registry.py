@@ -19,7 +19,7 @@ The view registry is populated in the order of `settings.INSTALLED_APPS`
 so that subsequent apps can override the views of preceding apps - this means
 that apps lower in `INSTALLED_APPS` will override apps that are higher.
 
-This enables the eurogamer_net app's `content:ArticleView` to override 
+Example: This enables the eurogamer_net app's `content:ArticleView` to override 
 the content app's `content:ArticleView`, etc.
 """
 
