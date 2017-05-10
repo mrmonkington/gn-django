@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 if [ $1 = "tests" ]; then
-	DJANGO_SETTINGS_MODULE=tests.dj_project.settings \
-		django-admin test tests
+	cd tests
+	python manage.py test .
+    exit $?
 fi
 
 if [ $1 = "coverage" ]; then

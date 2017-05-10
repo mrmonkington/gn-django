@@ -1,5 +1,3 @@
-from threading import local
-
 from django.test import TestCase, override_settings
 from django.conf import settings
 
