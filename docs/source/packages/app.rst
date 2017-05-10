@@ -16,6 +16,18 @@ Right now, the only extended functionality that it offers is to allow django
 apps to register views for combining in to a :ref:`view-registry`.  In future,
 it may offer additional functionality for app-specific configuration.
 
+.. note::
+
+   Django is particular about how a custom app config should be specified.  
+   To specify a custom ``GNAppConfig`` class for a django app, it must be defined in 
+   ``<app>/apps.py`` and must be referenced in the app package's ``__init__.py``
+   as follows:
+
+   .. code-block:: python
+
+        default_app_config = 'path.to.AppConfig'
+
+
 .. _view-registry:
 
 View Registry
