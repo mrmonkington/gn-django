@@ -91,8 +91,8 @@ being that Jinja uses the Pythonic ``elif`` instead of ``elseif``.
 Macros
 ------
 
-Macros are similar in Jinja to Twig, with the big exception being that Jinja macros support
-named parameters. If they exist in the same template, they do not need to be imported
+Macros are similar in Jinja to Twig, with the big exception being that Jinja macros can be called
+with named parameters. If they exist in the same template, they do not need to be imported
 or called from ``_self``.
 
 This means that you can do this:
