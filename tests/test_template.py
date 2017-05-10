@@ -41,7 +41,7 @@ class TestJinja2(TestCase):
         template = jinja.from_string("<html>{{foo}}</html>")
         rendered = template.render({'foo': 'bar'})
         self.assertEqual("<html>bar</html>", rendered)
-    
+
     def test_filters_work(self):
         """
         Test that filters work from a variety of sources.
@@ -64,7 +64,7 @@ class TestJinja2(TestCase):
             template = jinja.from_string(template_str)
             rendered = template.render()
             self.assertEqual(rendered, expected_result)
-        
+
     def test_globals_work(self):
         """
         Test that globals work from a variety of sources.
@@ -139,6 +139,29 @@ class TestJinja2(TestCase):
             rendered = template.render(request=True)
             self.assertEqual(rendered, expected_result)
 
+    def test_include_with_extension(self):
+        class ExampleModel:
+
+            display_text = 'This is text that belongs to a model'
+
+            def __init__(self, name):
+                self.name = name
+
+        template_dir = os.path.join(BASE_DIR, "test_files", "include_with_templates")
+
+        jinja_config = self.get_jinja_config()
+        jinja_config['DIRS'].append(template_dir)
+        jinja = Jinja2(jinja_config)
+        params = {
+            'string': 'This is a message',
+            'obj': ExampleModel('Hello World!'),
+            'parent_context': 'Parent context',
+        }
+
+        result = jinja.get_template('include.html').render(params).strip()
+        expected = jinja.get_template('include_expected.html').render().strip()
+
+        self.assertEquals(result, expected)
 
 class TestHierarchyLoader(TestCase):
     """
@@ -227,13 +250,6 @@ class TestHierarchyLoader(TestCase):
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("wibble.j2"))
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("core:wibble.j2"))
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("eurogamer_parent:wibble.j2"))
-
-        # Test that the loader defaults to sequential lookup when a template 
-        # does not exist in either directed/ancestor mode
-        t = jinja.get_template("eurogamer_net_parent:home.j2")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/home.j2"))
-        t = jinja.get_template("eurogamer:home.j2")
-        self.assertEquals(t.template.filename, self.get_template_dir("core/home.j2"))
 
 
 class TestMultiHierarchyLoader(TestCase):

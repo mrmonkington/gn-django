@@ -1,13 +1,17 @@
-from random import randint
+from random import randint as base_randint
 
-def random(limit):
+def randint(maximum=100, minimum=0):
     """
-    Generate a random integer between 1 and `limit`
+    Generate a random integer between `minimum` and `maximum`.
     Args:
-        * `limit` - `integer` - The max number that can be generated
+        - `maximum` - The maximum integer that can be generated (defaults to 100)
+        - `minimum` - The minimum integer that can be generated (defaults to 0)
     Returns:
         A random integer
     Usage:
-        ``random(100)``
+        ``random()``
+        ``random(300)``
+        ``random(10, 5)``
+        ``random(minimim=20, maximum=40)``
     """
-    return randint(1, limit)
+    return base_randint(minimum, maximum)

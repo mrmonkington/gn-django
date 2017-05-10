@@ -4,10 +4,9 @@ Using Jinja templates
 Here's how the official jinja documentation describes itself:
 
     "A Jinja template is simply a text file. 
-    Jinja can generate any text-based format (HTML, XML, CSV, LaTeX, etc.). 
 
-    A template contains variables and/or expressions, which get replaced with 
-    values when a template is rendered; and tags, which control the logic of 
+    A template contains variables and/or expressions, which get replaced with
+    values when a template is rendered; and tags, which control the logic of
     the template. The template syntax is heavily inspired by Django and Python."
 
 
@@ -15,10 +14,10 @@ To get up to speed on the syntax and semantics of Jinja templates, refer to
 the documentation here: http://jinja.pocoo.org/docs/2.9/templates/.
 
 The following reference documentation assumes that you know the general syntax
-of jinja.  gn-django offers an extended jinja library and the following 
-reference documentation *should* provide an exhaustive reference of: 
-    - filters 
-    - globals 
+of jinja.  gn-django offers an extended jinja library and the following
+reference documentation *should* provide an exhaustive reference of:
+    - filters
+    - globals
     - tests
     - extensions
     - custom template loaders
@@ -174,6 +173,10 @@ Globals reference
     A convenient alternative to dict literals.  ``{'foo': 'bar'}`` is the same
     as ``dict(foo='bar')``.
 
+.. function:: randint(maximum=100, minimum=0)
+
+    Generate and print a random number between the ``minimum`` and ``maximum`` value.
+
 .. class:: cycler(\*items)
 
     The cycler allows you to cycle among values similar to how `loop.cycle`
@@ -239,9 +242,9 @@ Globals reference
     Reverse urls in templates::
 
         {{ url('ns:name', pk=obj.pk) }}
-    
-    This approach is very flexible, because we do not need additional options 
-    to set a result if executing url in one variable. With jinja2 you can use 
+
+    This approach is very flexible, because we do not need additional options
+    to set a result if executing url in one variable. With jinja2 you can use
     the set template tag for it::
 
         {% set myurl=url("ns:name", pk=obj.pk) %}
@@ -249,13 +252,13 @@ Globals reference
 
 .. function:: static(filename)
 
-    To link to static files that are saved in ``STATIC_ROOT`` the 
+    To link to static files that are saved in ``STATIC_ROOT`` the
     `static` global is used. If the `django.contrib.staticfiles`
     app is installed, the tag will serve files using ``url()`` method of the
     storage specified by the ``STATICFILES_STORAGE`` setting. For example::
 
         {{ static("js/lib/foo.js") }}
-    
+
 
 Extensions reference
 --------------------
@@ -294,6 +297,25 @@ Likewise, a loop that stops processing after the 10th iteration::
 Note that ``loop.index`` starts with 1, and ``loop.index0`` starts with 0
 (See: :ref:`for-loop`).
 
+.. _include-with-statement:
+
+Include With Statement
+~~~~~~~~~~~~~~~~~~~~~~
+
+This is a GN specific extension that allows developer to include templates
+with a redeclared context. This is done using the ``include_with``, followed by
+the name of the template, and then keyword arguments separated by commas. This negates
+the need to use the :ref:`With statement <with-statement>` when using includes.
+
+**Note:** This will completely override the current context,
+meaning that any variables declared by context processors *will not* be included in
+the context of the included template. For more information, read the :ref:`case study <writing-include-with-ext>`
+
+Example::
+
+    {% include_with 'subtemplate.j2' foo='bar', key=['value'] %}
+
+.. _with-statement:
 
 With Statement
 ~~~~~~~~~~~~~~
@@ -355,9 +377,8 @@ This provides protection against cross site request forgeries, as described
 `in the django documentation <https://docs.djangoproject.com/en/dev/ref/csrf/>`_.
 
 Example::
-    
+
     <form action="" method="post">
         {% csrf_token %}
         ...
-    </form>
-
+    </form>1

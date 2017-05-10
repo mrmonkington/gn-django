@@ -17,8 +17,14 @@ Sparse template inheritance
 
 Sparse template inheritance is the idea that a given template identifier can 
 resolve to many different concrete template files depending on the makeup of 
-the template **hierarchy** and that the inheritance chain for those templates
-is dependent on an active **hierarchy** rather than being static.  
+a template **hierarchy**.  The inheritance chain for templates
+is dependent on the active **hierarchy** rather than being static.  So, if we 
+have a django app that can be used for many different sites, sparse template
+inheritance affords us the ability to override the templates that are used
+at runtime depending on the active template **hierarchy**.  Say we have a generalised
+``"article.html"`` template in our common templates directory - this can be overridden 
+easily for a given site by inserting a template directory in to the hierarchy 
+which defines it.  View code can remain unchanged.
 
 The idea came about to solve the problem of major duplication between templates
 for a related family of sites.  Broadly, most content sites can share a lot of 
@@ -55,6 +61,10 @@ at Gamer Network.  It makes sense for our template code to be able to make use o
 this ancestry.  Hopefully the majority of template code will be in common for 
 all of Gamer Network content sites, and only certain parts of templates
 will need overrides at different levels of the **hierarchy**.
+
+**For any given site, the template hierarchy - inheritance chain that should be taken
+through the tree - is defined and is static.**
+
 The idea of a **template hierarchy** for a given site is key: the **hierarchy**
 is the path that is taken through the tree to get to a concrete site.
 In practical terms, this means that nodes in the tree end up as directories of
@@ -66,11 +76,9 @@ for each node of our tree.  Say that the root node is called `core` - that node
 contains base defaults for page templates, widgets, etc. On the next level, 
 `eurogamer` contains templates (which may inherit from core) which have overrides
 for eurogamer-family specifc structure.  And then `eurogamer_net` contains 
-templates which inherit and override others in the **hierarchy** for structure that
-is truly site specific.
+templates which inherit and override others in the **hierarchy** for template 
+code that is truly site specific.
 
-For any given site, the template **hierarchy** - inheritance chain that should be taken
-through the tree - is defined and is static.
 The great thing about sparse template inheritance is that it can be done 
 without any special view code - so an ``ArticleView`` just renders a template
 identified as ``article.j2``.  The view doesn't care that the **hierarchy**
@@ -90,11 +98,24 @@ To use sparse template inheritance in a django project, you must use either the
 
 The :ref:`hierarchy-loader` is for use when your deployable django project is
 for one concrete site - i.e. there is a single template inheritance hierarchy 
-to resolve.
+to resolve.  In this case, we may have a ``eurogamer`` repository which has django
+apps for ``eurogamer_net``, ``eurogamer_de``, ``eurogamer_pl`` etc.  Each of 
+these different apps would have their own template directories and overridden 
+backend code - so there would need to be a separate deployment per site.  In this
+case we can use the :ref:`hierarchy-loader` because a given django deployment has
+a single static hierarchy to resolve.
 
 The :ref:`multi-hierarchy-loader` is for use when your deployable django project is
 for multiple concrete sites - i.e. there are many inheritance hierarchies that
-the loader will need to resolve.
+the loader will need to resolve. For example, the auth service will have a 
+web app frontend for setting user profiles/changing passwords etc. Each 
+instance of the auth frontend will need to be able to serve any of the 
+following domains: auth.eurogamer.net, auth.eurogamer.de, auth.usgamer.net, etc. 
+The core auth functionality between different sites is unlikely to differ 
+beyond needing feature toggles, but we do need to be able to have site-specific 
+frontends and override the templates used in a nice way.  So the 
+:ref:`multi-hierarchy-loader` is used for selecting the appropriate template 
+hierarchy to use for each request.
 
 Using the HierarchyLoader
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,7 +178,6 @@ The loader offers three formats of template lookup:
   
   * **sequential lookup** - ``base.j2`` - this will attempt to find the `base.j2`
     template by trying all of the loaders in the loader hierarchy, sequentially.
-    Note: If the other two methods fail, sequential lookup is the fallback.
 
 **Examples:**
 
@@ -166,14 +186,14 @@ The loader offers three formats of template lookup:
     hierarchy_loader.get_source(env, 'eurogamer_parent:base.j2')
 
 Will yield `base.j2` from the `'core'` loader and will
-otherwise try to find it sequentially from eurogamer to core:
+otherwise raise a `DjangoTemplateNotFoundException` if it cannot find it.
 
 .. code-block:: python
 
     hierarchy_loader.get_source(env, 'core:foo.j2')
 
 Will yield `foo.j2` from the `'core'` loader if it exists and will
-otherwise try to find it sequentially from the ``eurogamer`` loader to ``core``:
+otherwise raise a `DjangoTemplateNotFoundException` if it cannot find it.
 
 .. code-block:: python
 

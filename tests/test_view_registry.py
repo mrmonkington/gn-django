@@ -4,48 +4,39 @@ from django.test import TestCase, override_settings
 from django.views.generic.base import View
 from django.conf import settings
 
-from gn_django.view import view_registry
+from gn_django.app import view_registry
+from gn_django.app import GNAppConfig
 
 class TestViewRegistry(TestCase):
 
-    def test_register(self):
+    def test_initialise_view_registry(self):
         """
-        Test that views can be registered.
+        Test the initialise_view_registry function successfully builds a 
+        view registry from a mocked apps config.
         """
-        view = mock.Mock()
-        view_registry.register('wibble:Article', view)
-        # Registry populated with view
-        self.assertEquals(view_registry._registry['wibble']['Article'], view.as_view())
-        # Exception raised when the view label is malformed 
-        self.assertRaises(Exception, view_registry.register, ('wibbleArticle', view))
-
-    def test_register_app_views(self):
-        """
-        Test that a module of views can be registered under a particular
-        application namespace.
-        """
-        # Create a mocked views.py module
-        views_module = mock.Mock()
-        views_module.__name__ = 'fooob.views'
-        views = []
-        # Create 5 mocked views within our module
-        for i in range(5):
-            view_func = mock.Mock()
-            class AView(View):
-                
-                def as_view():
-                    return view_func
-            view = AView
-            view_name = 'View%s' % i
-            view.__name__ = view_name
-            view.__module__ = views_module.__name__
-            views.append(view)
-            setattr(views_module, view_name, view)
-        # Register our module in the registry
-        view_registry.register_app_views('fooob', views_module)
-        # Test that our views are present in the registry
-        for view in views:
-            self.assertEquals(view_registry._registry['fooob'][view.__name__], view.as_view())
+        first_app = mock.Mock(spec=GNAppConfig)
+        first_app.name = "core"
+        first_app.views = {'core:Home': mock.Mock(spec=View)}
+        second_app = mock.Mock(spec=GNAppConfig)
+        second_app.name = "content"
+        second_app.views = {'core:Home': mock.Mock(spec=View), 'content:Article': mock.Mock(spec=View)}
+        mocked_app_config = [
+            first_app,
+            second_app,
+        ]
+        expected_registry = {
+            'core': {
+                'Home': second_app.views['core:Home'].as_view(),
+            },
+            'content': {
+                'Article': second_app.views['content:Article'].as_view(),
+            }
+        }
+        with mock.patch.dict(view_registry._registry, {}):
+            with mock.patch("django.apps.apps.get_app_configs") as mocked_get_app_configs:
+                mocked_get_app_configs.return_value = mocked_app_config
+                view_registry.initialise_view_registry()
+                self.assertEquals(view_registry._registry, expected_registry)
 
     def test_get(self):
         """

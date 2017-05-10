@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 
 from .views import DomainView
 
-from gn_django.view import view_registry
+from gn_django.app import view_registry
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
