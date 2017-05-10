@@ -6,10 +6,14 @@ from jinja2.loaders import BaseLoader, TemplateNotFound, iteritems, FileSystemLo
 import re
 
 """
+Cached store of FileSystemLoader instanced, with template directories as keys
+"""
+file_system_loaders = {}
+
+"""
 Custom template loaders that can be used for special template loading
 functionality.
 """
-
 class DjangoTemplateNotFound(TemplateNotFound):
     """
     Adds a `tried` attribute to our `TemplateNotFound` exception - which allows
@@ -267,7 +271,14 @@ def get_hierarchy_loader(directories):
     """
     template_loaders = OrderedDict()
     for app_name, template_dir in directories:
-        template_loaders[app_name] = FileSystemLoader(template_dir)
+        # Pull FileSystemLoader from cache if it already exists for this directory,
+        # or instanciate it if not
+        if template_dir not in file_system_loaders:
+            loader = FileSystemLoader(template_dir)
+            file_system_loaders[template_dir] = loader
+        else:
+            loader = file_system_loaders[template_dir]
+        template_loaders[app_name] = loader
     return HierarchyLoader(template_loaders)
 
 
