@@ -55,7 +55,7 @@ ROOT_URLCONF = 'tests.dj_project.urls'
 TEMPLATES = [
     {
         "BACKEND": "gn_django.template.backend.Jinja2",
-        "APP_DIRS": True,
+        'DIRS': [os.path.join(BASE_DIR, 'dj_project', 'templates')],
         "OPTIONS": {
             'match_extension': None,
             'context_processors': [

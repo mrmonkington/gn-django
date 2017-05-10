@@ -1,0 +1,27 @@
+<h1><code>include_with</code> test</h1>
+
+<h2>Parent:</h2>
+<p>Parent context only: Parent context</p>
+<p>Out of context: {{ out_of_context }}</p>
+<h2>First include:</h2>
+<p>Object:</p>
+<ul>
+  <li>Name: Hello World!</li>
+  <li>Text: This is text that belongs to a model</li>
+</ul>
+<p>Hard coded string: this is a hard coded message</p>
+<p>Variable string: This is a message</p>
+<h2>Second include:</h2>
+<p>Dictionary:</p>
+<ul>
+  <li>sheep: baa</li>
+  <li>cow: moo</li>
+</ul>
+<p>Tuple:</p>
+<ul><li>Link</li><li>Zelda</li><li>Seigmeyer</li></ul>
+<p>List:</p>
+<ul><li>Dark Souls</li><li>Bloodborne</li></ul>
+<p>Int: 1337</p>
+<p>Parent context only: {{ parent_context }}</p>
+<h2>Nested include</h2>
+<p>A variable: I&#39;m a barbie girl, in a barbie world</p>

@@ -1,0 +1,21 @@
+<h2>Second include:</h2>
+<p>Dictionary:</p>
+<ul>
+  <li>sheep: {{ foo.sheep }}</li>
+  <li>cow: {{ foo.cow }}</li>
+</ul>
+<p>Tuple:</p>
+<ul>
+  {%- for bae in baes -%}
+    <li>{{ bae }}</li>
+  {%- endfor -%}
+</ul>
+<p>List:</p>
+<ul>
+  {%- for game in games -%}
+    <li>{{ game }}</li>
+  {%- endfor -%}
+</ul>
+<p>Int: {{ leet }}</p>
+<p>Parent context only: {{ parent_context }}</p>
+{% include_with 'i3.html' foo="I'm a barbie girl, in a barbie world" %}
