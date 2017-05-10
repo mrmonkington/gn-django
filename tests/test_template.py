@@ -251,6 +251,35 @@ class TestHierarchyLoader(TestCase):
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("core:wibble.html"))
         self.assertRaises(TemplateDoesNotExist, jinja.get_template, ("eurogamer_parent:wibble.html"))
 
+    def test_init_name_has_parent(self):
+        hierarchy = OrderedDict((
+            ("eurogamer_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+            ("eurogamer", FileSystemLoader(self.get_template_dir("eurogamer"))),
+            ("core", FileSystemLoader(self.get_template_dir("core"))),
+            ("eurogamer_net_parent", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+        ))
+        with self.assertRaises(Exception):
+            loader = HierarchyLoader(hierarchy)
+
+    def test_init_name_has_default_delimiter(self):
+        hierarchy = OrderedDict((
+            ("eurogamer_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+            ("eurogamer", FileSystemLoader(self.get_template_dir("eurogamer"))),
+            ("core", FileSystemLoader(self.get_template_dir("core"))),
+            ("eurogamer:net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+        ))
+        with self.assertRaises(Exception):
+            loader = HierarchyLoader(hierarchy)
+
+    def test_init_name_has_custom_delimiter(self):
+        hierarchy = OrderedDict((
+            ("eurogamer_net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+            ("eurogamer", FileSystemLoader(self.get_template_dir("eurogamer"))),
+            ("core", FileSystemLoader(self.get_template_dir("core"))),
+            ("eurogamer-net", FileSystemLoader(self.get_template_dir("eurogamer_net"))),
+        ))
+        with self.assertRaises(Exception):
+            loader = HierarchyLoader(hierarchy, '-')
 
 class TestMultiHierarchyLoader(TestCase):
     """
