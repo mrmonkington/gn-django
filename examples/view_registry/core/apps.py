@@ -4,6 +4,6 @@ from . import views
 
 class CoreConfig(GNAppConfig):
     name = 'core'
-    view_registry = {
+    views = {
         'core:Home': views.Home,
     }

@@ -56,8 +56,8 @@ def initialise_view_registry():
         return
     all_apps = apps.get_app_configs()
     for app in all_apps:
-        if isinstance(app, GNAppConfig) and app.view_registry:
-            for label, view in app.view_registry.items():
+        if isinstance(app, GNAppConfig) and app.views:
+            for label, view in app.views.items():
                 app, view_name = _process_view_label(label)
                 try:
                     _registry[app][view_name] = view.as_view()

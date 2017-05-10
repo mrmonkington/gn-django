@@ -4,6 +4,6 @@ from . import views
 
 class EurogamerConfig(GNAppConfig):
     name = 'eurogamer'
-    view_registry = {
+    views = {
         'core:Home': views.EurogamerHome,
     }

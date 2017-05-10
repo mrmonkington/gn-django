@@ -16,20 +16,20 @@ class TestViewRegistry(TestCase):
         """
         first_app = mock.Mock(spec=GNAppConfig)
         first_app.name = "core"
-        first_app.view_registry = {'core:Home': mock.Mock(spec=View)}
+        first_app.views = {'core:Home': mock.Mock(spec=View)}
         second_app = mock.Mock(spec=GNAppConfig)
         second_app.name = "content"
-        second_app.view_registry = {'core:Home': mock.Mock(spec=View), 'content:Article': mock.Mock(spec=View)}
+        second_app.views = {'core:Home': mock.Mock(spec=View), 'content:Article': mock.Mock(spec=View)}
         mocked_app_config = [
             first_app,
             second_app,
         ]
         expected_registry = {
             'core': {
-                'Home': second_app.view_registry['core:Home'].as_view(),
+                'Home': second_app.views['core:Home'].as_view(),
             },
             'content': {
-                'Article': second_app.view_registry['content:Article'].as_view(),
+                'Article': second_app.views['content:Article'].as_view(),
             }
         }
         with mock.patch.dict(view_registry._registry, {}):
