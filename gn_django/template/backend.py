@@ -13,7 +13,7 @@ from django_jinja import builtins as dj_jinja_builtins
 from django_jinja.contrib._humanize.templatetags._humanize import ordinal, intcomma, intword, apnumber, naturalday, naturaltime
 
 from .extensions import SpacelessExtension, IncludeWithExtension
-from .globals import random
+from .globals import randint
 
 class Environment(jinja2.Environment):
     """
@@ -181,7 +181,9 @@ class Jinja2(DjangoJinja2):
         Returns:
             iterable of globals
         """
-        base_globals = {}
+        base_globals = {
+            'randint': randint,
+        }
         return base_globals
 
     def get_base_tests(self):

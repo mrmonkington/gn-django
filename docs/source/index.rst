@@ -18,6 +18,7 @@ to use when building django applications and sites at Gamer Network.
    jinja_templates/extending_jinja
    jinja_templates/why_jinja_not_django
    jinja_templates/loaders
+   jinja_templates/jinja_twig_devs
 
 .. toctree::
    :maxdepth: 2
