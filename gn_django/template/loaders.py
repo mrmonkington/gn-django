@@ -1,7 +1,13 @@
+"""
+Custom template loaders that can be used for special template loading
+functionality.
+"""
+
 from collections import OrderedDict
 
 from django.utils import six
 from django.utils.module_loading import import_string
+from django.core.exceptions import ImproperlyConfigured
 from jinja2.loaders import BaseLoader, TemplateNotFound, iteritems, FileSystemLoader
 import re
 
@@ -10,10 +16,6 @@ Cached store of FileSystemLoader instanced, with template directories as keys
 """
 file_system_loaders = {}
 
-"""
-Custom template loaders that can be used for special template loading
-functionality.
-"""
 class DjangoTemplateNotFound(TemplateNotFound):
     """
     Adds a `tried` attribute to our `TemplateNotFound` exception - which allows
@@ -95,14 +97,14 @@ class HierarchyLoader(BaseLoader):
             separating namespace from template identifier
         """
         if not isinstance(hierarchy, OrderedDict):
-            raise Exception("HierarchyLoader must be called with a \
+            raise TypeError("HierarchyLoader must be called with a \
                 collections.OrderedDict type of mapping")
 
         # Validate names
         pattern = re.compile(r'\_parent$')
         for name in hierarchy:
             if delimiter in name or pattern.search(name):
-                raise Exception("Template namespace `%s` must not contain the delimiter (%s) or end with `_parent`" % (name, delimiter))
+                raise ImproperlyConfigured("Template namespace `%s` must not contain the delimiter (%s) or end with `_parent`" % (name, delimiter))
 
         self.hierarchy = hierarchy
         self.delimiter = delimiter
