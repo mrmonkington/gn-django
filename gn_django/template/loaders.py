@@ -1,20 +1,27 @@
+"""
+Custom template loaders that can be used for special template loading
+functionality.
+"""
+
 from collections import OrderedDict
 
 from django.utils import six
 from django.utils.module_loading import import_string
+from django.core.exceptions import ImproperlyConfigured
 from jinja2.loaders import BaseLoader, TemplateNotFound, iteritems, FileSystemLoader
+import re
 
 """
-Custom template loaders that can be used for special template loading 
-functionality.
+Cached store of FileSystemLoader instanced, with template directories as keys
 """
+file_system_loaders = {}
 
 class DjangoTemplateNotFound(TemplateNotFound):
     """
     Adds a `tried` attribute to our `TemplateNotFound` exception - which allows
     django to flag the template locations that were attempted.
     """
-    
+
     def __init__(self, name, message=None, tried=None):
         super(DjangoTemplateNotFound, self).__init__(name, message)
         if tried:
@@ -29,16 +36,16 @@ class JinjaOrigin(object):
 class HierarchyLoader(BaseLoader):
     """
     A loader that is a combination of the PrefixLoader and ChoiceLoader.
-    This allows us to define a hierarchy of template loaders such that a 
+    This allows us to define a hierarchy of template loaders such that a
     template defined in the most specific part of the hierarchy is loaded in
     preference to a template in the least specific part of the hierarchy.  This
-    enables very granular overrides of templates and finer control of template 
+    enables very granular overrides of templates and finer control of template
     loading through various lookup modes determined by prefixing the template
     name.
 
     Takes an ``OrderedDict`` loader hierarchy with keys as loader names and values
     as instantiated `Loader` objects.  This mapping should be in order of most
-    specific (concrete) template loader to least specific (parent/base) 
+    specific (concrete) template loader to least specific (parent/base)
     template loader.
 
     Allows three formats of template lookup:
@@ -74,7 +81,7 @@ class HierarchyLoader(BaseLoader):
 
         hierarchy_loader.get_source(env, 'bar.html')
 
-    Will find `bar.html` by querying the loaders sequentially from ``eurogamer_net``
+    Will find ``bar.html`` by querying the loaders sequentially from ``eurogamer_net``
     to ``core``.
     """
 
@@ -84,12 +91,21 @@ class HierarchyLoader(BaseLoader):
           * `hierarchy` - OrderedDict - ordered dict with keys as template
             namespace and values as template loader, in order of most specific
             to least specific.
+            **Note:** The template namespace must not end with ``_parent`` nor
+            contain the ``delimiter``
           * `delimiter` - string - the namespace delimiter string to use when
             separating namespace from template identifier
         """
         if not isinstance(hierarchy, OrderedDict):
-            raise Exception("HierarchyLoader must be called with a \
+            raise TypeError("HierarchyLoader must be called with a \
                 collections.OrderedDict type of mapping")
+
+        # Validate names
+        pattern = re.compile(r'\_parent$')
+        for name in hierarchy:
+            if delimiter in name or pattern.search(name):
+                raise ImproperlyConfigured("Template namespace `%s` must not contain the delimiter (%s) or end with `_parent`" % (name, delimiter))
+
         self.hierarchy = hierarchy
         self.delimiter = delimiter
 
@@ -110,7 +126,7 @@ class HierarchyLoader(BaseLoader):
 
     def get_ancestor_loader_names(self, child):
         """
-        Get a list of ancestor loaders to try, in order of closest relative to 
+        Get a list of ancestor loaders to try, in order of closest relative to
         most distant.
         """
         # Get a list of loader keys
@@ -160,7 +176,7 @@ class HierarchyLoader(BaseLoader):
     def get_namespace_source(self, environment, template, tried):
         """
         Given a template identifier of format `<loader>:foo.html` find the
-        template by looking up the specified loader in the loader hierarchy and 
+        template by looking up the specified loader in the loader hierarchy and
         retrieving it from there.
 
         Args:
@@ -202,11 +218,11 @@ class HierarchyLoader(BaseLoader):
                 tried.append([origin, "Source does not exist"])
                 continue
         return None
-        
+
     def get_source(self, environment, template):
         """
         Get the template source for a given template identifier.  An appropriate
-        loader is used based on whether the template identifier indicates 
+        loader is used based on whether the template identifier indicates
         sequential, ancestor or namespace lookup modes.
 
         Args:
@@ -230,7 +246,7 @@ class HierarchyLoader(BaseLoader):
             return template_source
         else:
             raise DjangoTemplateNotFound(template, tried=tried)
-            
+
     def list_templates(self):
         result = []
         for prefix, loader in iteritems(self.hierarchy):
@@ -259,7 +275,14 @@ def get_hierarchy_loader(directories):
     """
     template_loaders = OrderedDict()
     for app_name, template_dir in directories:
-        template_loaders[app_name] = FileSystemLoader(template_dir)
+        # Pull FileSystemLoader from cache if it already exists for this directory,
+        # or instanciate it if not
+        if template_dir not in file_system_loaders:
+            loader = FileSystemLoader(template_dir)
+            file_system_loaders[template_dir] = loader
+        else:
+            loader = file_system_loaders[template_dir]
+        template_loaders[app_name] = loader
     return HierarchyLoader(template_loaders)
 
 
@@ -270,7 +293,7 @@ class MultiHierarchyLoader(BaseLoader):
     function which is parameterised at object instantiation.
 
     Args:
-      * `get_active_hierarchy_cb` - function/import string - import string of the function 
+      * `get_active_hierarchy_cb` - function/import string - import string of the function
         to call to determine the hierarchy loader which is active right now.
       * `hierarchies` - mapping - mapping of hierarchy names to instantiated
         ``HierarchyLoader`` objects
@@ -303,12 +326,12 @@ class MultiHierarchyLoader(BaseLoader):
 
 def get_multi_hierarchy_loader(get_active_hierarchy_cb, hierarchies):
     """
-    Helper to instantiate a ``MultiHierarchyLoader`` from many named template 
+    Helper to instantiate a ``MultiHierarchyLoader`` from many named template
     directory hierarchies.
 
     Args:
-      * `get_active_hierarchy_cb` - function/import string -  function 
-        to call to determine the name of the hierarchy loader which is active 
+      * `get_active_hierarchy_cb` - function/import string -  function
+        to call to determine the name of the hierarchy loader which is active
         at any time.
       * `hierarchy` - iterable of pairs - The loader hierarchies to create.
         Each pair should specify the hierarchy name and template hierarchy for
