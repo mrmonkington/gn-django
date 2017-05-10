@@ -1,1 +1,1 @@
--e git://github.com/gamernetwork/gn-django.git
+git+ssh://git@github.com/gamernetwork/gn-django.git
