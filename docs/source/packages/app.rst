@@ -9,7 +9,9 @@ App configs
 -----------
 
 The ``app`` package defines a custom ``AppConfig`` class called ``GNAppConfig``
-which should be used by django apps which depend on gn-django features.
+which should be used by django apps which depend on gn-django features.  It's
+a drop-in replacement for django's standard ``AppConfig`` class in django's built
+in `applications library <https://docs.djangoproject.com/en/1.11/ref/applications/>`_.
 Right now, the only extended functionality that it offers is to allow django
 apps to register views for combining in to a :ref:`view-registry`.  In future,
 it may offer additional functionality for app-specific configuration.
