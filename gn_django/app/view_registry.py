@@ -10,9 +10,12 @@ view that will service a particular url.
 Using the registry means we do not need to duplicate url patterns in multiple
 apps' `urls.py` files.
 
-An app registers View classes to the registry in a `registered_views.py` file.
-All apps' `registered_views.py` files are included when the django application 
-is started.
+An app registers View classes to the registry by declaring a `GNAppConfig` 
+subclass in `apps.py`.
+
+All apps' app configs are iterated over to build the global view registry for
+a django project.  This occurs the first time that a view is queried for using
+the `get` function.
 The view registry is populated in the order of `settings.INSTALLED_APPS` 
 so that subsequent apps can override the views of preceding apps - this means
 that apps lower in `INSTALLED_APPS` will override apps that are higher.
@@ -46,7 +49,8 @@ def initialise_view_registry():
     Goes through all installed apps which use GNAppConfig and have a non-empty 
     view registry and initialises the project's view registry.
 
-    Repeated calls will return early if the global view registry is populated.
+    Repeated calls will return the cached registry early if the global 
+    view registry is already populated.
     """
     if _registry:
         return
@@ -63,8 +67,11 @@ def initialise_view_registry():
 
 def get(view_label):
     """
-    Retrieve the class based view for the view label of format 
+    Retrieve the view callable for the view label of format 
     ``'[app_name]:[view_class_name]'``
+
+    Args:
+      * ``view_label`` - string - view label of format `'[app_name]:[view_class_name]'`
     """
     app, view_name = _process_view_label(view_label)
     def _get_view(*args, **kwargs):
