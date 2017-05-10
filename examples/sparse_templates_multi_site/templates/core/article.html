@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block page %}
+    {% block title %}
+    <h2>Welcome to the article page</h2>
+    {% endblock %}
+    
+    <p>Here's an article body</p>
+    
+    {% include "widgets/comments.html" %}
+{% endblock %}
