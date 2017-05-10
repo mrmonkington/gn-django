@@ -79,7 +79,7 @@ class HierarchyLoader(BaseLoader):
 
         hierarchy_loader.get_source(env, 'bar.html')
 
-    Will find `bar.html` by querying the loaders sequentially from ``eurogamer_net``
+    Will find ``bar.html`` by querying the loaders sequentially from ``eurogamer_net``
     to ``core``.
     """
 
@@ -89,6 +89,8 @@ class HierarchyLoader(BaseLoader):
           * `hierarchy` - OrderedDict - ordered dict with keys as template
             namespace and values as template loader, in order of most specific
             to least specific.
+            **Note:** The template namespace must not end with ``_parent`` nor
+            contain the ``delimiter``
           * `delimiter` - string - the namespace delimiter string to use when
             separating namespace from template identifier
         """
