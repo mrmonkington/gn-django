@@ -5,9 +5,9 @@
 <p>Out of context: {{ out_of_context }}</p>
 <p>Context processor variable <code>settings.BASE_DIR</code>: {{ settings.BASE_DIR }}</p>
 {%
-  include_with 'included/i1.html'
+  include_with 'included/i1.j2'
   foo=obj,
   hard='this is a hard coded message',
   var=string
 %}
-{% include_with 'included/i2.html' foo={'cow': 'moo', 'sheep': 'baa'}, baes=('Link', 'Zelda', 'Seigmeyer'), games=['Dark Souls', 'Bloodborne'], leet=1337 %}
+{% include_with 'included/i2.j2' foo={'cow': 'moo', 'sheep': 'baa'}, baes=('Link', 'Zelda', 'Seigmeyer'), games=['Dark Souls', 'Bloodborne'], leet=1337 %}

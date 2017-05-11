@@ -158,8 +158,8 @@ class TestJinja2(TestCase):
             'parent_context': 'Parent context',
         }
 
-        result = jinja.get_template('include.html').render(params).strip()
-        expected = jinja.get_template('include_expected.html').render().strip()
+        result = jinja.get_template('include.j2').render(params).strip()
+        expected = jinja.get_template('include_expected.j2').render().strip()
 
         self.assertEquals(result, expected)
 
