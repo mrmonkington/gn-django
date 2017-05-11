@@ -9,8 +9,9 @@ fi
 if [ $1 = "coverage" ]; then
     python --version
 	coverage erase
-	DJANGO_SETTINGS_MODULE=tests.dj_project.settings \
-		coverage run `which django-admin` test -v2 tests
+	#DJANGO_SETTINGS_MODULE=tests.project.settings \
+	#	coverage run `which django-admin` test -v2 tests
+	coverage run tests/manage.py test tests/
 	coverage report
 	coverage html
 fi

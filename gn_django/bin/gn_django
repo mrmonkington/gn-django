@@ -9,10 +9,14 @@ if [ $1 = "startproject" ]; then
     PROJECT_NAME=$2
     PROJECT_DIR=$3
 
+    if [ ! -z "$PROJECT_DIR" ]; then
+        echo "CREATING $PROJECT_DIR"
+        mkdir -p $PROJECT_DIR
+    fi
+
     django-admin startproject $PROJECT_NAME $PROJECT_DIR
 
-    if [ -z "$PROJECT_DIR" ]
-    then
+    if [ -z "$PROJECT_DIR" ]; then
         PROJECT_DIR=./$PROJECT_NAME
     fi
 
