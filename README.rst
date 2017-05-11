@@ -6,6 +6,7 @@ Overview
 
 This library should be the first dependency installed when creating
 a Gamer Network django project.  It offers:
+
   * An executable project builder which creates a bootstrapped django project
     following Gamer Network's best practices/patterns.
     ``gn_django startproject myproject``
@@ -48,6 +49,7 @@ Tests
 -----
 
 To run the tests: 
+
   * Clone the github repository.
   * ``pip install -r requirements.txt`` in to a >=python3.5 virtualenv .
   * Run ``./do tests`` in the project root.
