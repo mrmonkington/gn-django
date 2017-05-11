@@ -23,7 +23,7 @@ reference documentation *should* provide an exhaustive reference of:
     - custom template loaders
 
 File extension
-~~~~~~~~~~~~~~
+--------------
 
 The Jinja2 project does not mandate that any particular file extension is used 
 for jinja template files.  However, the agreed standard for Gamer Network django
