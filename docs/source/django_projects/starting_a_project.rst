@@ -5,7 +5,8 @@ There is a builder binary included as part of ``gn-django`` which makes
 creating a Gamer Network django project easy.  
 
 To use it, follow these steps: 
-*  `create a python3.5 (or later) virtualenv <https://github.com/gamernetwork/devops/wiki/Python-Tips#virtualenv>`_ 
+
+* `create a python3.5 (or later) virtualenv <https://github.com/gamernetwork/devops/wiki/Python-Tips#virtualenv>`_ 
   and activate it.  gn-django supports python 3.4 as well, but 3.5 
   or greater is recommended.
 * Run ``pip install git+ssh://git@github.com/gamernetwork/gn-django.git`` to 
