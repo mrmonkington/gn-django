@@ -81,7 +81,7 @@ code that is truly site specific.
 
 The great thing about sparse template inheritance is that it can be done 
 without any special view code - so an ``ArticleView`` just renders a template
-identified as ``article.html``.  The view doesn't care that the **hierarchy**
+identified as ``article.j2``.  The view doesn't care that the **hierarchy**
 used grabbed the template from the ``eurogamer`` directory instead of the ``core`` 
 directory.  
 
@@ -141,7 +141,6 @@ in the ``TEMPLATES`` django setting.
             "BACKEND": "gn_django.template.backend.Jinja2",
             "APP_DIRS": True,
             "OPTIONS": {
-                'match_extension': None,
                 'context_processors': [
                     'django.template.context_processors.debug',
                     'django.template.context_processors.request',
@@ -170,37 +169,37 @@ etc template tags within templates.
 
 The loader offers three formats of template lookup:
 
-  * **ancestor lookup** - ``<loader>_parent:base.html`` - this will attempt to find
+  * **ancestor lookup** - ``<loader>_parent:base.j2`` - this will attempt to find
     the closest ancestor template that matches below the named loader
     in the loader hierarchy.
   
-  * **namespace lookup** - ``<loader>:base.html`` - this will attempt to find the `base.html`
+  * **namespace lookup** - ``<loader>:base.j2`` - this will attempt to find the `base.j2`
     template from the specified named loader in the loader hierarchy.
   
-  * **sequential lookup** - ``base.html`` - this will attempt to find the `base.html`
+  * **sequential lookup** - ``base.j2`` - this will attempt to find the `base.j2`
     template by trying all of the loaders in the loader hierarchy, sequentially.
 
 **Examples:**
 
 .. code-block:: python
 
-    hierarchy_loader.get_source(env, 'eurogamer_parent:base.html')
+    hierarchy_loader.get_source(env, 'eurogamer_parent:base.j2')
 
-Will yield `base.html` from the `'core'` loader and will
+Will yield `base.j2` from the `'core'` loader and will
 otherwise raise a `DjangoTemplateNotFoundException` if it cannot find it.
 
 .. code-block:: python
 
-    hierarchy_loader.get_source(env, 'core:foo.html')
+    hierarchy_loader.get_source(env, 'core:foo.j2')
 
-Will yield `foo.html` from the `'core'` loader if it exists and will
+Will yield `foo.j2` from the `'core'` loader if it exists and will
 otherwise raise a `DjangoTemplateNotFoundException` if it cannot find it.
 
 .. code-block:: python
 
-    hierarchy_loader.get_source(env, 'bar.html')
+    hierarchy_loader.get_source(env, 'bar.j2')
 
-Will find `bar.html` by querying the loaders sequentially from ``eurogamer_net``
+Will find `bar.j2` by querying the loaders sequentially from ``eurogamer_net``
 to ``core``.
 
 
@@ -289,7 +288,6 @@ in the ``TEMPLATES`` django setting.
             "BACKEND": "gn_django.template.backend.Jinja2",
             "APP_DIRS": True,
             "OPTIONS": {
-                'match_extension': None,
                 'context_processors': [
                     'django.template.context_processors.debug',
                     'django.template.context_processors.request',

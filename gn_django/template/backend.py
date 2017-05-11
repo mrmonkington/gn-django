@@ -94,7 +94,7 @@ class Jinja2(DjangoJinja2):
             e.g. ``["gn_django.template.context_processors.settings"]``
           * ``"match_extension"`` - selectively use this jinja backend when the
             template name has an extension that matches this setting.  e.g.:
-            ``".jinja"``
+            ``".jinja"``.  Defaults to ``".j2"``
             This should be set to ``None`` if this backend should be tried for
             rendering any template.  Note that Django will go through all backends specified
             in order of the ``TEMPLATES`` setting until one yields a rendered template
@@ -151,6 +151,9 @@ class Jinja2(DjangoJinja2):
         base_globals = self.get_base_globals()
         base_globals.update(options.pop('globals', {}))
         options['globals'] = base_globals
+
+        # Default jinja template extension to be .j2
+        options['match_extension'] = options.pop('match_extension', '.j2')
 
         params['OPTIONS'] = options
         super(Jinja2, self).__init__(params)

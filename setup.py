@@ -16,5 +16,6 @@ setup(
     dependency_links = [
     ],
     include_package_data=True,
+    scripts = ['gn_django/bin/gn_django'],
     packages = find_packages(),
 )

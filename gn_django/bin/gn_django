@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Get the absolute path to the gn-django site-package bin directory
+DIR=`python -c "import gn_django, os; print(os.path.join(os.path.dirname(gn_django.__file__), 'bin'))"`
+
+if [ $1 = "startproject" ]; then
+    PROJECT_NAME=$2
+    PROJECT_DIR=$3
+
+    if [ ! -z "$PROJECT_DIR" ]; then
+        echo "CREATING $PROJECT_DIR"
+        mkdir -p $PROJECT_DIR
+    fi
+
+    django-admin startproject $PROJECT_NAME $PROJECT_DIR
+
+    if [ -z "$PROJECT_DIR" ]; then
+        PROJECT_DIR=./$PROJECT_NAME
+    fi
+
+    cd $PROJECT_DIR
+    # copy over the pull request template
+    cp -r $DIR/startproject/_github .github
+    # copy over the generic gitignore
+    cp $DIR/startproject/_gitignore .gitignore
+
+    # By default, django creates a project directory named as the project name 
+    # - so you end up with polls/polls/ for a project called "polls".
+    # This renames that directory to "project" and does a recursive find/replace
+    # within python files to rewrite references
+    mv $PROJECT_NAME project
+    find . -name "*.py" -exec sed -i'' -e "s/$PROJECT_NAME/project/g" {} +
+
+    # Turn settings in to our file-based pattern
+    mkdir project/settings
+    mv project/settings.py project/settings/base.py
+    cp $DIR/startproject/settings__init__.py project/settings/__init__.py
+    cp $DIR/startproject/settings_local.py project/settings/local.py
+    cp $DIR/startproject/settings_local.py project/settings/example_local.py
+    # Use the rewriter script to set sensible default settings which use
+    # our base dependencies
+    python $DIR/startproject/settings_rewriter.py project/settings/base.py
+
+    # Drop a default requirements.txt file in the root directory
+    cp $DIR/startproject/requirements.txt .
+fi

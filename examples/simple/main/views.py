@@ -7,13 +7,13 @@ from gn_django.video import youtube
 
 class Home(TemplateView):
 
-    template_name = "home.html"
+    template_name = "home.j2"
 
     def get_context_data(self):
         return {'msg': helpers.super_helper()}
 
 class Include(TemplateView):
-    template_name = "include.html"
+    template_name = "include.j2"
 
     def get_context_data(self):
         return {
@@ -23,7 +23,7 @@ class Include(TemplateView):
         }
 
 class Youtube(TemplateView):
-    template_name = "youtube.html"
+    template_name = "youtube.j2"
 
     def get_context_data(self):
         url = 'https://www.youtube.com/watch?v=7pV5r4ePww8'
@@ -36,7 +36,7 @@ class Youtube(TemplateView):
         }
 
 class URLProtocol(TemplateView):
-    template_name = 'url-protocol.html'
+    template_name = 'url-protocol.j2'
 
     def get_context_data(self):
         http = 'http://www.eurogamer.net'
