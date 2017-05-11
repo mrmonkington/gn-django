@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-long_description = open(BASE_DIR + '/README.md').read()
+long_description = open(BASE_DIR + '/README.rst').read()
 
 setup(
     name='gn-django',
