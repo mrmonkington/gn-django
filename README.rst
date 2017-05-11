@@ -35,7 +35,7 @@ gn-django's documentation can be found on readthedocs.com
 Getting Started
 ---------------
 
-To use gn-django in a django project, just install it with pip in a >=python3.5 
+To use gn-django in a django project, just install it with pip in a python3.5 (or greater)
 virtualenv:
 
 ``pip install git+ssh://git@github.com/gamernetwork/gn-django.git``
@@ -49,5 +49,5 @@ Tests
 To run the tests: 
 
 * Clone the github repository.
-* ``pip install -r requirements.txt`` in to a >=python3.5 virtualenv .
+* ``pip install -r requirements.txt`` in to a python3.5 (or greater) virtualenv.
 * Run ``./do tests`` in the project root.
