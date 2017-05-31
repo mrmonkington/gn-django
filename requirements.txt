@@ -1,4 +1,4 @@
-django-jinja
+django-jinja==2.3.0
 Jinja2==2.9.6
 -e .
 coverage

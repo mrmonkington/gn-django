@@ -10,8 +10,8 @@ setup(
     description='Collection of tools and patterns for Gamer Network django apps/projects.',
     long_description=long_description,
     install_requires=[
-        "django>=1.11",
-        "django-jinja>=2.2.2",
+        "django==1.11.1",
+        "django-jinja==2.3.0",
     ],
     dependency_links = [
     ],
