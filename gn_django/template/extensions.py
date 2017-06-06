@@ -105,7 +105,13 @@ class CSSExtension(Extension):
 
     def _render(self, name, caller):
         debug_less = hasattr(dj_settings, 'DEBUG_LESS') and dj_settings.DEBUG_LESS
+        ext = 'css'
+        version = '?v={{ randint(minimum=0,maximum=99999) }}'
+        append = ''
         if debug_less:
+            less_compiler = ''
+            if hasattr(dj_settings, 'CLIENT_LESS_COMPILER'):
+                less_compiler = '<script src="%s"></script>' % dj_settings.CLIENT_LESS_COMPILER
             ext = 'less'
             version = ''
             append = """
@@ -113,12 +119,8 @@ class CSSExtension(Extension):
     localStorage.clear();
     less = { env: "development" }
 </script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
-            """
-        else:
-            ext = 'css'
-            version = '?v={{ randint(minimum=0,maximum=99999) }}'
-            append = ''
+%s            """ % less_compiler
+
         template = '<link href="{{ static("%s/%s.%s") }}%s" rel="stylesheet" type="text/css" />%s' % (ext, name, ext, version, append)
 
         return self.environment.from_string(template).render()
