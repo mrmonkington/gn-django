@@ -1,5 +1,7 @@
 from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
+from django.conf import settings as dj_settings
+
 import re
 
 class SpacelessExtension(Extension):
@@ -89,3 +91,34 @@ class IncludeWithExtension(Extension):
         kwargs = nodes.Dict(kwargs)
 
         return kwargs
+
+class CSSExtension(Extension):
+    tags = set(['css'])
+
+    def parse(self, parser):
+        first = parser.parse_expression()
+        name = parser.parse_expression()
+
+        call = self.call_method('_render', [name], lineno=first.lineno)
+
+        return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
+
+    def _render(self, name, caller):
+        debug_less = hasattr(dj_settings, 'DEBUG_LESS') and dj_settings.DEBUG_LESS
+        if debug_less:
+            ext = 'less'
+            version = ''
+            append = """
+<script>
+    localStorage.clear();
+    less = { env: "development" }
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
+            """
+        else:
+            ext = 'css'
+            version = '?v={{ randint(minimum=0,maximum=99999) }}'
+            append = ''
+        template = '<link href="{{ static("%s/%s.%s") }}%s" rel="stylesheet" type="text/css" />%s' % (ext, name, ext, version, append)
+
+        return self.environment.from_string(template).render()
