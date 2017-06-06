@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^admin', admin.site.urls),
     url(r'^youtube', views.Youtube.as_view()),
     url(r'^protocol-stripped', views.URLProtocol.as_view()),
+    url(r'^css-extension', views.CSSExtension.as_view()),
     url(r'^$', views.Home.as_view()),
 ]
 

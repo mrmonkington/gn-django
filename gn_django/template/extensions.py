@@ -94,6 +94,7 @@ class IncludeWithExtension(Extension):
 
 class CSSExtension(Extension):
     tags = set(['css'])
+    rendered_once = False
 
     def parse(self, parser):
         first = parser.parse_expression()
@@ -106,21 +107,22 @@ class CSSExtension(Extension):
     def _render(self, name, caller):
         debug_less = hasattr(dj_settings, 'DEBUG_LESS') and dj_settings.DEBUG_LESS
         ext = 'css'
-        version = '?v={{ randint(minimum=0,maximum=99999) }}'
         append = ''
         if debug_less:
             less_compiler = ''
-            if hasattr(dj_settings, 'CLIENT_LESS_COMPILER'):
-                less_compiler = '<script src="%s"></script>' % dj_settings.CLIENT_LESS_COMPILER
             ext = 'less'
-            version = ''
-            append = """
+            if self.rendered_once == False:
+                if hasattr(dj_settings, 'CLIENT_LESS_COMPILER'):
+                    less_compiler = '<script src="%s"></script>' % dj_settings.CLIENT_LESS_COMPILER
+                append = """
 <script>
     localStorage.clear();
     less = { env: "development" }
 </script>
-%s            """ % less_compiler
+%s
+""" % less_compiler
+                self.rendered_once = True
 
-        template = '<link href="{{ static("%s/%s.%s") }}%s" rel="stylesheet" type="text/css" />%s' % (ext, name, ext, version, append)
+        template = '<link href="{{ static("%s/%s.%s") }}?v={{ randint(minimum=0,maximum=99999) }}" rel="stylesheet" type="text/css" />%s' % (ext, name, ext, append)
 
         return self.environment.from_string(template).render()
