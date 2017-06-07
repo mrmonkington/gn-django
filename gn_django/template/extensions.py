@@ -94,6 +94,39 @@ class IncludeWithExtension(Extension):
         return kwargs
 
 class CSSExtension(Extension):
+    """
+    Extension for injecting ``link`` tags for stylesheets. This will inject the
+    ``less`` version of the file if ``DEBUG_LESS`` is set and is set to ``True``,
+    or if ``DEBUG_LESS`` is not set but ``DEBUG`` is set to True. Otherwise it
+    will link to the ``css`` version.
+
+    For this extension to work, LESS files and CSS files must be mapped identically
+    within their directories.
+
+    Supported tags:
+        - ``{% css '[name]' %}`` - Link to a stylesheet in the assets directory.
+                                    The '[name]' is the path to the file relative
+                                    to the assets directory that contains files
+                                    of that type, with no file extension e.g.
+                                    'static/css/pages/article.css' would be 'pages/article'
+        - ``{% compile_less %}`` - Render the script tags to link to a JavaScript
+                                    LESS compiler for the client side if LESS is in
+                                    debug mode. If not, it will output nothing.
+
+    Configurations:
+        - ``DEBUG_LESS``            - Link to LESS files if true, and CSS if false.
+                                        Defaults to the value of ``DEBUG``
+        - ``CLIENT_LESS_COMPILER``  - The URL of the client-side LESS compiler. If
+                                        not set, an exception will be thrown when
+                                        trying to use ``compile_less`` in debug mode
+        - ``STATIC_FILE_MAP``       - A dictionary mapping file extensions to directories
+                                        within the static directory. All file extensions
+                                        will default to a directory matching it (e.g.
+                                        CSS files will be assumed to be in a ``css``
+                                        directory).
+
+    """
+
     tags = set(['css', 'compile_less'])
 
     def __init__(self, *args, **kwargs):
@@ -112,6 +145,14 @@ class CSSExtension(Extension):
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
     def _css(self, name, caller):
+        """
+        Render link tags for stylesheets. If ``self.debug_less`` is set to true
+        this will be the ``less`` version of the file.
+
+        Params:
+            - `name` - The name of the file
+            - `caller` - Required by Jinja
+        """
         ext = 'css'
         if self.debug_less:
             ext = 'less'
@@ -122,6 +163,14 @@ class CSSExtension(Extension):
         return self.environment.from_string(template).render()
 
     def _compile_less(self, caller):
+        """
+        If ``self.debug_less`` is true, inject a script to compile LESS in the front end.
+        The URL for the LESS compiler is set as ``CLIENT_LESS_COMPILER`` in the settings
+        file.
+
+        Params:
+            - `caller` - Required by Jinja
+        """
         if not self.debug_less:
             return self.environment.from_string('').render()
 
