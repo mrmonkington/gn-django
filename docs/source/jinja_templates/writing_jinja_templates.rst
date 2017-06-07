@@ -3,7 +3,7 @@ Using Jinja templates
 
 Here's how the official jinja documentation describes itself:
 
-    "A Jinja template is simply a text file. 
+    "A Jinja template is simply a text file.
 
     A template contains variables and/or expressions, which get replaced with
     values when a template is rendered; and tags, which control the logic of
@@ -25,7 +25,7 @@ reference documentation *should* provide an exhaustive reference of:
 File extension
 --------------
 
-The Jinja2 project does not mandate that any particular file extension is used 
+The Jinja2 project does not mandate that any particular file extension is used
 for jinja template files.  However, the agreed standard for Gamer Network django
 projects is to use the ``.j2`` extension.
 
@@ -34,13 +34,13 @@ will only be used for templates named with the ``.j2`` extension e.g. ``home.j2`
 
 The reasons for settling on ``.j2`` are as follows:
 
-  * It allows us to use the ``match_extension`` option for the django-jinja 
+  * It allows us to use the ``match_extension`` option for the django-jinja
     backend.  This means that the template backend will relinquish rendering
     for template names that do not end in ``.j2`` - so in theory we could use
     django templating in addition to jinja if we needed to.
   * It matches ansible - which requires that template files end with ``.j2``.
   * Syntax highlighting can be easily set for editors, based on file extension.
-  * Generally, many open source projects use some sort of file extension for 
+  * Generally, many open source projects use some sort of file extension for
     jinja templates.  ``.jinja`` is too long.  ``.html.j2`` is annoying.
     ``.j2`` is juuust right.
 
@@ -349,6 +349,48 @@ are equivalent::
     {% endwith %}
 
 .. _autoescape-overrides:
+
+CSS Extension
+~~~~~~~~~~~~~
+
+This is a GN specific extension to aid development with LESS in Jinja templates.
+It will output a ``link`` tag pointing to either a CSS or LESS file depending
+on how the project is configured.
+
+Two tags come included with the extension - ``css`` and ``compile_less``.
+
+``css`` links to the CSS or LESS file. If the ``DEBUG_LESS`` setting exists and is
+set to true, it will link to the LESS file, otherwise it will link to the CSS file.
+If ``DEBUG_LESS`` is not set, the responsibility of this behaviour goes to the
+``DEBUG`` setting.
+
+This tag takes one parameter - the subdirectory and name of the file, e.g. ``pages/article``.
+Assuming that the ``STATIC_URL`` is set to ``assets``, this will link to ``/assets/css/pages/article.css``
+if debug mode is disabled, and ``/assets/less/pages/article.less`` if debug mode is enabled.
+
+The subdirectory defaults to the file extension (e.g. CSS files will be linked to in
+``/assets/css/``, and LESS files will be linked to in ``/assets/less/``). This behaviour
+can be overridden using the ``STATIC_FILE_MAP`` setting. This is a dictionary that maps
+file extensions to directories within the main asset directory. For instance the following::
+
+    STATIC_FILE_MAP = {
+      'css': 'foo',
+      'less': 'bar',
+    }
+
+would link CSS files to ``/assets/foo/`` and LESS files to ``/assets/bar/``.
+
+``compile_less`` outputs the necessary script to compile LESS files in the client if
+debug mode is enabled. If debug mode is disabled, it will not output anything. Since this links
+to an external script (such as ``//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js``),
+the URL of this must be specified using the ``CLIENT_LESS_COMPILER`` setting.
+
+**Note:** The ``compile_less`` tag should appear after the stylesheets.
+
+Example::
+
+    {% css 'pages/article' %}
+    {% compile_less %}
 
 Autoescape Extension
 ~~~~~~~~~~~~~~~~~~~~
