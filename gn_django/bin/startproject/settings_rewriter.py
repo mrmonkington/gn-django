@@ -38,7 +38,19 @@ extra_templates = """
     },"""
 templates_index = settings.find("TEMPLATES")
 templates_start = settings.find('[', templates_index)
-settings = settings[:templates_start+1] + extra_templates + settings[templates_start+1:]
+
+static_settings = """
+STATIC_URL = '/assets/'
+STATIC_ROOT = os.path.join(BASE_DIR, '../.collected_static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '../static')
+]
+CLIENT_LESS_COMPILER = '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js'
+"""
+
+settings.replace("STATIC_URL = '/static/'", static_settings)
+
+settings = settings[:templates_start+1] + extra_templates + settings[templates_start+1:] + static_settings
 
 with open(settings_path, "w") as f:
     f.write(settings)
