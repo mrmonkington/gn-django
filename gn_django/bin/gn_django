@@ -49,5 +49,5 @@ if [ $1 = "startproject" ]; then
     # Copy files for Gulp configuration into root directory
     cp $DIR/startproject/package.json .
     cp $DIR/startproject/gulpfile.js .
-    echo Django project installed. Run `npm install` to use Gulp.
+    echo "Django project installed. Run `npm install` to use Gulp."
 fi
