@@ -26,6 +26,7 @@ extra_templates = """
     {
         "BACKEND": "gn_django.template.backend.Jinja2",
         "APP_DIRS": True,
+        "OPTIONS": {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
