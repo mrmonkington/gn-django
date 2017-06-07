@@ -26,7 +26,6 @@ extra_templates = """
     {
         "BACKEND": "gn_django.template.backend.Jinja2",
         "APP_DIRS": True,
-        "OPTIONS": {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -48,9 +47,9 @@ STATICFILES_DIRS = [
 CLIENT_LESS_COMPILER = '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js'
 """
 
-settings.replace("STATIC_URL = '/static/'", static_settings)
+settings = settings.replace("STATIC_URL = '/static/'", static_settings)
 
-settings = settings[:templates_start+1] + extra_templates + settings[templates_start+1:] + static_settings
+settings = settings[:templates_start+1] + extra_templates + settings[templates_start+1:]
 
 with open(settings_path, "w") as f:
     f.write(settings)
