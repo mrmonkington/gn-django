@@ -1,6 +1,7 @@
 from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
 from django.conf import settings as dj_settings
+from django.core import exceptions
 
 import re
 
@@ -93,36 +94,56 @@ class IncludeWithExtension(Extension):
         return kwargs
 
 class CSSExtension(Extension):
-    tags = set(['css'])
-    rendered_once = False
+    tags = set(['css', 'compile_less'])
+
+    def __init__(self, *args, **kwargs):
+        self.debug_less = self._debug_less()
+
+        return super(CSSExtension, self).__init__(*args, **kwargs)
 
     def parse(self, parser):
         first = parser.parse_expression()
-        name = parser.parse_expression()
-
-        call = self.call_method('_render', [name], lineno=first.lineno)
+        if first.name == 'css':
+            name = parser.parse_expression()
+            call = self.call_method('_css', [name], lineno=first.lineno)
+        elif first.name == 'compile_less':
+            call = self.call_method('_compile_less', lineno=first.lineno)
 
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
-    def _render(self, name, caller):
-        debug_less = hasattr(dj_settings, 'DEBUG_LESS') and dj_settings.DEBUG_LESS
+    def _css(self, name, caller):
         ext = 'css'
-        append = ''
-        if debug_less:
-            less_compiler = ''
+        if self.debug_less:
             ext = 'less'
-            if self.rendered_once == False:
-                if hasattr(dj_settings, 'CLIENT_LESS_COMPILER'):
-                    less_compiler = '<script src="%s"></script>' % dj_settings.CLIENT_LESS_COMPILER
-                append = """
+        file_dir = self._get_file_dir(ext)
+
+        template = '<link href="{{ static("%s/%s.%s") }}?v={{ randint(minimum=0,maximum=99999) }}" rel="stylesheet" type="text/%s" />' % (file_dir, name, ext, ext)
+
+        return self.environment.from_string(template).render()
+
+    def _compile_less(self, caller):
+        if not self.debug_less:
+            return self.environment.from_string('').render()
+
+        if not hasattr(dj_settings, 'CLIENT_LESS_COMPILER'):
+            raise exceptions.ImproperlyConfigured('Cannot compile LESS on frontend, `CLIENT_LESS_COMPILER` must be configured.')
+        template = """
+<script src="%s"></script>
 <script>
     localStorage.clear();
     less = { env: "development" }
 </script>
-%s
-""" % less_compiler
-                self.rendered_once = True
-
-        template = '<link href="{{ static("%s/%s.%s") }}?v={{ randint(minimum=0,maximum=99999) }}" rel="stylesheet" type="text/css" />%s' % (ext, name, ext, append)
+""" % dj_settings.CLIENT_LESS_COMPILER
 
         return self.environment.from_string(template).render()
+
+    def _debug_less(self):
+        if hasattr(dj_settings, 'DEBUG_LESS'):
+            return dj_settings.DEBUG_LESS
+        return dj_settings.DEBUG
+
+    def _get_file_dir(self, ext):
+        if hasattr(dj_settings, 'STATIC_FILE_MAP'):
+            return dj_settings.STATIC_FILE_MAP.get(ext, ext)
+
+        return ext
