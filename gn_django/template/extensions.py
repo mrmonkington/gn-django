@@ -93,7 +93,7 @@ class IncludeWithExtension(Extension):
 
         return kwargs
 
-class CSSExtension(Extension):
+class StaticLinkExtension(Extension):
     """
     Extension for injecting ``link`` tags for stylesheets. This will inject the
     ``less`` version of the file if ``DEBUG_LESS`` is set and is set to ``True``,
@@ -127,20 +127,21 @@ class CSSExtension(Extension):
 
     """
 
-    tags = set(['css', 'compile_less'])
+    tags = set(['css', 'js', 'load_compilers'])
 
     def __init__(self, *args, **kwargs):
         self.debug_less = self._debug_less()
 
-        return super(CSSExtension, self).__init__(*args, **kwargs)
+        return super(StaticLinkExtension, self).__init__(*args, **kwargs)
 
     def parse(self, parser):
         first = parser.parse_expression()
-        if first.name == 'css':
+        if first.name == 'load_compilers':
+            call = self.call_method('_load_compilers', lineno=first.lineno)
+        else:
             name = parser.parse_expression()
-            call = self.call_method('_css', [name], lineno=first.lineno)
-        elif first.name == 'compile_less':
-            call = self.call_method('_compile_less', lineno=first.lineno)
+            # Method to call follows pattern of tag name preceeded with underscore
+            call = self.call_method('_%s' % first.name, [name], lineno=first.lineno)
 
         return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
 
@@ -162,7 +163,16 @@ class CSSExtension(Extension):
 
         return self.environment.from_string(template).render()
 
-    def _compile_less(self, caller):
+    def _js(self, name, caller):
+        ext = 'js'
+        file_dir = self._get_file_dir(ext)
+        script_type = 'application/javascript'
+
+        template = '<script href="{{ static("%s/%s.%s") }}" type="%s"></script>' % (file_dir, name, ext, script_type)
+        print(template)
+        return self.environment.from_string(template).render()
+
+    def _load_compilers(self, caller):
         """
         If ``self.debug_less`` is true, inject a script to compile LESS in the front end.
         The URL for the LESS compiler is set as ``CLIENT_LESS_COMPILER`` in the settings
@@ -174,15 +184,13 @@ class CSSExtension(Extension):
         if not self.debug_less:
             return self.environment.from_string('').render()
 
-        if not hasattr(dj_settings, 'CLIENT_LESS_COMPILER'):
-            raise exceptions.ImproperlyConfigured('Cannot compile LESS on frontend, `CLIENT_LESS_COMPILER` must be configured.')
-        template = """
-<script src="%s"></script>
-<script>
-    localStorage.clear();
-    less = { env: "development" }
-</script>
-""" % dj_settings.CLIENT_LESS_COMPILER
+        template = ''
+
+        if hasattr(dj_settings, 'STATICLINK_CLIENT_COMPILERS'):
+            for compiler in dj_settings.STATICLINK_CLIENT_COMPILERS:
+                template = '%s\n<script src="%s"></script>' % (template, compiler)
+
+        template = "%s\n<script>localStorage.clear();</script>" % template
 
         return self.environment.from_string(template).render()
 

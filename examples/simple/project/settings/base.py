@@ -134,8 +134,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, '../.collected_static')
+# STATIC_ROOT = os.path.join(BASE_DIR, '../.collected_static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../static')
 ]
-CLIENT_LESS_COMPILER = '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js'
+
+# Static configs
+STATICLINK_CLIENT_COMPILERS = [
+    '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
+]
