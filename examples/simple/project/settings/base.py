@@ -140,6 +140,14 @@ STATICFILES_DIRS = [
 ]
 
 # Static configs
-STATICLINK_CLIENT_COMPILERS = [
-    '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
-]
+STATICLINK_PREPROCESSORS = {
+    'css': 'less',
+}
+
+STATICLINK_CLIENT_COMPILERS = {
+    'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
+}
+
+STATICLINK_DEBUG = {
+    'css': False,
+}

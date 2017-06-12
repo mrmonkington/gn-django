@@ -129,11 +129,6 @@ class StaticLinkExtension(Extension):
 
     tags = set(['css', 'js', 'load_compilers'])
 
-    def __init__(self, *args, **kwargs):
-        self.debug_less = self._debug_less()
-
-        return super(StaticLinkExtension, self).__init__(*args, **kwargs)
-
     def parse(self, parser):
         first = parser.parse_expression()
         if first.name == 'load_compilers':
@@ -155,8 +150,8 @@ class StaticLinkExtension(Extension):
             - `caller` - Required by Jinja
         """
         ext = 'css'
-        if self.debug_less:
-            ext = 'less'
+        if self._is_debug(ext):
+            ext = self._get_preprocessor(ext)
         file_dir = self._get_file_dir(ext)
 
         template = '<link href="{{ static("%s/%s.%s") }}?v={{ randint(minimum=0,maximum=99999) }}" rel="stylesheet" type="text/%s" />' % (file_dir, name, ext, ext)
@@ -169,7 +164,7 @@ class StaticLinkExtension(Extension):
         script_type = 'application/javascript'
 
         template = '<script href="{{ static("%s/%s.%s") }}" type="%s"></script>' % (file_dir, name, ext, script_type)
-        print(template)
+
         return self.environment.from_string(template).render()
 
     def _load_compilers(self, caller):
@@ -181,26 +176,35 @@ class StaticLinkExtension(Extension):
         Params:
             - `caller` - Required by Jinja
         """
-        if not self.debug_less:
-            return self.environment.from_string('').render()
 
+        debug = dj_settings.DEBUG
         template = ''
 
         if hasattr(dj_settings, 'STATICLINK_CLIENT_COMPILERS'):
-            for compiler in dj_settings.STATICLINK_CLIENT_COMPILERS:
-                template = '%s\n<script src="%s"></script>' % (template, compiler)
+            for ext in dj_settings.STATICLINK_CLIENT_COMPILERS:
+                if self._is_debug(ext):
+                    debug = True
+                    compiler = dj_settings.STATICLINK_CLIENT_COMPILERS[ext]
+                    template = '%s\n<script src="%s"></script>' % (template, compiler)
 
-        template = "%s\n<script>localStorage.clear();</script>" % template
+        if debug:
+            template = "%s\n<script>localStorage.clear();</script>" % template
 
         return self.environment.from_string(template).render()
 
-    def _debug_less(self):
-        if hasattr(dj_settings, 'DEBUG_LESS'):
-            return dj_settings.DEBUG_LESS
+    def _is_debug(self, ext):
+        if hasattr(dj_settings, 'STATICLINK_DEBUG'):
+            return dj_settings.STATICLINK_DEBUG.get(ext, dj_settings.DEBUG)
         return dj_settings.DEBUG
 
     def _get_file_dir(self, ext):
-        if hasattr(dj_settings, 'STATIC_FILE_MAP'):
-            return dj_settings.STATIC_FILE_MAP.get(ext, ext)
+        if hasattr(dj_settings, 'STATICLINK_FILE_MAP'):
+            return dj_settings.STATICLINK_FILE_MAP.get(ext, ext)
 
         return ext
+
+    def _get_preprocessor(self, ext):
+        preprocessor = dj_settings.STATICLINK_PREPROCESSORS.get(ext, False)
+        if preprocessor:
+            return preprocessor
+        raise exceptions.ImproperlyConfigured('Cannot render `%s` in debug mode, set preprocessor (eg `less`) in STATICLINK_PREPROCESSORS config' % ext)
