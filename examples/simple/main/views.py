@@ -50,4 +50,4 @@ class URLProtocol(TemplateView):
         }
 
 class CSSExtension(TemplateView):
-    template_name = 'css-extension.j2'
+    template_name = 'static-link-extension.j2'

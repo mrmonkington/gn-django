@@ -163,7 +163,7 @@ class StaticLinkExtension(Extension):
         file_dir = self._get_file_dir(ext)
         script_type = 'application/javascript'
 
-        template = '<script href="{{ static("%s/%s.%s") }}" type="%s"></script>' % (file_dir, name, ext, script_type)
+        template = '<script src="{{ static("%s/%s.%s") }}" type="%s"></script>' % (file_dir, name, ext, script_type)
 
         return self.environment.from_string(template).render()
 
