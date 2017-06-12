@@ -40,7 +40,7 @@ templates_index = settings.find("TEMPLATES")
 templates_start = settings.find('[', templates_index)
 
 static_settings = """
-STATIC_URL = '/assets/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '../.collected_static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '../static')
