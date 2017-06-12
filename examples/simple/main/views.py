@@ -49,5 +49,5 @@ class URLProtocol(TemplateView):
             'https_stripped': url_helpers.strip_protocol(https),
         }
 
-class CSSExtension(TemplateView):
+class StaticLinkExtension(TemplateView):
     template_name = 'static-link-extension.j2'

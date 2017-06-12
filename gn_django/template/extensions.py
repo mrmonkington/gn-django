@@ -3,7 +3,7 @@ from jinja2.ext import Extension
 from django.conf import settings as dj_settings
 from django.core import exceptions
 
-import re
+import re, time
 
 class SpacelessExtension(Extension):
     """
@@ -154,7 +154,7 @@ class StaticLinkExtension(Extension):
             ext = self._get_preprocessor(ext)
         file_dir = self._get_file_dir(ext)
 
-        template = '<link href="{{ static("%s/%s.%s") }}?v={{ randint(minimum=0,maximum=99999) }}" rel="stylesheet" type="text/%s" />' % (file_dir, name, ext, ext)
+        template = '<link href="{{ static("%s/%s.%s") }}?v=%s" rel="stylesheet" type="text/%s" />' % (file_dir, name, ext, self._get_version(), ext)
 
         return self.environment.from_string(template).render()
 
@@ -163,7 +163,7 @@ class StaticLinkExtension(Extension):
         file_dir = self._get_file_dir(ext)
         script_type = 'application/javascript'
 
-        template = '<script src="{{ static("%s/%s.%s") }}" type="%s"></script>' % (file_dir, name, ext, script_type)
+        template = '<script src="{{ static("%s/%s.%s") }}?v=%s" type="%s"></script>' % (file_dir, name, ext, self._get_version(), script_type)
 
         return self.environment.from_string(template).render()
 
@@ -208,3 +208,8 @@ class StaticLinkExtension(Extension):
         if preprocessor:
             return preprocessor
         raise exceptions.ImproperlyConfigured('Cannot render `%s` in debug mode, set preprocessor (eg `less`) in STATICLINK_PREPROCESSORS config' % ext)
+
+    def _get_version(self):
+        if hasattr(dj_settings, 'STATICLINK_VERSION'):
+            return dj_settings.STATICLINK_VERSION
+        return time.time()
