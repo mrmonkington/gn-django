@@ -350,47 +350,69 @@ are equivalent::
 
 .. _autoescape-overrides:
 
-CSS Extension
-~~~~~~~~~~~~~
+Static Link Extension
+~~~~~~~~~~~~~~~~~~~~~
 
-This is a GN specific extension to aid development with LESS in Jinja templates.
-It will output a ``link`` tag pointing to either a CSS or LESS file depending
-on how the project is configured.
+This is a GN specific extension to aid development with static file linking and precompilation.
+The purpose is to allow different files to be linked to in different development
+environments. In a dev environment, it may be beneficial to link to a ``LESS`` file rather than
+a ``CSS`` file, for example.
 
-Two tags come included with the extension - ``css`` and ``compile_less``.
+The following tags come included with the extension:
 
-``css`` links to the CSS or LESS file. If the ``DEBUG_LESS`` setting exists and is
-set to true, it will link to the LESS file, otherwise it will link to the CSS file.
-If ``DEBUG_LESS`` is not set, the responsibility of this behaviour goes to the
-``DEBUG`` setting.
+- ``{% css '[name]' %}`` - Link to a stylesheet. The ``name`` is the file path within the static directory for that file type, without a file extension e.g. ``pages/article``
+- ``{% js '[name]' %}`` - Link to a JavaScript file. The ``name`` is the file path within the static directory for that file type, without a file extension e.g. ``pages/article`
+- ``{% load_compilers %}`` - Link to compiler scripts for client-side compilation of static files when in a dev environment (outputs nothing in production).
 
-This tag takes one parameter - the subdirectory and name of the file, e.g. ``pages/article``.
-Assuming that the ``STATIC_URL`` is set to ``assets``, this will link to ``/assets/css/pages/article.css``
-if debug mode is disabled, and ``/assets/less/pages/article.less`` if debug mode is enabled.
+The extension is highly configurable:
 
-The subdirectory defaults to the file extension (e.g. CSS files will be linked to in
-``/assets/css/``, and LESS files will be linked to in ``/assets/less/``). This behaviour
-can be overridden using the ``STATIC_FILE_MAP`` setting. This is a dictionary that maps
-file extensions to directories within the main asset directory. For instance the following::
+- ``STATICLINK_PREPROCESSORS`` - A dictionary mapping script type to preprocessors::
 
-    STATIC_FILE_MAP = {
-      'css': 'foo',
-      'less': 'bar',
+    STATICLINK_PREPROCESSORS = {
+      'css': 'less',
+    }
+- ``STATICLINK_CLIENT_COMPILERS`` - A dictionary mapping script type to the URLs or client-side compilation scripts::
+
+    STATICLINK_CLIENT_COMPILERS = {
+        'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
     }
 
-would link CSS files to ``/assets/foo/`` and LESS files to ``/assets/bar/``.
+- ``STATICLINK_DEBUG`` - Typically, whether to load the scripts in debug mode or not depends on the ``DEBUG`` setting. However, this option allows you to enable or disable debug mode for different script types regardless of the ``DEBUG`` setting::
 
-``compile_less`` outputs the necessary script to compile LESS files in the client if
-debug mode is enabled. If debug mode is disabled, it will not output anything. Since this links
-to an external script (such as ``//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js``),
-the URL of this must be specified using the ``CLIENT_LESS_COMPILER`` setting.
+    STATICLINK_DEBUG = {
+       'css': False,
+       'js': True,
+    }
 
-**Note:** The ``compile_less`` tag should appear after the stylesheets.
+- ``STATICLINK_FILE_MAP`` - A dictionary mapping file extensions to directory. If it is not set, it will default to a directory of the same name as the file extension::
 
-Example::
+    STATICLINK_FILE_MAP = {
+       'js': 'scripts',
+       'less': 'precompiled',
+    }
 
-    {% css 'pages/article' %}
-    {% compile_less %}
+- ``STATICLINK_VERSION`` - A unique version number to append to the static file URLs for cache-busting. Defaults to current time stamp.
+
+As example of this in action can be found in the ``simple`` example with the ``static-link-extnesion`` slug.
+
+The template has the following in the header::
+
+  {% css 'test' %}
+  {% js 'test' %}
+  {% load_compilers %}
+
+In debug mode, this is output::
+
+  <link href="/static/less/test.less?v=1497282637.059254" rel="stylesheet" type="text/less" />
+  <script src="/static/scripts/test.js?v=1497282637.0611155" type="application/javascript"></script>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
+  <script>localStorage.clear();</script>
+
+While in production, this is output::
+
+  <link href="/static/css/test.css?v=1497350630.0394886" rel="stylesheet" type="text/css" />
+  <script src="/static/js/test.js?v=1497350630.0409005" type="application/javascript"></script>
 
 Autoescape Extension
 ~~~~~~~~~~~~~~~~~~~~
