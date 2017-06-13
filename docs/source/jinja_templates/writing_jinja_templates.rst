@@ -348,7 +348,7 @@ are equivalent::
         {{ foo }}
     {% endwith %}
 
-.. _autoescape-overrides:
+.. _static-link:
 
 Static Link Extension
 ~~~~~~~~~~~~~~~~~~~~~
@@ -413,6 +413,8 @@ While in production, this is output::
 
   <link href="/static/css/test.css?v=1497350630.0394886" rel="stylesheet" type="text/css" />
   <script src="/static/js/test.js?v=1497350630.0409005" type="application/javascript"></script>
+
+.. _autoescape-overrides:
 
 Autoescape Extension
 ~~~~~~~~~~~~~~~~~~~~
