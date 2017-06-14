@@ -1,4 +1,8 @@
-import sys, os, urlparse, urlencode
+import sys, os
+
+import urllib.parse as urlparse
+from urllib.parse import urlencode
+
 
 def is_sphinx_autodoc_running():
     """
