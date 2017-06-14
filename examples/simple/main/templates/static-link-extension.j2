@@ -1,0 +1,18 @@
+<head>
+  {% css 'test' %}
+  {% js 'test' %}
+  {% load_compilers %}
+</head>
+<body>
+  <p>The Jinja tags for this page look like this:</p>
+<pre>
+{&#37; css 'test' %}
+{&#37; js 'test' %}
+{&#37; load_compilers %}
+</pre>
+
+  <p>
+    This above code block should be styled regardless of whether CSS or LESS are being linked to.
+  </p>
+  <p id="jstest" style="display:none;"><strong>If you can see this sentence, the JavaScript is working.</strong></p>
+</body>

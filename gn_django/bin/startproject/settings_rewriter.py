@@ -38,7 +38,43 @@ extra_templates = """
     },"""
 templates_index = settings.find("TEMPLATES")
 templates_start = settings.find('[', templates_index)
-settings = settings[:templates_start+1] + extra_templates + settings[templates_start+1:]
+
+static_settings = """
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '../static')
+]
+
+# Static link configs
+
+# Set the preprocessors for different clientside languages
+STATICLINK_PREPROCESSORS = {
+    'css': 'less',
+}
+
+# Set URL for client-side compiler
+STATICLINK_CLIENT_COMPILERS = {
+    'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
+}
+
+# Set debug mode for static asset compilation separately from main DEBUG setting
+# STATICLINK_DEBUG = {
+#     'css': False,
+# }
+
+# Set path within STATICFILES_DIRS setting where static files can be located.
+# Defaults to file extension
+# STATICLINK_FILE_MAP = {
+#     'js': 'scripts'
+# }
+
+# Set version number to append to linked static files (for caching). Defaults to
+# current timestamp.
+# STATICLINK_VERSION = 123456
+
+"""
+
+settings = settings[:templates_start+1] + extra_templates + settings[templates_start+1:] + static_settings
 
 with open(settings_path, "w") as f:
     f.write(settings)

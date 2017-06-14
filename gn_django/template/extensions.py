@@ -1,6 +1,9 @@
 from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
-import re
+from django.conf import settings as dj_settings
+from django.core import exceptions
+
+import re, time
 
 class SpacelessExtension(Extension):
     """
@@ -89,3 +92,135 @@ class IncludeWithExtension(Extension):
         kwargs = nodes.Dict(kwargs)
 
         return kwargs
+
+class StaticLinkExtension(Extension):
+    """
+    Extension for linking to static assets within a template, with the ability to
+    render uncompiled scripts (such as LESS) when in DEBUG mode.
+
+    For usage, see https://gamer-network-gn-django.readthedocs-hosted.com/en/latest/jinja_templates/writing_jinja_templates.html#static-link-extension
+
+    Supported tags:
+        - ``{% css '[name]' %}``    - Link to a stylesheet in the assets directory.
+        - ``{% js '[name]' %}``     - Link to a script in the assets directory.
+        - ``{% load_compilers %}``  - Prepare front end compilation for preprocessors.
+    """
+
+    tags = set(['css', 'js', 'load_compilers'])
+
+    def parse(self, parser):
+        first = parser.parse_expression()
+        if first.name == 'load_compilers':
+            call = self.call_method('_load_compilers', lineno=first.lineno)
+        else:
+            name = parser.parse_expression()
+            # Method to call follows pattern of tag name preceeded with underscore
+            call = self.call_method('_%s' % first.name, [name], lineno=first.lineno)
+
+        return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
+
+    def _css(self, name, caller):
+        """
+        Render link tags for stylesheets. If debug mode is enabled this will be
+        the uncompiled version of the file.
+
+        Params:
+            - `name` - The name of the file
+            - `caller` - Required by Jinja
+        """
+        ext = 'css'
+        if self._is_debug(ext):
+            ext = self._get_preprocessor(ext)
+        file_dir = self._get_file_dir(ext)
+
+        template = '<link href="{{ static("%s/%s.%s") }}?v=%s" rel="stylesheet" type="text/%s" />' % (file_dir, name, ext, self._get_version(), ext)
+
+        return self.environment.from_string(template).render()
+
+    def _js(self, name, caller):
+        """
+        Render script tags for JavaScript
+
+        Params:
+            - `name` - The name of the file
+            - `caller` - Required by Jinja
+        """
+        ext = 'js'
+        file_dir = self._get_file_dir(ext)
+        script_type = 'application/javascript'
+
+        template = '<script src="{{ static("%s/%s.%s") }}?v=%s" type="%s"></script>' % (file_dir, name, ext, self._get_version(), script_type)
+
+        return self.environment.from_string(template).render()
+
+    def _load_compilers(self, caller):
+        """
+        If debug mode is enabled, inject front end compilers.
+
+        Params:
+            - `caller` - Required by Jinja
+        """
+
+        debug = dj_settings.DEBUG
+        template = ''
+
+        if hasattr(dj_settings, 'STATICLINK_CLIENT_COMPILERS'):
+            for ext in dj_settings.STATICLINK_CLIENT_COMPILERS:
+                if self._is_debug(ext):
+                    debug = True
+                    compiler = dj_settings.STATICLINK_CLIENT_COMPILERS[ext]
+                    template = '%s\n<script src="%s"></script>' % (template, compiler)
+
+        if debug:
+            template = "%s\n<script>localStorage.clear();</script>" % template
+
+        return self.environment.from_string(template).render()
+
+    def _is_debug(self, ext):
+        """
+        Check if debug mode is enabled for a file type. If it does not exist
+        in the `STATICLINK_DEBUG` setting, it will default to the `DEBUG` setting
+
+        Params:
+            - `ext` - The file extension to check the debug mode for
+        """
+        if hasattr(dj_settings, 'STATICLINK_DEBUG'):
+            return dj_settings.STATICLINK_DEBUG.get(ext, dj_settings.DEBUG)
+        return dj_settings.DEBUG
+
+    def _get_file_dir(self, ext):
+        """
+        Get the directory of a file type within the main static directory. This
+        can be configured in the `STATICLINK_FILE_MAP` setting. If it is not set,
+        it will be assumed to be the file extension.
+
+        Params:
+            - `ext` - The file extension
+        """
+        if hasattr(dj_settings, 'STATICLINK_FILE_MAP'):
+            return dj_settings.STATICLINK_FILE_MAP.get(ext, ext)
+
+        return ext
+
+    def _get_preprocessor(self, ext):
+        """
+        Get the preprocessor for that file type, e.g. 'less' for 'css'. This is
+        configured in the `STATICLINK_PREPROCESSORS` setting and is required for
+        debug mode.
+
+        Params:
+            - `ext` - The file extension to get the preprocessor for
+        """
+        preprocessor = dj_settings.STATICLINK_PREPROCESSORS.get(ext, False)
+        if preprocessor:
+            return preprocessor
+        raise exceptions.ImproperlyConfigured('Cannot render `%s` in debug mode, set preprocessor (eg `less`) in STATICLINK_PREPROCESSORS config' % ext)
+
+    def _get_version(self):
+        """
+        Get the version number to append to the static file URLs. This is defined
+        in the `STATICLINK_VERSION` setting, and defaults to the current timestamp.
+        """
+        if hasattr(dj_settings, 'STATICLINK_VERSION'):
+            return dj_settings.STATICLINK_VERSION
+        return time.time()
