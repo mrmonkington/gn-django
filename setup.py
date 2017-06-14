@@ -14,9 +14,7 @@ setup(
         "django==1.11.1",
         "django-jinja==2.3.0",
     ],
-    dependency_links = [
-    ],
     include_package_data=True,
-    scripts = ['gn_django/bin/gn_django'],
+    scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
     packages = find_packages(),
 )
