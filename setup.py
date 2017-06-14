@@ -17,5 +17,5 @@ setup(
     ],
     include_package_data=True,
     scripts = ['gn_django/bin/gn_django'],
-    packages = find_packages(),
+    packages = find_packages(exclude=('tests', 'examples')),
 )
