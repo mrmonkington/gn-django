@@ -24,4 +24,4 @@ gulp.task('compile', function () {
 
 gulp.task('watch', function () {
   gulp.watch('./static/less/*.less', ['compile']);
-})
+});

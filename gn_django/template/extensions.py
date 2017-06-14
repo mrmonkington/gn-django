@@ -95,36 +95,15 @@ class IncludeWithExtension(Extension):
 
 class StaticLinkExtension(Extension):
     """
-    Extension for injecting ``link`` tags for stylesheets. This will inject the
-    ``less`` version of the file if ``DEBUG_LESS`` is set and is set to ``True``,
-    or if ``DEBUG_LESS`` is not set but ``DEBUG`` is set to True. Otherwise it
-    will link to the ``css`` version.
+    Extension for linking to static assets within a template, with the ability to
+    render uncompiled scripts (such as LESS) when in DEBUG mode.
 
-    For this extension to work, LESS files and CSS files must be mapped identically
-    within their directories.
+    For usage, see https://gamer-network-gn-django.readthedocs-hosted.com/en/latest/jinja_templates/writing_jinja_templates.html#static-link-extension
 
     Supported tags:
-        - ``{% css '[name]' %}`` - Link to a stylesheet in the assets directory.
-                                    The '[name]' is the path to the file relative
-                                    to the assets directory that contains files
-                                    of that type, with no file extension e.g.
-                                    'static/css/pages/article.css' would be 'pages/article'
-        - ``{% compile_less %}`` - Render the script tags to link to a JavaScript
-                                    LESS compiler for the client side if LESS is in
-                                    debug mode. If not, it will output nothing.
-
-    Configurations:
-        - ``DEBUG_LESS``            - Link to LESS files if true, and CSS if false.
-                                        Defaults to the value of ``DEBUG``
-        - ``CLIENT_LESS_COMPILER``  - The URL of the client-side LESS compiler. If
-                                        not set, an exception will be thrown when
-                                        trying to use ``compile_less`` in debug mode
-        - ``STATIC_FILE_MAP``       - A dictionary mapping file extensions to directories
-                                        within the static directory. All file extensions
-                                        will default to a directory matching it (e.g.
-                                        CSS files will be assumed to be in a ``css``
-                                        directory).
-
+        - ``{% css '[name]' %}``    - Link to a stylesheet in the assets directory.
+        - ``{% js '[name]' %}``     - Link to a script in the assets directory.
+        - ``{% load_compilers %}``  - Prepare front end compilation for preprocessors.
     """
 
     tags = set(['css', 'js', 'load_compilers'])
@@ -142,8 +121,8 @@ class StaticLinkExtension(Extension):
 
     def _css(self, name, caller):
         """
-        Render link tags for stylesheets. If ``self.debug_less`` is set to true
-        this will be the ``less`` version of the file.
+        Render link tags for stylesheets. If debug mode is enabled this will be
+        the uncompiled version of the file.
 
         Params:
             - `name` - The name of the file
@@ -159,6 +138,13 @@ class StaticLinkExtension(Extension):
         return self.environment.from_string(template).render()
 
     def _js(self, name, caller):
+        """
+        Render script tags for JavaScript
+
+        Params:
+            - `name` - The name of the file
+            - `caller` - Required by Jinja
+        """
         ext = 'js'
         file_dir = self._get_file_dir(ext)
         script_type = 'application/javascript'
@@ -169,9 +155,7 @@ class StaticLinkExtension(Extension):
 
     def _load_compilers(self, caller):
         """
-        If ``self.debug_less`` is true, inject a script to compile LESS in the front end.
-        The URL for the LESS compiler is set as ``CLIENT_LESS_COMPILER`` in the settings
-        file.
+        If debug mode is enabled, inject front end compilers.
 
         Params:
             - `caller` - Required by Jinja
@@ -193,23 +177,50 @@ class StaticLinkExtension(Extension):
         return self.environment.from_string(template).render()
 
     def _is_debug(self, ext):
+        """
+        Check if debug mode is enabled for a file type. If it does not exist
+        in the `STATICLINK_DEBUG` setting, it will default to the `DEBUG` setting
+
+        Params:
+            - `ext` - The file extension to check the debug mode for
+        """
         if hasattr(dj_settings, 'STATICLINK_DEBUG'):
             return dj_settings.STATICLINK_DEBUG.get(ext, dj_settings.DEBUG)
         return dj_settings.DEBUG
 
     def _get_file_dir(self, ext):
+        """
+        Get the directory of a file type within the main static directory. This
+        can be configured in the `STATICLINK_FILE_MAP` setting. If it is not set,
+        it will be assumed to be the file extension.
+
+        Params:
+            - `ext` - The file extension
+        """
         if hasattr(dj_settings, 'STATICLINK_FILE_MAP'):
             return dj_settings.STATICLINK_FILE_MAP.get(ext, ext)
 
         return ext
 
     def _get_preprocessor(self, ext):
+        """
+        Get the preprocessor for that file type, e.g. 'less' for 'css'. This is
+        configured in the `STATICLINK_PREPROCESSORS` setting and is required for
+        debug mode.
+
+        Params:
+            - `ext` - The file extension to get the preprocessor for
+        """
         preprocessor = dj_settings.STATICLINK_PREPROCESSORS.get(ext, False)
         if preprocessor:
             return preprocessor
         raise exceptions.ImproperlyConfigured('Cannot render `%s` in debug mode, set preprocessor (eg `less`) in STATICLINK_PREPROCESSORS config' % ext)
 
     def _get_version(self):
+        """
+        Get the version number to append to the static file URLs. This is defined
+        in the `STATICLINK_VERSION` setting, and defaults to the current timestamp.
+        """
         if hasattr(dj_settings, 'STATICLINK_VERSION'):
             return dj_settings.STATICLINK_VERSION
         return time.time()
