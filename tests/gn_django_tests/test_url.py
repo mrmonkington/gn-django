@@ -1,6 +1,6 @@
 import unittest
 
-from gn_django.url import helpers
+from gn_django.url import utils
 
 class TestUrlHelpers(unittest.TestCase):
     """
@@ -9,20 +9,20 @@ class TestUrlHelpers(unittest.TestCase):
 
     def test_strip_protocol_http(self):
         url = 'http://www.example.com'
-        stripped = helpers.strip_protocol(url)
+        stripped = utils.strip_protocol(url)
         self.assertEqual('//www.example.com', stripped)
 
     def test_strip_protocol_https(self):
         url = 'https://www.example.com'
-        stripped = helpers.strip_protocol(url)
+        stripped = utils.strip_protocol(url)
         self.assertEqual('//www.example.com', stripped)
 
     def test_strip_protocol_relative(self):
         url = '//www.example.com'
-        stripped = helpers.strip_protocol(url)
+        stripped = utils.strip_protocol(url)
         self.assertEqual('//www.example.com', stripped)
 
     def test_strip_protocol_none(self):
         url = 'www.example.com'
-        stripped = helpers.strip_protocol(url)
+        stripped = utils.strip_protocol(url)
         self.assertEqual('www.example.com', stripped)

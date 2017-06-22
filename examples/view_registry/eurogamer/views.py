@@ -1,7 +1,5 @@
 from django.views.generic import TemplateView
 
-from gn_django import helpers
-
 from core.views import Home
 
 class EurogamerHome(Home):

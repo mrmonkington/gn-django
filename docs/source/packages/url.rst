@@ -3,10 +3,10 @@
 URL
 ===
 
-General helpers
----------------
+General utils
+-------------
 
-The following helpers can be accessed by importing :code:`gn_django.url.helpers`
+The following utils can be accessed by importing :code:`gn_django.url.utils`
 
 .. function:: strip_protocol(url)
 
