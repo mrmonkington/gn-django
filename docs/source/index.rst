@@ -11,7 +11,7 @@ to use when building django applications and sites at Gamer Network.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Building GN Django projects
 
    django_projects/starting_a_project
@@ -19,7 +19,7 @@ to use when building django applications and sites at Gamer Network.
    django_projects/static_files
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Jinja Templates
 
    jinja_templates/how_to_set_up_jinja
@@ -30,23 +30,25 @@ to use when building django applications and sites at Gamer Network.
    jinja_templates/jinja_twig_devs
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: ORM extensions
 
    orm_extensions/fields
    orm_extensions/validators
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Packages
 
+   packages/utils
    packages/url
+   packages/form
    packages/video
    packages/site
    packages/app
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Testing in gn-django
 
    testing/running_and_writing

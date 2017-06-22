@@ -11,7 +11,7 @@ def get_form_error_dict(form):
       A string:string dictionary with keys as form fields and values as a comma
       delimited string of error messages.
     """
-    errors = {f_name: ', '.join([val for val in values]) 
+    errors = {f_name: ', '.join([val.strip('.') for val in values]) 
         for f_name, values in form.errors.items()}
     return errors
 
