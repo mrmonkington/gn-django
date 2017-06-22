@@ -26,7 +26,7 @@ if [ $1 = "startproject" ]; then
     # copy over the generic gitignore
     cp $DIR/startproject/_gitignore .gitignore
 
-    # By default, django creates a project directory named as the project name 
+    # By default, django creates a project directory named as the project name
     # - so you end up with polls/polls/ for a project called "polls".
     # This renames that directory to "project" and does a recursive find/replace
     # within python files to rewrite references
@@ -45,4 +45,9 @@ if [ $1 = "startproject" ]; then
 
     # Drop a default requirements.txt file in the root directory
     cp $DIR/startproject/requirements.txt .
+
+    # Copy files for Gulp configuration into root directory
+    cp $DIR/startproject/package.json .
+    cp $DIR/startproject/gulpfile.js .
+    echo "Django project installed. Run \"npm install\" to enable Gulp."
 fi

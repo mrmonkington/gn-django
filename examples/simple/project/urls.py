@@ -1,4 +1,6 @@
 from main import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 """project URL Configuration
 
@@ -23,5 +25,9 @@ urlpatterns = [
     url(r'^admin', admin.site.urls),
     url(r'^youtube', views.Youtube.as_view()),
     url(r'^protocol-stripped', views.URLProtocol.as_view()),
+    url(r'^static-link-extension', views.StaticLinkExtension.as_view()),
     url(r'^$', views.Home.as_view()),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

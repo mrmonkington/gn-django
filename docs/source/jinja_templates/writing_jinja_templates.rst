@@ -3,7 +3,7 @@ Using Jinja templates
 
 Here's how the official jinja documentation describes itself:
 
-    "A Jinja template is simply a text file. 
+    "A Jinja template is simply a text file.
 
     A template contains variables and/or expressions, which get replaced with
     values when a template is rendered; and tags, which control the logic of
@@ -25,7 +25,7 @@ reference documentation *should* provide an exhaustive reference of:
 File extension
 --------------
 
-The Jinja2 project does not mandate that any particular file extension is used 
+The Jinja2 project does not mandate that any particular file extension is used
 for jinja template files.  However, the agreed standard for Gamer Network django
 projects is to use the ``.j2`` extension.
 
@@ -34,13 +34,13 @@ will only be used for templates named with the ``.j2`` extension e.g. ``home.j2`
 
 The reasons for settling on ``.j2`` are as follows:
 
-  * It allows us to use the ``match_extension`` option for the django-jinja 
+  * It allows us to use the ``match_extension`` option for the django-jinja
     backend.  This means that the template backend will relinquish rendering
     for template names that do not end in ``.j2`` - so in theory we could use
     django templating in addition to jinja if we needed to.
   * It matches ansible - which requires that template files end with ``.j2``.
   * Syntax highlighting can be easily set for editors, based on file extension.
-  * Generally, many open source projects use some sort of file extension for 
+  * Generally, many open source projects use some sort of file extension for
     jinja templates.  ``.jinja`` is too long.  ``.html.j2`` is annoying.
     ``.j2`` is juuust right.
 
@@ -347,6 +347,72 @@ are equivalent::
         {% set foo = 42 %}
         {{ foo }}
     {% endwith %}
+
+.. _static-link:
+
+Static Link Extension
+~~~~~~~~~~~~~~~~~~~~~
+
+This is a GN specific extension to aid development with static file linking and precompilation.
+The purpose is to allow different files to be linked to in different development
+environments. In a dev environment, it may be beneficial to link to a ``LESS`` file rather than
+a ``CSS`` file, for example.
+
+The following tags come included with the extension:
+
+- ``{% css '[name]' %}`` - Link to a stylesheet. The ``name`` is the file path within the static directory for that file type, without a file extension e.g. ``pages/article``
+- ``{% js '[name]' %}`` - Link to a JavaScript file. The ``name`` is the file path within the static directory for that file type, without a file extension e.g. ``pages/article`
+- ``{% load_compilers %}`` - Link to compiler scripts for client-side compilation of static files when in a dev environment (outputs nothing in production).
+
+The extension is highly configurable:
+
+- ``STATICLINK_PREPROCESSORS`` - A dictionary mapping script type to preprocessors::
+
+    STATICLINK_PREPROCESSORS = {
+      'css': 'less',
+    }
+- ``STATICLINK_CLIENT_COMPILERS`` - A dictionary mapping script type to the URLs or client-side compilation scripts::
+
+    STATICLINK_CLIENT_COMPILERS = {
+        'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
+    }
+
+- ``STATICLINK_DEBUG`` - Typically, whether to load the scripts in debug mode or not depends on the ``DEBUG`` setting. However, this option allows you to enable or disable debug mode for different script types regardless of the ``DEBUG`` setting::
+
+    STATICLINK_DEBUG = {
+       'css': False,
+       'js': True,
+    }
+
+- ``STATICLINK_FILE_MAP`` - A dictionary mapping file extensions to directory. If it is not set, it will default to a directory of the same name as the file extension::
+
+    STATICLINK_FILE_MAP = {
+       'js': 'scripts',
+       'less': 'precompiled',
+    }
+
+- ``STATICLINK_VERSION`` - A unique version number to append to the static file URLs for cache-busting. Defaults to current time stamp.
+
+As example of this in action can be found in the ``simple`` example with the ``static-link-extnesion`` slug.
+
+The template has the following in the header::
+
+  {% css 'test' %}
+  {% js 'test' %}
+  {% load_compilers %}
+
+In debug mode, this is output::
+
+  <link href="/static/less/test.less?v=1497282637.059254" rel="stylesheet" type="text/less" />
+  <script src="/static/scripts/test.js?v=1497282637.0611155" type="application/javascript"></script>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
+  <script>localStorage.clear();</script>
+
+While in production, this is output::
+
+  <link href="/static/css/test.css?v=1497350630.0394886" rel="stylesheet" type="text/css" />
+  <script src="/static/js/test.js?v=1497350630.0409005" type="application/javascript"></script>
 
 .. _autoescape-overrides:
 
