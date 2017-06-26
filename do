@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $1 = "tests" ]; then
-	cd tests
+	cd tests/gn_django_tests
 	python manage.py test .
     exit $?
 fi
@@ -9,7 +9,7 @@ fi
 if [ $1 = "coverage" ]; then
     python --version
 	coverage erase
-	coverage run tests/manage.py test tests/
+	coverage run tests/gn_django_tests/manage.py test tests/gn_django_tests
 	coverage report
 	coverage html
 fi

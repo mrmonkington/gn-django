@@ -11,8 +11,7 @@ import os, sys
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.project.settings")
-
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gn_django_tests.project.settings")
 
 application = get_wsgi_application()
 from gn_django.view import view_registry

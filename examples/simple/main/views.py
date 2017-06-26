@@ -1,8 +1,8 @@
 from django.views.generic import TemplateView
 
-from gn_django import helpers
+from gn_django import utils
 from .models import ExampleModel
-from gn_django.url import helpers as url_helpers
+from gn_django.url import utils as url_utils
 from gn_django.video import youtube
 
 class Home(TemplateView):
@@ -10,7 +10,7 @@ class Home(TemplateView):
     template_name = "home.j2"
 
     def get_context_data(self):
-        return {'msg': helpers.super_helper()}
+        return {'msg': utils.super_helper()}
 
 class Include(TemplateView):
     template_name = "include.j2"
@@ -44,9 +44,9 @@ class URLProtocol(TemplateView):
 
         return {
             'http': http,
-            'http_stripped': url_helpers.strip_protocol(http),
+            'http_stripped': url_utils.strip_protocol(http),
             'https': https,
-            'https_stripped': url_helpers.strip_protocol(https),
+            'https_stripped': url_utils.strip_protocol(https),
         }
 
 class StaticLinkExtension(TemplateView):

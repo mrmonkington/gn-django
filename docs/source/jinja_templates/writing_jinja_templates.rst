@@ -1,5 +1,5 @@
-Using Jinja templates
-=====================
+Writing Jinja templates - reference docs
+========================================
 
 Here's how the official jinja documentation describes itself:
 

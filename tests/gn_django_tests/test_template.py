@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.template.exceptions import TemplateDoesNotExist
 
 from gn_django.template.backend import Jinja2
+from gn_django.template import utils
 from gn_django.template.loaders import HierarchyLoader, get_hierarchy_loader
 from gn_django.template.loaders import MultiHierarchyLoader, get_multi_hierarchy_loader
 from gn_django.template.loaders import file_system_loaders
@@ -490,3 +491,12 @@ class TestLoaderBuilders(TestCase):
             self.assertEquals(expected_templates, actual_templates)
 
         self.assertEquals(len(file_system_loaders), 7)
+
+class TestTemplateUtils(TestCase):
+    """
+    Tests for the Jinja2 class.
+    """
+
+    def test_render_to_string(self):
+        rendered = utils.render_to_string("site.j2", {'site': 'eurogamer', 'namespace': 'core'})
+        self.assertEquals(rendered, "Site: eurogamer\nNamespace: core")

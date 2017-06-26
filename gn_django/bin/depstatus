@@ -1,0 +1,116 @@
+#!/bin/bash
+
+master_colour="\033[01;31m"
+branch_colour="\033[01;33m"
+mod_colour="\033[01;32m"
+reset_colour="\033[00m"
+
+function _git_is_instance {
+    if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+    then
+        return 0
+    fi
+    return 1
+}
+
+function _git_parse_branch {
+    if _git_is_instance
+    then
+        git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1 /' | xargs echo -n
+    fi
+}
+
+function _git_new {
+    if _git_is_instance
+    then
+        if [[ $(git ls-files --other --exclude-standard 2> /dev/null) ]]
+        then
+			return 0
+        fi
+    fi
+	return 1
+}
+
+function _git_staged {
+    if _git_is_instance
+    then
+        git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
+        (( $? && $? != 128 )) && return 0
+    fi
+	return 1
+}
+
+function _git_modified {
+    if _git_is_instance
+    then
+        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || return 0
+    fi
+	return 1
+}
+
+function _pushd {
+	pushd $1 > /dev/null
+}
+function _popd {
+	popd > /dev/null
+}
+
+function _svn_parse_branch {
+	svn info | grep 'Relative URL' | cut -d ' ' -f 3
+}
+
+function _svn_modified {
+	st=`svn status | grep '^[AMCGD\?]'`
+	if [ -n "$st" ]
+	then
+		return 0
+	fi
+	return 1
+}
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../../
+
+for rep in $DIR/src/*/;
+do
+	_pushd $rep
+	echo -n ${rep##$DIR/src/}": "
+	if [ -d .svn ]
+	then
+		# subversion
+		branch=$(_svn_parse_branch)
+		if ( echo "$branch" | grep -E 'branch' > /dev/null ); then
+			echo -ne $branch_colour
+		else
+			echo -ne $master_colour
+		fi
+		echo -n $branch
+		echo -ne $reset_colour
+		if _svn_modified
+		then
+			echo -n " - "
+			echo -ne $mod_colour
+			echo -n "modified"
+			echo -ne $reset_colour
+		fi
+		echo
+	else
+		# git
+		branch=$(_git_parse_branch)
+		if [ "$branch" == "master" ]; then
+			echo -ne $master_colour
+		elif [ "$branch" != "magnet" -a "$branch" != "develop" ]; then
+			echo -ne $branch_colour
+		fi
+		echo -n $branch
+		echo -ne $reset_colour
+		if _git_staged || _git_modified;
+		then
+			echo -n " - "
+			echo -ne $mod_colour
+			echo -n "modified"
+			echo -ne $reset_colour
+		fi
+		echo
+	fi
+	_popd
+done

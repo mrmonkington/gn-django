@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, re
 
 def is_sphinx_autodoc_running():
     """
@@ -11,3 +11,6 @@ def is_sphinx_autodoc_running():
     """
     calling_command = os.path.split(sys.argv[0])[-1]
     return calling_command == 'sphinx-build'
+
+def super_helper():
+    return "DW all your problems are now fixed."
