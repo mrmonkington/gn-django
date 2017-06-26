@@ -43,3 +43,20 @@ def add_path_to_url(url, path):
         path = '/' + path
     return url + path
 
+def convert_camelcase_to_slugified(camelcase):
+    """
+    Takes a camelcase string and converts it to a string in slug format.
+
+    e.g. 
+        "MyStringHere" becomes "my-string-here"
+
+    Args:
+      * `camelcase` - string - the camelcase string to convert
+
+    Returns:
+      A string.
+    """
+    slugified = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', camelcase)
+    slugified = re.sub('([a-z0-9])([A-Z])', r'\1-\2', slugified).lower()
+    return slugified
+

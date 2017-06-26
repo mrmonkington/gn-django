@@ -66,3 +66,13 @@ class TestUrlUtils(unittest.TestCase):
         to_add = "/a/resource"
         full_url = utils.add_path_to_url(url, to_add)
         self.assertEqual("/path/to/a/resource", full_url)
+
+    def test_convert_camelcase_to_slugified(self):
+        camel = "ACamelCaseString"
+        slugified = utils.convert_camelcase_to_slugified(camel)
+        self.assertEqual(slugified, "a-camel-case-string")
+
+    def test_convert_camelcase_to_slugified_already_slugified(self):
+        camel = "a-camel-case-string"
+        slugified = utils.convert_camelcase_to_slugified(camel)
+        self.assertEqual(slugified, "a-camel-case-string")
