@@ -153,7 +153,7 @@ STATICLINK_CLIENT_COMPILERS = {
 
 # Set debug mode for static asset compilation separately from main DEBUG setting
 # STATICLINK_DEBUG = {
-#     'css': False,
+#     'css': True,
 # }
 
 # Set path within STATICFILES_DIRS setting where static files can be located.

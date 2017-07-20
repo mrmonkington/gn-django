@@ -377,7 +377,7 @@ The extension is highly configurable:
         'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
     }
 
-- ``STATICLINK_DEBUG`` - Typically, whether to load the scripts in debug mode or not depends on the ``DEBUG`` setting. However, this option allows you to enable or disable debug mode for different script types regardless of the ``DEBUG`` setting::
+- ``STATICLINK_DEBUG`` - This option allows you to enable or disable debug mode for different script types::
 
     STATICLINK_DEBUG = {
        'css': False,
