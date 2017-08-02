@@ -178,15 +178,14 @@ class StaticLinkExtension(Extension):
 
     def _is_debug(self, ext):
         """
-        Check if debug mode is enabled for a file type. If it does not exist
-        in the `STATICLINK_DEBUG` setting, it will default to the `DEBUG` setting
+        Check if debug mode is enabled for a file type.
 
         Params:
             - `ext` - The file extension to check the debug mode for
         """
         if hasattr(dj_settings, 'STATICLINK_DEBUG'):
             return dj_settings.STATICLINK_DEBUG.get(ext, dj_settings.DEBUG)
-        return dj_settings.DEBUG
+        return False
 
     def _get_file_dir(self, ext):
         """
