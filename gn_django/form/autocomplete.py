@@ -1,5 +1,7 @@
 from dal_select2.views import Select2QuerySetView
 from django.db import models
+from django import forms
+from dal import autocomplete
 
 class AutocompleteView(Select2QuerySetView):
     """
@@ -67,3 +69,25 @@ class AutocompleteView(Select2QuerySetView):
         Instead, logic to load autocomplete suggestions should be in `get_option_list()`
         """
         return
+
+class AutocompleteSelectField(forms.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('widget', False):
+            raise ValueError('`widget` argument must not be set when instanciating `AutocompleteSelectField`')
+        if not kwargs.get('url', False):
+            raise ValueError('`url` argument must be set to the URL or name of the view that handles the generation of autocomplete options')
+        w_kwargs = {
+            'url': kwargs['url']
+        }
+        del kwargs['url']
+
+        if kwargs.get('attrs', False):
+            w_kwargs['attrs'] = kwargs['attrs']
+            del kwargs['attrs']
+        if kwargs.get('widget_kwargs', False):
+            w_kwargs.update(kwargs['widget_kwargs'])
+            del kwargs['widget_kwargs']
+
+        kwargs['widget'] = autocomplete.Select2(**w_kwargs)
+
+        super(AutocompleteSelectField, self).__init__(*args, **kwargs)
