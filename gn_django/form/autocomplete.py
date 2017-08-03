@@ -71,6 +71,8 @@ class AutocompleteView(Select2QuerySetView):
         return
 
 class AutocompleteSelectField(forms.ChoiceField):
+    ac_kwargs = ['url', 'attrs', 'widget_kwargs']
+
     def __init__(self, *args, **kwargs):
         if kwargs.get('widget', False):
             raise ValueError('`widget` argument must not be set when instanciating `AutocompleteSelectField`')
@@ -87,7 +89,5 @@ class AutocompleteSelectField(forms.ChoiceField):
         if kwargs.get('widget_kwargs', False):
             w_kwargs.update(kwargs['widget_kwargs'])
             del kwargs['widget_kwargs']
-
         kwargs['widget'] = autocomplete.Select2(**w_kwargs)
-
-        super(AutocompleteSelectField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
