@@ -28,6 +28,9 @@ class AutocompleteView(Select2QuerySetView):
         """
         raise NotImplementedError('Must declare `get_option_list()` method on class that extends `gn_django.form.autocomplete.AutocompleteView`')
 
+    def validate(self, value):
+        raise NotImplementedError('Write a validator!')
+
     def get_result_value(self, result):
         """
         Get the value from the list returned by ``get_option_list()``. If the
@@ -71,7 +74,7 @@ class AutocompleteView(Select2QuerySetView):
         return
 
 class AutocompleteSelectField(forms.ChoiceField):
-    ac_kwargs = ['url', 'attrs', 'widget_kwargs']
+    ac_kwargs = ['url', 'attrs', 'widget_kwargs', 'validator']
 
     def __init__(self, *args, **kwargs):
         if kwargs.get('widget', False):
@@ -89,5 +92,16 @@ class AutocompleteSelectField(forms.ChoiceField):
         if kwargs.get('widget_kwargs', False):
             w_kwargs.update(kwargs['widget_kwargs'])
             del kwargs['widget_kwargs']
+
+        self.validator = kwargs.get('validator', False)
+        if self.validator:
+            del kwargs['validator']
+
         kwargs['widget'] = autocomplete.Select2(**w_kwargs)
         super().__init__(*args, **kwargs)
+
+    def validate(self, value):
+        if self.validator:
+            if not self.validator(value):
+                raise forms.ValidationError('`%s` is not a valid value' % value)
+        return True
