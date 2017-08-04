@@ -101,6 +101,8 @@ class AutocompleteSelectField(forms.ChoiceField):
         super().__init__(*args, **kwargs)
 
     def validate(self, value):
+        if not value:
+            return True
         if self.validator:
             if not self.validator(value):
                 raise forms.ValidationError('`%s` is not a valid value' % value)
