@@ -28,9 +28,6 @@ class AutocompleteView(Select2QuerySetView):
         """
         raise NotImplementedError('Must declare `get_option_list()` method on class that extends `gn_django.form.autocomplete.AutocompleteView`')
 
-    def validate(self, value):
-        raise NotImplementedError('Write a validator!')
-
     def get_result_value(self, result):
         """
         Get the value from the list returned by ``get_option_list()``. If the
