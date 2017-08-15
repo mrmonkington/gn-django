@@ -74,26 +74,24 @@ class AutocompleteView(Select2QuerySetView):
         return
 
 class AutocompleteSelectField(forms.ChoiceField):
-    ac_kwargs = ['url', 'attrs', 'widget_kwargs', 'validator']
-
     def __init__(self, *args, **kwargs):
-        if kwargs.get('widget', False):
+        if kwargs.get('widget', None):
             raise ValueError('`widget` argument must not be set when instanciating `AutocompleteSelectField`')
-        if not kwargs.get('url', False):
+        if not kwargs.get('url', None):
             raise ValueError('`url` argument must be set to the URL or name of the view that handles the generation of autocomplete options')
         w_kwargs = {
             'url': kwargs['url']
         }
         del kwargs['url']
 
-        if kwargs.get('attrs', False):
+        if kwargs.get('attrs', None):
             w_kwargs['attrs'] = kwargs['attrs']
             del kwargs['attrs']
-        if kwargs.get('widget_kwargs', False):
+        if kwargs.get('widget_kwargs', None):
             w_kwargs.update(kwargs['widget_kwargs'])
             del kwargs['widget_kwargs']
 
-        self.validator = kwargs.get('validator', False)
+        self.validator = kwargs.get('validator', None)
         if self.validator:
             del kwargs['validator']
 
