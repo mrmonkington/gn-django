@@ -72,36 +72,3 @@ class AutocompleteView(Select2QuerySetView):
         Instead, logic to load autocomplete suggestions should be in `get_option_list()`
         """
         return
-
-class AutocompleteSelectField(forms.ChoiceField):
-    def __init__(self, *args, **kwargs):
-        if kwargs.get('widget', None):
-            raise ValueError('`widget` argument must not be set when instanciating `AutocompleteSelectField`')
-        if not kwargs.get('url', None):
-            raise ValueError('`url` argument must be set to the URL or name of the view that handles the generation of autocomplete options')
-        w_kwargs = {
-            'url': kwargs['url']
-        }
-        del kwargs['url']
-
-        if kwargs.get('attrs', None):
-            w_kwargs['attrs'] = kwargs['attrs']
-            del kwargs['attrs']
-        if kwargs.get('widget_kwargs', None):
-            w_kwargs.update(kwargs['widget_kwargs'])
-            del kwargs['widget_kwargs']
-
-        self.validator = kwargs.get('validator', None)
-        if self.validator:
-            del kwargs['validator']
-
-        kwargs['widget'] = autocomplete.Select2(**w_kwargs)
-        super().__init__(*args, **kwargs)
-
-    def validate(self, value):
-        if not value:
-            return True
-        if self.validator:
-            if not self.validator(value):
-                raise forms.ValidationError('`%s` is not a valid value' % value)
-        return True
