@@ -3,6 +3,22 @@ from django.db import models
 from django import forms
 from dal import autocomplete
 
+class SelectWidget(autocomplete.Select2):
+    def __init__(self, label_finder=None, *args, **kwargs):
+        if label_finder:
+            self.get_label = label_finder
+        super().__init__(*args, **kwargs)
+
+    def filter_choices_to_render(self, selected_choices):
+        if selected_choices:
+            selected = selected_choices[0]
+            if hasattr(self, 'get_label') and selected_choices:
+                label = self.get_label(selected)
+                if label:
+                    self.choices = ((selected, label),)
+            else:
+                self.choices = ((selected, selected),)
+
 class AutocompleteView(Select2QuerySetView):
     """
     Base view for populating autocomplete form fields. When the user starts typing
