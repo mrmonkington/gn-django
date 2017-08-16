@@ -4,12 +4,29 @@ from django import forms
 from dal import autocomplete
 
 class SelectWidget(autocomplete.Select2):
+    """
+    Widget for autocomplete select fields to be added to forms. Is almost identical
+    to Django Autocomplete Light's Select2 widget, but fixes the issue where the
+    selected value will not display if the options are not loaded from a Django query set.
+
+    Since the widget has no direct way of knowing the label for the selected value, by
+    default it will be the same as the value. However, the ``label_finder`` parameter
+    allows developers to pass a callable to the class to determine the label. The
+    callable must take only the selected value as a parameter.
+    """
     def __init__(self, label_finder=None, *args, **kwargs):
         if label_finder:
             self.get_label = label_finder
         super().__init__(*args, **kwargs)
 
     def filter_choices_to_render(self, selected_choices):
+        """
+        Pre-populate form if value is set. The value should be the only item in
+        the ``selected_choices`` list. If the callable ``label_finder`` parameter was set on
+        initialization (or ``get_label`` attribute has been declared elsewhere),
+        the value will be run through that to get the label for the option with
+        that value.
+        """
         if selected_choices:
             selected = selected_choices[0]
             if hasattr(self, 'get_label') and selected_choices:
