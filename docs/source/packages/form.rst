@@ -32,7 +32,7 @@ an instance of ``gn_django.form.autocomplete.SelectWidget``. This takes the same
 as the Django Autocomplete Light widgets, as well as an optional parameter for ``label_finder``.
 This is a callable that can be used to find the label that matches the value, if set.
 
-For example::
+For example:
 
 .. code-block:: python
 
@@ -77,7 +77,7 @@ You will need to override the ``get_option_list()`` method to return a list or t
 options. Each option should be either a string, or a dictionary with a ``value`` key
 and a ``label`` key. The current user input can be accessed through ``self.q``
 
-Par example::
+Par example:
 
 .. code-block:: python
 
@@ -107,7 +107,7 @@ Par example::
 This example checks each of the blog types to see if the current user input
 matches the start of the blog type name, and returns all that do.
 
-`Note:` The examples above are unlikely to be very practical in the wild since they
+**Note:** The examples above are unlikely to be very practical in the wild since they
 are just loading options from a static tuple, in which case a regular select field
 would be fine. In practice, this will be best for loading options from a data source
 such as Elasticsearch or MongoDB.
