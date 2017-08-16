@@ -36,6 +36,9 @@ For example::
 
 .. code-block:: python
 
+  from gn_django.form.autocomplete import SelectWidget
+  from gravity_core.forms import GravityEditORMForm
+
   class BlogForm(GravityEditORMForm):
       class Meta:
           def get_label(choice):
@@ -71,6 +74,8 @@ and a ``label`` key. The current user input can be accessed through ``self.q``
 Par example::
 
 .. code-block:: python
+
+  from gn_django.form.autocomplete import AutocompleteView
 
   class BlogTypeAutocompleteView(AutocompleteView):
       def get_option_list(self):
