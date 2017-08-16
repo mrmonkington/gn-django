@@ -14,7 +14,7 @@ The following utils can be accessed by importing :code:`gn_django.form.utils`
 Autocomplete
 ------------
 
-GN Django makes use of the Django Autocomplete Light library to allow to autocomplete
+GN Django makes use of the `Django Autocomplete Light <http://django-autocomplete-light.readthedocs.io/en/master/>`_ library to allow to autocomplete
 select fields. This library allows select fields to populate from Django querysets.
 However, GN Django extends this library to allow for more flexibility, decoupling it
 from the Django ORM.
