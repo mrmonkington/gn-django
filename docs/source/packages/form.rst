@@ -19,7 +19,7 @@ select fields. This library allows select fields to populate from Django queryse
 However, GN Django extends this library to allow for more flexibility, decoupling it
 from the Django ORM.
 
-**Note:** You will need to ensure that `dal` and `dal_select2` are added to the apps
+**Note:** You will need to ensure that ``dal`` and ``dal_select2`` are added to the apps
 list in your settings file.
 
 This feature relies on two components:
