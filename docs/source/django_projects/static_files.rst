@@ -47,12 +47,16 @@ The ``gulpfile.js`` that comes with the binary looks like this (excluding the in
 at the top)::
 
   gulp.task('compile', function () {
+    l.on('error',function(e){
+      console.log(e);
+      l.end();
+    });
     return gulp.src([
         './static/less/*.less',
         '!./static/less/modules/**',
         '!./static/less/helpers/**'
       ])
-      .pipe(less())
+      .pipe(l)
       .pipe(minify())
       .pipe(autoprefixer({
         browsers: ['last 10 versions']
