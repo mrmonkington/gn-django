@@ -17,6 +17,7 @@ to use when building django applications and sites at Gamer Network.
    django_projects/starting_a_project
    django_projects/environment_overridable_settings
    django_projects/static_files
+   django_projects/development
 
 .. toctree::
    :maxdepth: 1
