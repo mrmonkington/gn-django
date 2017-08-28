@@ -13,7 +13,6 @@ setup(
     install_requires=[
         "django==1.11.1",
         "django-jinja==2.3.0",
-        "django-autocomplete-light==3.2.9",
     ],
     include_package_data=True,
     scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],

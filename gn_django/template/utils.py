@@ -21,6 +21,13 @@ def render_to_string(template, context, request=None, using=None):
 
 def get_template_dir_for_app(app_name):
     """
+    Get the absolute path to an app's template directory, given the app name.
+
+    Args:
+      * `app_name` - string - the name of the django app
+
+    Returns:
+      The absolute path to the template directory.
     """
     app_module = __import__(app_name)
     app_path = os.path.dirname(app_module.__file__)
