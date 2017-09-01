@@ -83,8 +83,44 @@ class GNRemote(webdriver.Remote):
         """Creates a web element with the specified `element_id`."""
         return self._web_element_cls(self, element_id, w3c=self.w3c, 
             element_scroll_behavior=self.element_scroll_behavior)
-    
+
 class BrowserManager:
+
+    def _get_dimensions_and_capabilities(self, capabilities, test_name):
+        capabilities = capabilities.copy()
+        dimensions = [int(dimension) for dimension in capabilities['screenResolution'].split('x')]
+        width_offset = 0
+        height_offset = 0
+        if capabilities['browserName'] == 'firefox':
+            height_offset = 71
+        if capabilities['browserName'] == 'chrome':
+            width_offset = 11
+            height_offset = 87
+        dimensions[0] += width_offset
+        dimensions[1] += height_offset
+        capabilities['name'] = test_name
+        capabilities['screenResolution'] = '2100x1200'
+        return (dimensions, capabilities)
+        
+    def get_browser(self, capabilities, test_name):
+        """
+        """
+        dimensions, capabilities = self._get_dimensions_and_capabilities(capabilities, test_name)
+        element_scroll_behavior = capabilities.get('elementScrollBehavior')
+        kwargs = {
+            'command_executor': "http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
+            'desired_capabilities': capabilities,
+        }
+        if element_scroll_behavior:
+            kwargs['element_scroll_behavior'] = element_scroll_behavior
+        browser = GNRemote(**kwargs)
+        browser.implicitly_wait(1)
+        width, height = int(dimensions[0]), int(dimensions[1])
+        browser.set_window_size(width, height)
+        return browser
+    
+    
+class PersistentBrowserManager(BrowserManager):
     """
     """
     
@@ -94,35 +130,30 @@ class BrowserManager:
     def _hash_capabilities(self, capabilities):
         return hash(frozenset(capabilities.items()))
 
-    def get_browser(self, capabilities):
+    def _get_dimensions_and_capabilities(self, capabilities, test_name):
+        dimensions, capabilities = super()._get_dimensions_and_capabilities(capabilites, test_name)
+        capabilities['name'] = capabilities['browserName'] + ' ' + capabilities['screenResolution']
+        return (dimensions, capabilities)
+
+    def get_browser(self, capabilities, test_name):
         """
         """
         capability_hash = self._hash_capabilities(capabilities)
-        dimensions = capabilities['screenResolution'].split('x')
-        capabilities['name'] = capabilities['browserName'] + ' ' + capabilities['screenResolution']
-        capabilities['screenResolution'] = '1920x1080'
+        dimensions, capabilities = self._get_dimensions_and_capabilities(capabilities, test_name)
         browser = self._browsers.get(capability_hash)
         if browser:
             browser.delete_all_cookies()
         else:
-            element_scroll_behavior = capabilities.get('elementScrollBehavior')
-            kwargs = {
-                'command_executor': "http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
-                'desired_capabilities': capabilities,
-            }
-            if element_scroll_behavior:
-                kwargs['element_scroll_behavior'] = element_scroll_behavior
-            browser = GNRemote(**kwargs)
-            browser.implicitly_wait(1)
-            width, height = int(dimensions[0]), int(dimensions[1])
-            browser.set_window_size(width, height)
-            self._browsers[capability_hash] = browser
+            browser = super().get_browser(capabilities, test_name)
         return browser
 
     def cleanup(self):
         for browser in self._browsers.values():
             browser.quit()
 
-browser_manager = BrowserManager()
+if hasattr(settings, "SELENIUM_PERSISTENT_BROWSERS") and settings.SELENIUM_PERSISTENT_BROWSERS:
+    browser_manager = PersistentBrowserManager()
+    atexit.register(browser_manager.cleanup)
+else:
+    browser_manager = BrowserManager()
 
-atexit.register(browser_manager.cleanup)
