@@ -14,6 +14,9 @@ setup(
         "django==1.11.1",
         "django-jinja==2.3.0",
     ],
+    extras_require={
+        'selenium': ['selenium==3.3.1']
+    },
     include_package_data=True,
     scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
     packages = find_packages(exclude=('tests', 'examples')),
