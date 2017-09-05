@@ -15,8 +15,8 @@ setup(
         "django-jinja==2.3.0",
     ],
     extras_require={
-        'selenium': ['selenium==3.3.1']
-        'autocomplete': ['django-autocomplete-light==3.2.9']
+        'selenium': ['selenium==3.3.1'],
+        'autocomplete': ['django-autocomplete-light==3.2.9'],
     },
     include_package_data=True,
     scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
