@@ -1,2 +1,2 @@
 -r rtd_requirements.txt
--e ../
+-e ..[selenium,autocomplete]

@@ -48,6 +48,7 @@ to use when building django applications and sites at Gamer Network.
    packages/site
    packages/app
    packages/template
+   packages/test
 
 .. toctree::
    :maxdepth: 1

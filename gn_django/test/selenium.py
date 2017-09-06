@@ -30,6 +30,10 @@ def link_has_gone_stale(link):
 
 class GNWebElement(WebElement):
     """
+    Custom WebElement class enabling extended element find/interaction shortcuts.
+
+    Interaction calls will generally scroll the browser so that the element is
+    in the viewport, before interaction functionality is run.
     """
 
     def __init__(self, *args, **kwargs):
@@ -39,6 +43,10 @@ class GNWebElement(WebElement):
         super().__init__(*args, **kwargs)
 
     def scroll_to_element(self):
+        """
+        If element scroll behaviour has been defined, use javascript to scroll
+        an element in to the view port.
+        """
         if self.element_scroll_behavior == 'bottom':
             self._parent.execute_script(
                 "arguments[0].scrollIntoView(false);", self)
@@ -55,20 +63,36 @@ class GNWebElement(WebElement):
         return super().send_keys(*args, **kwargs)
 
     def wait_for_new_page(self):
+        """
+        Wait for a new page to load in the browser.
+        """
         wait_for(link_has_gone_stale, self)
 
     def click_to_new_page(self):
+        """
+        Click a link which links through to a new page and wait for the 
+        page to load.
+        """
         result = self.click()
         self.wait_for_new_page()
         return result
 
     def send_enter(self):
+        """
+        Send the enter key and wait for a new page load.
+        """
         self.send_keys(u'\ue007')
         self.wait_for_new_page()
 
 
 class GNRemote(webdriver.Remote):
     """
+    Selenium Remote subclass which uses our custom GNWebElement class for
+    interacting with dom elements.
+
+    This allows us to specify custom element scroll behaviour - meaning we 
+    can ensure an element has been scrolled in to view before interacting
+    with it.
     """
 
     _web_element_cls = GNWebElement
@@ -80,11 +104,19 @@ class GNRemote(webdriver.Remote):
         super().__init__(*args, **kwargs)
 
     def create_web_element(self, element_id):
-        """Creates a web element with the specified `element_id`."""
+        """
+        Creates a web element with the specified `element_id`.
+        """
         return self._web_element_cls(self, element_id, w3c=self.w3c, 
             element_scroll_behavior=self.element_scroll_behavior)
 
 class BrowserManager:
+    """
+    Provides instantiated selenium browser objects, given a requested set of
+    capabilities.
+
+    This manager instantiates one browser per test case.
+    """
 
     def _get_dimensions_and_capabilities(self, capabilities, test_name):
         capabilities = capabilities.copy()
@@ -104,6 +136,15 @@ class BrowserManager:
         
     def get_browser(self, capabilities, test_name):
         """
+        Get an instantiated browser, given a set of capabilities.
+
+        Args:
+          * ``capabilities`` - dict - Selenium capabilities dictionary;
+            http://selenium-python.readthedocs.io/api.html#desired-capabilities
+          * ``test_name`` - string - test name for the current test case.
+
+        Returns:
+          An instantiated selenium browser.
         """
         dimensions, capabilities = self._get_dimensions_and_capabilities(capabilities, test_name)
         element_scroll_behavior = capabilities.get('elementScrollBehavior')
@@ -122,6 +163,9 @@ class BrowserManager:
     
 class PersistentBrowserManager(BrowserManager):
     """
+    Much like the standard BrowserManager, but attempts to reuse 
+    browser instances by reusing existing browsers which match a particular
+    set of capabilities.
     """
     
     def __init__(self):
@@ -137,6 +181,15 @@ class PersistentBrowserManager(BrowserManager):
 
     def get_browser(self, capabilities, test_name):
         """
+        Get an instantiated browser, given a set of capabilities.
+
+        Args:
+          * ``capabilities`` - dict - Selenium capabilities dictionary;
+            http://selenium-python.readthedocs.io/api.html#desired-capabilities
+          * ``test_name`` - string - test name for the current test case.
+
+        Returns:
+          An instantiated selenium browser.
         """
         capability_hash = self._hash_capabilities(capabilities)
         dimensions, capabilities = self._get_dimensions_and_capabilities(capabilities, test_name)
