@@ -175,7 +175,7 @@ class PersistentBrowserManager(BrowserManager):
         return hash(frozenset(capabilities.items()))
 
     def _get_dimensions_and_capabilities(self, capabilities, test_name):
-        dimensions, capabilities = super()._get_dimensions_and_capabilities(capabilites, test_name)
+        dimensions, capabilities = super()._get_dimensions_and_capabilities(capabilities, test_name)
         capabilities['name'] = capabilities['browserName'] + ' ' + capabilities['screenResolution']
         return (dimensions, capabilities)
 
