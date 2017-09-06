@@ -9,6 +9,10 @@ def strip_protocol(url):
     pattern = re.compile(r'^https?\:')
     return re.sub(pattern, '', url)
 
+def strip_query_string(url):
+    p = urlparse.urlparse(url)
+    return '%s://%s%s' % (p.scheme, p.netloc, p.path)
+
 def add_params_to_url(url, **params):
     """
     Reliably add a dictionary of GET parameters to a url string.
@@ -47,7 +51,7 @@ def convert_camelcase_to_slugified(camelcase):
     """
     Takes a camelcase string and converts it to a string in slug format.
 
-    e.g. 
+    e.g.
         "MyStringHere" becomes "my-string-here"
 
     Args:
@@ -59,4 +63,3 @@ def convert_camelcase_to_slugified(camelcase):
     slugified = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', camelcase)
     slugified = re.sub('([a-z0-9])([A-Z])', r'\1-\2', slugified).lower()
     return slugified
-
