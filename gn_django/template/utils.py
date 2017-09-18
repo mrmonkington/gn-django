@@ -1,3 +1,5 @@
+import os
+
 from django.template import loader
 
 def render_to_string(template, context, request=None, using=None):
@@ -17,3 +19,17 @@ def render_to_string(template, context, request=None, using=None):
     """
     return loader.render_to_string(template, context=context, request=request, using=using)
 
+def get_template_dir_for_app(app_name):
+    """
+    Get the absolute path to an app's template directory, given the app name.
+
+    Args:
+      * `app_name` - string - the name of the django app
+
+    Returns:
+      The absolute path to the template directory.
+    """
+    app_module = __import__(app_name)
+    app_path = os.path.dirname(app_module.__file__)
+    template_path = os.path.join(app_path, 'templates')
+    return template_path

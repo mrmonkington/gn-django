@@ -8,12 +8,17 @@ var minify = require('gulp-minify-css');
 var util = require('gulp-util');
 
 gulp.task('compile', function () {
+  var l = less({});
+  l.on('error',function(e){
+    console.log(e);
+    l.end();
+  });
   return val = gulp.src([
       './static/less/*.less',
       '!./static/less/modules/**',
       '!./static/less/helpers/**'
     ])
-    .pipe(less())
+    .pipe(l)
     .pipe(minify())
     .pipe(autoprefixer({
       browsers: ['last 10 versions']
