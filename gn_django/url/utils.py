@@ -75,5 +75,5 @@ def convert_to_camelcase(to_convert):
     Returns:
       A string.
     """
-    camelcase = to_convert.replace('-', ' ').replace('_', ' ').title().replace(' ', '')
+    camelcase = re.sub('[^A-Za-z0-9]+', ' ', to_convert).title().replace(' ', '') 
     return camelcase
