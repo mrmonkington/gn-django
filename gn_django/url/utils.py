@@ -66,3 +66,21 @@ def convert_camelcase_to_slugified(camelcase):
     slugified = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', camelcase)
     slugified = re.sub('([a-z0-9])([A-Z])', r'\1-\2', slugified).lower()
     return slugified
+
+def convert_to_camelcase(to_convert):
+    """
+    Takes a string and converts it to a string in camelcase format.
+
+    e.g.
+        "my-string-here" becomes "MyStringHere"
+        "my string here" becomes "MyStringHere"
+        "my_string-here" becomes "MyStringHere"
+
+    Args:
+      * `to_convert` - string - the slug string to convert
+
+    Returns:
+      A string.
+    """
+    camelcase = re.sub('[^A-Za-z0-9]+', ' ', to_convert).title().replace(' ', '')
+    return camelcase

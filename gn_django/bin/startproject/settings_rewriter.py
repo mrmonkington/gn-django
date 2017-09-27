@@ -17,8 +17,6 @@ with open(settings_path, "r") as f:
 
 extra_installed_apps = """
     "django_jinja",
-    'dal',
-    'dal_select2',
 """
 installed_apps_index = settings.find("INSTALLED_APPS")
 installed_apps_end = settings.find(']', installed_apps_index)

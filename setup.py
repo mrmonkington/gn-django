@@ -6,15 +6,18 @@ long_description = open(BASE_DIR + '/README.rst').read()
 
 setup(
     name='gn-django',
-    version='1.1.0',
+    version='1.2.0',
     url='https://github.com/gamernetwork/gn-django',
     description='Collection of tools and patterns for Gamer Network django apps/projects.',
     long_description=long_description,
     install_requires=[
-        "django==1.11.1",
+        "django==1.11.5",
         "django-jinja==2.3.0",
-        "django-autocomplete-light==3.2.9",
     ],
+    extras_require={
+        'selenium': ['selenium==3.3.1'],
+        'autocomplete': ['django-autocomplete-light==3.2.9'],
+    },
     include_package_data=True,
     scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
     packages = find_packages(exclude=('tests', 'examples')),

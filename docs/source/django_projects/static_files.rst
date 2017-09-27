@@ -19,13 +19,7 @@ installation, file watching and asset generation.
 Gulp Installation
 ~~~~~~~~~~~~~~~~~
 
-To use Gulp, you will need to ensure that the Gulp and its CLI are installed globally on the server
-by running::
-
-  npm install gulp-cli -g
-  npm install gulp -D
-
-You'll then need to install the dependencies defined in the ``packages.json`` file
+To use Gulp, you'll then need to install the dependencies defined in the ``packages.json`` file
 by running::
 
   npm install
@@ -38,7 +32,7 @@ Gulp Compilation Tasks
 
 To watch your static files and compile automatically, run::
 
-  gulp watch --silent &
+  node_modules/gulp-cli/bin/gulp.js watch --silent &
 
 This will print the process number for the watcher and then leave it running silently in the background.
 The behaviour of the tasks is defined in the ``gulpfile.js`` file.
@@ -47,12 +41,17 @@ The ``gulpfile.js`` that comes with the binary looks like this (excluding the in
 at the top)::
 
   gulp.task('compile', function () {
+    var l = less({});
+    l.on('error',function(e){
+      console.log(e);
+      l.end();
+    });
     return gulp.src([
         './static/less/*.less',
         '!./static/less/modules/**',
         '!./static/less/helpers/**'
       ])
-      .pipe(less())
+      .pipe(l)
       .pipe(minify())
       .pipe(autoprefixer({
         browsers: ['last 10 versions']
