@@ -10,6 +10,9 @@ def strip_protocol(url):
     return re.sub(pattern, '', url)
 
 def strip_query_string(url):
+    """
+    Strip query string from URL
+    """
     p = urlparse.urlparse(url)
     return '%s://%s%s' % (p.scheme, p.netloc, p.path)
 
