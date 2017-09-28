@@ -133,6 +133,20 @@ class BrowserManager:
         capabilities['name'] = test_name
         capabilities['screenResolution'] = '2100x1200'
         return (dimensions, capabilities)
+
+    def _get_instantiated_browser(self, width, height, capabilities):
+        element_scroll_behavior = capabilities.get('elementScrollBehavior')
+        kwargs = {
+            'command_executor': "http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
+            'desired_capabilities': capabilities,
+        }
+        if element_scroll_behavior:
+            kwargs['element_scroll_behavior'] = element_scroll_behavior
+        browser = GNRemote(**kwargs)
+        browser.implicitly_wait(1)
+        browser.set_window_size(width, height)
+        return browser
+        
         
     def get_browser(self, capabilities, test_name):
         """
@@ -147,17 +161,8 @@ class BrowserManager:
           An instantiated selenium browser.
         """
         dimensions, capabilities = self._get_dimensions_and_capabilities(capabilities, test_name)
-        element_scroll_behavior = capabilities.get('elementScrollBehavior')
-        kwargs = {
-            'command_executor': "http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
-            'desired_capabilities': capabilities,
-        }
-        if element_scroll_behavior:
-            kwargs['element_scroll_behavior'] = element_scroll_behavior
-        browser = GNRemote(**kwargs)
-        browser.implicitly_wait(1)
-        width, height = int(dimensions[0]), int(dimensions[1])
-        browser.set_window_size(width, height)
+        width, height = dimensions
+        browser = self._get_instantiated_browser(width, height, capabilities)
         return browser
     
     
@@ -175,8 +180,9 @@ class PersistentBrowserManager(BrowserManager):
         return hash(frozenset(capabilities.items()))
 
     def _get_dimensions_and_capabilities(self, capabilities, test_name):
+        name = capabilities['browserName'] + ' ' + capabilities['screenResolution']
         dimensions, capabilities = super()._get_dimensions_and_capabilities(capabilities, test_name)
-        capabilities['name'] = capabilities['browserName'] + ' ' + capabilities['screenResolution']
+        capabilities['name'] = name
         return (dimensions, capabilities)
 
     def get_browser(self, capabilities, test_name):
@@ -197,7 +203,9 @@ class PersistentBrowserManager(BrowserManager):
         if browser:
             browser.delete_all_cookies()
         else:
-            browser = super().get_browser(capabilities, test_name)
+            width, height = dimensions
+            browser = self._get_instantiated_browser(width, height, capabilities)
+            self._browsers[capability_hash] = browser
         return browser
 
     def cleanup(self):
@@ -209,4 +217,3 @@ if hasattr(settings, "SELENIUM_PERSISTENT_BROWSERS") and settings.SELENIUM_PERSI
     atexit.register(browser_manager.cleanup)
 else:
     browser_manager = BrowserManager()
-
