@@ -10,7 +10,8 @@ The ``gn_django.db.db_routers.AppsRouter`` class
 ------------------------------------------------
 
 A router to route DB operations for one or more django apps to a particular 
-database.
+database.  This is a django DB router, for more information refer to
+`django's docs on DB routers <https://docs.djangoproject.com/en/1.11/topics/db/multi-db/#using-routers>`_.
 
 Subclasses of ``AppsRouter`` can specify django app labels and a database name
 to route DB operations to.
