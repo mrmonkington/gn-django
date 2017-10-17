@@ -24,4 +24,3 @@ setup(
     scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
     packages = find_packages(exclude=('tests', 'examples')),
 )
-
