@@ -6,7 +6,6 @@ long_description = open(BASE_DIR + '/README.rst').read()
 
 setup(
     name='gn-django',
-
     version='1.4.0',
     url='https://github.com/gamernetwork/gn-django',
     description='Collection of tools and patterns for Gamer Network django apps/projects.',
@@ -25,3 +24,4 @@ setup(
     scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
     packages = find_packages(exclude=('tests', 'examples')),
 )
+
