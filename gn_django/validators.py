@@ -54,8 +54,9 @@ class GamerNetworkImageValidator(URLValidator):
 
 class DomainValidator(URLValidator):
     patterns = {
-        'protocol': r'^([a-z]+)?\:?\/\/',
-        'www': r'^www\.?'
+        'protocol': r'^([a-zA-Z]+)?\:?\/\/',
+        'www': r'^www\.?',
+        'invalid': r'[^a-zA-Z0-9\.\-]+'
     }
     
     def __init__(self, *args, **kwargs):
@@ -67,7 +68,13 @@ class DomainValidator(URLValidator):
             if name == 'www' and self.allow_www:
                 continue
             if re.search(pattern, value):
-                raise ValidationError('Domain should not contain protocol (e.g. \'http://\') or \'www.\' subdomain')
+                if name == 'protocol':
+                    msg = 'Domain should not contain protocol (e.g. \'http://\')'
+                elif name == 'www':
+                    msg = 'Domain should not contain \'www.\' subdomain'
+                elif name == 'invalid':
+                    msg = 'Domain name contains invalid characters, only alphanumeric characters, hyphens and full stops are allowed'
+                raise ValidationError(msg)
         try:
             super().__call__('http://%s' % value)
         except ValidationError:
