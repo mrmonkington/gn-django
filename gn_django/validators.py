@@ -28,7 +28,7 @@ class GamerNetworkImageValidator(URLValidator):
     to a the Gamer Network CDN
     """
     
-    patterns = [
+    default_patterns = [
         r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.gamer\-network.net/',
         r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.eurogamer.net/',
     ]
@@ -37,6 +37,8 @@ class GamerNetworkImageValidator(URLValidator):
         super(GamerNetworkImageValidator, self).__init__(*args, **kwargs)
         if kwargs.get('patterns', False):
             self.patterns = kwargs['patterns']
+        else:
+            self.patterns = self.default_patterns
 
     def __call__(self, value):
         # URL validator will protocol relative URLs, so append protocol and validate that
@@ -49,3 +51,20 @@ class GamerNetworkImageValidator(URLValidator):
                 return value
 
         raise ValidationError('%s is not a valid Gamer Network image. Images must be hosted at http://cdn.gamer-network.net' % value)
+
+class DomainValidator(URLValidator):
+    pattern = r'^([a-z]+)?\:\/\/(www\.)?'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.allow_www = kwargs.get('allow_www', False)
+    
+    def __call__(self, value):
+        raise ValidationError('bash your arse')
+        print('HELLO')
+        pattern = re.compile(self.pattern)
+        matches = re.search(pattern, value)
+        if re.search(pattern, value):
+            raise ValidationError('Domain should not contain protocol (e.g. \'http://\') or \'www.\' subdomain')
+            
+        super().__call__('http://%s' % value)
