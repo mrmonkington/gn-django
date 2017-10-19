@@ -53,18 +53,20 @@ class GamerNetworkImageValidator(URLValidator):
         raise ValidationError('%s is not a valid Gamer Network image. Images must be hosted at http://cdn.gamer-network.net' % value)
 
 class DomainValidator(URLValidator):
-    pattern = r'^([a-z]+)?\:\/\/(www\.)?'
+    patterns = [
+        r'^([a-z]+)?\:?\/\/',
+        r'^www\.?'
+    ]
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.allow_www = kwargs.get('allow_www', False)
     
     def __call__(self, value):
-        raise ValidationError('bash your arse')
-        print('HELLO')
-        pattern = re.compile(self.pattern)
-        matches = re.search(pattern, value)
-        if re.search(pattern, value):
-            raise ValidationError('Domain should not contain protocol (e.g. \'http://\') or \'www.\' subdomain')
-            
-        super().__call__('http://%s' % value)
+        for pattern in self.patterns:
+            if re.search(pattern, value):
+                raise ValidationError('Domain should not contain protocol (e.g. \'http://\') or \'www.\' subdomain')
+        try:
+            super().__call__('http://%s' % value)
+        except ValidationError:
+            raise ValidationError('\'%s\'is not a valid domain' % value)
