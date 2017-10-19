@@ -14,3 +14,6 @@ Reference
 
 .. gnimage-validator:
 .. include:: includes/validators/gnimage.rst
+
+.. domain-validator:
+.. include:: includes/validators/domain.rst
