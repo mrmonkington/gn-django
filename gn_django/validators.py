@@ -53,17 +53,19 @@ class GamerNetworkImageValidator(URLValidator):
         raise ValidationError('%s is not a valid Gamer Network image. Images must be hosted at http://cdn.gamer-network.net' % value)
 
 class DomainValidator(URLValidator):
-    patterns = [
-        r'^([a-z]+)?\:?\/\/',
-        r'^www\.?'
-    ]
+    patterns = {
+        'protocol': r'^([a-z]+)?\:?\/\/',
+        'www': r'^www\.?'
+    }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.allow_www = kwargs.get('allow_www', False)
     
     def __call__(self, value):
-        for pattern in self.patterns:
+        for name, pattern in self.patterns.items():
+            if name == 'www' and self.allow_www:
+                continue
             if re.search(pattern, value):
                 raise ValidationError('Domain should not contain protocol (e.g. \'http://\') or \'www.\' subdomain')
         try:
