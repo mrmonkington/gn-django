@@ -28,7 +28,7 @@ class GamerNetworkImageValidator(URLValidator):
     to a the Gamer Network CDN
     """
     
-    patterns = [
+    default_patterns = [
         r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.gamer\-network.net/',
         r'^(http)?s?\:?\/\/[a-zA-Z0-9-_]+.eurogamer.net/',
     ]
@@ -37,6 +37,8 @@ class GamerNetworkImageValidator(URLValidator):
         super(GamerNetworkImageValidator, self).__init__(*args, **kwargs)
         if kwargs.get('patterns', False):
             self.patterns = kwargs['patterns']
+        else:
+            self.patterns = self.default_patterns
 
     def __call__(self, value):
         # URL validator will protocol relative URLs, so append protocol and validate that
@@ -49,3 +51,31 @@ class GamerNetworkImageValidator(URLValidator):
                 return value
 
         raise ValidationError('%s is not a valid Gamer Network image. Images must be hosted at http://cdn.gamer-network.net' % value)
+
+class DomainValidator(URLValidator):
+    patterns = {
+        'protocol': r'^([a-zA-Z]+)?\:?\/\/',
+        'www': r'^www\.?',
+        'invalid': r'[^a-zA-Z0-9\.\-]+'
+    }
+    
+    def __init__(self, allow_www=False, *args, **kwargs):
+        self.allow_www = allow_www
+        super().__init__(*args, **kwargs)
+    
+    def __call__(self, value):
+        for name, pattern in self.patterns.items():
+            if name == 'www' and self.allow_www:
+                continue
+            if re.search(pattern, value):
+                if name == 'protocol':
+                    msg = 'Domain should not contain protocol (e.g. \'http://\')'
+                elif name == 'www':
+                    msg = 'Domain should not contain \'www.\' subdomain'
+                elif name == 'invalid':
+                    msg = 'Domain name contains invalid characters, only alphanumeric characters, hyphens and full stops are allowed'
+                raise ValidationError(msg)
+        try:
+            super().__call__('http://%s' % value)
+        except ValidationError:
+            raise ValidationError('\'%s\'is not a valid domain' % value)
