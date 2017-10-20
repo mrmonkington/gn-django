@@ -59,9 +59,9 @@ class DomainValidator(URLValidator):
         'invalid': r'[^a-zA-Z0-9\.\-]+'
     }
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, allow_www=False, *args, **kwargs):
+        self.allow_www = allow_www
         super().__init__(*args, **kwargs)
-        self.allow_www = kwargs.get('allow_www', False)
     
     def __call__(self, value):
         for name, pattern in self.patterns.items():
