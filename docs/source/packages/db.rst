@@ -1,4 +1,4 @@
-.. _package-db:
+.. _gn-django-package-db:
 
 DB
 ==

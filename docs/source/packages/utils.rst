@@ -1,4 +1,4 @@
-.. _utils:
+.. _gn-django-utils:
 
 Utils
 =====

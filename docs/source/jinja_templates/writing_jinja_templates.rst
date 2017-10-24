@@ -309,7 +309,7 @@ the need to use the :ref:`With statement <with-statement>` when using includes.
 
 **Note:** This will completely override the current context,
 meaning that any variables declared by context processors *will not* be included in
-the context of the included template. For more information, read the :ref:`case study <writing-include-with-ext>`
+the context of the included template. For more information, read the :ref:`case study <gn-django-writing-include-with-ext>`
 
 Example::
 
@@ -348,7 +348,7 @@ are equivalent::
         {{ foo }}
     {% endwith %}
 
-.. _static-link:
+.. _gn-django-static-link:
 
 Static Link Extension
 ~~~~~~~~~~~~~~~~~~~~~

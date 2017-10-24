@@ -1,4 +1,4 @@
-.. _environment-overridable-settings:
+.. _gn-django-environment-overridable-settings:
 
 Environment-Overridable Settings
 ================================

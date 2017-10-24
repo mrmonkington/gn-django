@@ -1,4 +1,4 @@
-.. _form-library:
+.. _gn-django-form-library:
 
 Form
 ====

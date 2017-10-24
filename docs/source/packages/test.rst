@@ -1,4 +1,4 @@
-.. _package-test:
+.. _gn-django-package-test:
 
 Test
 ====

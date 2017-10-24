@@ -1,4 +1,4 @@
-.. _how-to-set-up-jinja:
+.. _gn-django-how-to-set-up-jinja:
 
 How to set up Jinja in a django project
 =======================================

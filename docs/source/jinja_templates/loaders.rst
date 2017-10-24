@@ -94,18 +94,18 @@ Sparse template inheritance in practice
 ---------------------------------------
 
 To use sparse template inheritance in a django project, you must use either the
-:ref:`hierarchy-loader` or :ref:`multi-hierarchy-loader` classes.  
+:ref:`gn-django-hierarchy-loader` or :ref:`gn-django-multi-hierarchy-loader` classes.  
 
-The :ref:`hierarchy-loader` is for use when your deployable django project is
+The :ref:`gn-django-hierarchy-loader` is for use when your deployable django project is
 for one concrete site - i.e. there is a single template inheritance hierarchy 
 to resolve.  In this case, we may have a ``eurogamer`` repository which has django
 apps for ``eurogamer_net``, ``eurogamer_de``, ``eurogamer_pl`` etc.  Each of 
 these different apps would have their own template directories and overridden 
 backend code - so there would need to be a separate deployment per site.  In this
-case we can use the :ref:`hierarchy-loader` because a given django deployment has
+case we can use the :ref:`gn-django-hierarchy-loader` because a given django deployment has
 a single static hierarchy to resolve.
 
-The :ref:`multi-hierarchy-loader` is for use when your deployable django project is
+The :ref:`gn-django-multi-hierarchy-loader` is for use when your deployable django project is
 for multiple concrete sites - i.e. there are many inheritance hierarchies that
 the loader will need to resolve. For example, the auth service will have a 
 web app frontend for setting user profiles/changing passwords etc. Each 
@@ -114,7 +114,7 @@ following domains: auth.eurogamer.net, auth.eurogamer.de, auth.usgamer.net, etc.
 The core auth functionality between different sites is unlikely to differ 
 beyond needing feature toggles, but we do need to be able to have site-specific 
 frontends and override the templates used in a nice way.  So the 
-:ref:`multi-hierarchy-loader` is used for selecting the appropriate template 
+:ref:`gn-django-multi-hierarchy-loader` is used for selecting the appropriate template 
 hierarchy to use for each request.
 
 Using the HierarchyLoader
@@ -122,7 +122,7 @@ Using the HierarchyLoader
 
 **Note**: This worked example is runnable in ``examples/sparse_inheritance/``.
 
-The instantiated :ref:`hierarchy-loader` should be passed to the jinja backend
+The instantiated :ref:`gn-django-hierarchy-loader` should be passed to the jinja backend
 in the ``TEMPLATES`` django setting.
 
 .. code-block:: python
@@ -154,15 +154,15 @@ in the ``TEMPLATES`` django setting.
     ]
 
 .. note::
-    :ref:`get_hierarchy_loader <get-hierarchy-loader>` is a simple convenience method which allows us to
+    :ref:`get_hierarchy_loader <gn-django-get-hierarchy-loader>` is a simple convenience method which allows us to
     specify the template hierarchy as a simple list of namespace identifier/template directory 
     pairs.  Under the hood, it instantiates a loader hierarchy composed
     of ``FileSystemLoaders`` for each namespace/directory pair which allows templates
     to be loaded by ancestry, by namespace or by sequential lookup.
 
-.. _hierarchy-template-loading:
+.. _gn-django-hierarchy-template-loading:
 
-Now, when rendering templates from a view, the :ref:`hierarchy-loader` will be 
+Now, when rendering templates from a view, the :ref:`gn-django-hierarchy-loader` will be 
 used.  It's used for any template loading within jinja; loading the
 template to render for a view as well as for ``extends``, ``include``, ``macro``
 etc template tags within templates.
@@ -208,15 +208,15 @@ Using the MultiHierarchyLoader in conjunction with the site package
 
 **Note:** This worked example is runnable in ``examples/sparse_inheritance_multi_site/``.
 
-As mentioned, the :ref:`multi-hierarchy-loader` is for use when your deployable 
+As mentioned, the :ref:`gn-django-multi-hierarchy-loader` is for use when your deployable 
 django project will service multiple concrete sites.
 This might be achieved by domain separation - e.g. ``"auth.eurogamer.net"`` and 
 ``"auth.vg247.com"``.  Or it might be achieved by URL path separation - e.g. 
 ``"auth.gamer-network.net/eurogamer_net/"`` and ``auth.gamer-network.net/vg247_com/``. 
 Right now, only domain separation has been implemented with use of 
-:ref:`the site package<package-site>`.
+:ref:`the site package<gn-django-package-site>`.
 
-The instantiated :ref:`multi-hierarchy-loader` should be passed to the jinja backend
+The instantiated :ref:`gn-django-multi-hierarchy-loader` should be passed to the jinja backend
 in the ``TEMPLATES`` django setting.
 
 .. code-block:: python
@@ -302,24 +302,24 @@ in the ``TEMPLATES`` django setting.
     ]
 
 .. note::
-    :ref:`get_multi_hierarchy_loader <get-multi-hierarchy-loader>` is a convenience method which allows us to
+    :ref:`get_multi_hierarchy_loader <gn-django-get-multi-hierarchy-loader>` is a convenience method which allows us to
     specify the template hierarchies as a nested data structure.  Under the hood, 
-    it instantiates a :ref:`hierarchy-loader` for each template hierarchy 
+    it instantiates a :ref:`gn-django-hierarchy-loader` for each template hierarchy 
     specified.  It also takes a callback function to use by the loader to
     resolve which hierarchy is active at any given time - so that the correct
-    :ref:`hierarchy-loader` is used to load templates.
+    :ref:`gn-django-hierarchy-loader` is used to load templates.
 
-Template loading is delegated to the :ref:`hierarchy-loader` and follows the
-:ref:`conventions defined previously<hierarchy-template-loading>`.  The 
-difference is that the :ref:`hierarchy-loader` used to load templates is selected
+Template loading is delegated to the :ref:`gn-django-hierarchy-loader` and follows the
+:ref:`conventions defined previously<gn-django-hierarchy-template-loading>`.  The 
+difference is that the :ref:`gn-django-hierarchy-loader` used to load templates is selected
 based on the result of the ``gn_django.site.get_namespace_for_site`` callback 
 function.  So the loader is chosen based on the domain of the current request -
-set by the :ref:`SiteFromDomainMiddleware <site-from-domain-middleware>`.
+set by the :ref:`SiteFromDomainMiddleware <gn-django-site-from-domain-middleware>`.
 
 Reference
 ---------
 
-.. _hierarchy-loader:
+.. _gn-django-hierarchy-loader:
 
 HierarchyLoader
 ~~~~~~~~~~~~~~~
@@ -328,7 +328,7 @@ HierarchyLoader
    :members:
 
 
-.. _multi-hierarchy-loader:
+.. _gn-django-multi-hierarchy-loader:
 
 MultiHierarchyLoader
 ~~~~~~~~~~~~~~~~~~~~
@@ -339,11 +339,11 @@ MultiHierarchyLoader
 Helpers
 ~~~~~~~
 
-.. _get-hierarchy-loader:
+.. _gn-django-get-hierarchy-loader:
 
 .. autofunction:: gn_django.template.loaders.get_hierarchy_loader
 
-.. _get-multi-hierarchy-loader:
+.. _gn-django-get-multi-hierarchy-loader:
 
 .. autofunction:: gn_django.template.loaders.get_multi_hierarchy_loader
 

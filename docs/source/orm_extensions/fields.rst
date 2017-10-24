@@ -1,4 +1,4 @@
-.. _fields:
+.. _gn-django-fields:
 
 Fields
 ======
@@ -9,5 +9,5 @@ projects. For general usage, see the `official Django documentation <https://doc
 Reference
 ---------
 
-.. _youtube-field:
+.. _gn-django-youtube-field:
 .. include:: includes/fields/youtube.rst

@@ -1,9 +1,9 @@
-.. _package-app:
+.. _gn-django-package-app:
 
 App
 ===
 
-.. _app-configs:
+.. _gn-django-app-configs:
 
 App configs
 -----------
@@ -13,7 +13,7 @@ which should be used by django apps which depend on gn-django features.  It's
 a drop-in replacement for django's standard ``AppConfig`` class in django's built
 in `applications library <https://docs.djangoproject.com/en/1.11/ref/applications/>`_.
 Right now, the only extended functionality that it offers is to allow django
-apps to register views for combining in to a :ref:`view-registry`.  In future,
+apps to register views for combining in to a :ref:`gn-django-view-registry`.  In future,
 it may offer additional functionality for app-specific configuration.
 
 .. note::
@@ -28,7 +28,7 @@ it may offer additional functionality for app-specific configuration.
         default_app_config = 'path.to.AppConfig'
 
 
-.. _view-registry:
+.. _gn-django-view-registry:
 
 View Registry
 -------------
@@ -41,7 +41,7 @@ apps' ``urls.py`` files.  Views in ``urls.py`` are referenced by a registry
 lookup using a label as opposed to a concrete reference to a view class.
 
 An app registers View classes to the registry by declaring a 
-:ref:`GNAppConfig <app_configs>` subclass in ``apps.py``.  This class should
+:ref:`GNAppConfig <gn-django-app-configs>` subclass in ``apps.py``.  This class should
 have a class attribute ``views`` which is a dictionary composed of view labels 
 and view classes.
 
