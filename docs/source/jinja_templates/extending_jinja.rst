@@ -26,7 +26,7 @@ To use context processors, specify them in the jinja backend of your
     }
 
 
-.. _registering-jinja-per-application-globals-filters:
+.. _gn-django-registering-jinja-per-application-globals-filters:
 
 Registering per-application globals and filters
 -----------------------------------------------
@@ -86,7 +86,7 @@ Here's an example::
     library.extension(MyExtension)
 
 
-.. _extending-jinja-globals-filters:
+.. _gn-django-extending-jinja-globals-filters:
 
 Extending globals, filters and tests provided by gn-django
 ----------------------------------------------------------
@@ -106,5 +106,5 @@ possible collisions with context variables provided by views.
 **Note:** Any additions made here will be introduced to all Gamer Network django
 projects - so they should be generic enough for that to make sense.
 
-.. _writing-include-with-ext:
+.. _gn-django-writing-include-with-ext:
 .. include:: jinja_extensions/case_study_include_with.rst

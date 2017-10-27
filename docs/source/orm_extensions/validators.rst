@@ -1,4 +1,4 @@
-.. _validators:
+.. _gn-django-validators:
 
 Validators
 ==========
@@ -9,11 +9,11 @@ projects. For general usage, see the `official Django documentation <https://doc
 Reference
 ---------
 
-.. _youtube-validator:
+.. _gn-django-youtube-validator:
 .. include:: includes/validators/youtube.rst
 
-.. gnimage-validator:
+.. _gn-django-gnimage-validator:
 .. include:: includes/validators/gnimage.rst
 
-.. domain-validator:
+.. _gn-django-domain-validator:
 .. include:: includes/validators/domain.rst

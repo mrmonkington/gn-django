@@ -42,9 +42,9 @@ Some of the common practical differences are:
    ``{{foo|cut(10)}}``
  - Third party libraries which offer django filters, need to instead be registered 
    for jinja.  This can be achieved as described in 
-   :ref:`the following section <adapting-third-party-for-jinja>`.
+   :ref:`the following section <gn-django-adapting-third-party-for-jinja>`.
 
-.. adapting-third-party-for-jinja::
+.. _gn-djangoadapting-third-party-for-jinja:
 
 Adapting third-party django filters/tags to use in jinja
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,10 +52,10 @@ Adapting third-party django filters/tags to use in jinja
 To register a global or filter from a third party library for use in jinja, there
 are two mechanisms that could be used:
  - Register the global/filter just for your current django project, using 
-   :ref:`this mechanism <registering-jinja-per-application-globals-filters>`.
+   :ref:`this mechanism <gn-django-registering-jinja-per-application-globals-filters>`.
  - If the third-party library is included as a gn-django dependency, 
    register the global/filter as a default for gn-django using
-   :ref:`this mechanism <extending-jinja-globals-filters>`.
+   :ref:`this mechanism <gn-django-extending-jinja-globals-filters>`.
 
 Template tags are a little more complex, and require creating a jinja extension.
 This is described extensively in the jinja docs `here <http://jinja.pocoo.org/docs/2.9/extensions/#module-jinja2.ext>`_.

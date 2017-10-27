@@ -1,4 +1,4 @@
-.. _package-site:
+.. _gn-django-package-site:
 
 Site 
 ====

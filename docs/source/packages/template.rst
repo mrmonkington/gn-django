@@ -1,4 +1,4 @@
-.. _template-library:
+.. _gn-django-template-library:
 
 Template
 ========

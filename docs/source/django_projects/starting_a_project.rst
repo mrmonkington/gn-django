@@ -21,7 +21,7 @@ The project is set up with the following:
   * A standard ``manage.py`` for running the project.
   * A ``project/`` directory containing:
 
-      * :ref:`environment-overridable-settings`
+      * :ref:`gn-django-environment-overridable-settings`
       * A ``wsgi.py`` file
       * A root ``urls.py`` file
   * A ``.gitignore`` file which ignores a sensible default of files.
@@ -29,7 +29,7 @@ The project is set up with the following:
   * A basic ``requirements.txt`` file which includes ``gn-django`` as a requirement.
 
 The default project settings include ``django-jinja`` as an installed app
-and set up a jinja template backend as :ref:`explained here <how-to-set-up-jinja>` 
+and set up a jinja template backend as :ref:`gn-django-explained here <how-to-set-up-jinja>` 
 which matches jinja templates (ending with `".j2"`) in all apps' `templates/` 
 directories.
 

@@ -6,7 +6,7 @@ Usage in Templates
 
 GN Django comes with a Jinja extension for linking to static files using the ``css``
 and ``js`` tags. For more information on usage and configuration, see the
-:ref:`documentation <static-link>`.
+:ref:`documentation <gn-django-static-link>`.
 
 Compilation
 -----------

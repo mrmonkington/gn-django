@@ -1,5 +1,5 @@
-Testing in gn-django
-====================
+Testing GN Django 
+=================
 
 Tests are located in ``tests/`` which doubles up as a barebones django project.
 

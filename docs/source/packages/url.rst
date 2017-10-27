@@ -1,4 +1,4 @@
-.. _url-library:
+.. _gn-django-url-library:
 
 URL
 ===
