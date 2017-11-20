@@ -29,7 +29,7 @@ def get_template_dir_for_app(app_name):
     Returns:
       The absolute path to the template directory.
     """
-    app_module = __import__(app_name)
+    app_module = __import__(app_name, fromlist=[''])
     app_path = os.path.dirname(app_module.__file__)
     template_path = os.path.join(app_path, 'templates')
     return template_path
