@@ -148,7 +148,6 @@ class StaticLinkExtension(Extension):
         ext = 'js'
         file_dir = self._get_file_dir(ext)
         script_type = 'application/javascript'
-
         template = '<script src="{{ static("%s/%s.%s") }}?v=%s" type="%s"></script>' % (file_dir, name, ext, self._get_version(), script_type)
 
         return self.environment.from_string(template).render()
@@ -218,8 +217,8 @@ class StaticLinkExtension(Extension):
     def _get_version(self):
         """
         Get the version number to append to the static file URLs. This is defined
-        in the `STATICLINK_VERSION` setting, and defaults to the current timestamp.
+        in the `STATICLINK_VERSION` setting, and defaults to "latest".
         """
         if hasattr(dj_settings, 'STATICLINK_VERSION'):
             return dj_settings.STATICLINK_VERSION
-        return time.time()
+        return "latest"

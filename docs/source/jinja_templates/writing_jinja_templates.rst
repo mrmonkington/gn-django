@@ -391,7 +391,7 @@ The extension is highly configurable:
        'less': 'precompiled',
     }
 
-- ``STATICLINK_VERSION`` - A unique version number to append to the static file URLs for cache-busting. Defaults to current time stamp.
+- ``STATICLINK_VERSION`` - A unique version number to append to the static file URLs for cache-busting. Defaults to "latest".
 
 As example of this in action can be found in the ``simple`` example with the ``static-link-extnesion`` slug.
 
