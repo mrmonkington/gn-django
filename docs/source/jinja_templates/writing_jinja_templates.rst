@@ -364,34 +364,7 @@ The following tags come included with the extension:
 - ``{% js '[name]' %}`` - Link to a JavaScript file. The ``name`` is the file path within the static directory for that file type, without a file extension e.g. ``pages/article`
 - ``{% load_compilers %}`` - Link to compiler scripts for client-side compilation of static files when in a dev environment (outputs nothing in production).
 
-The extension is highly configurable:
-
-- ``STATICLINK_PREPROCESSORS`` - A dictionary mapping script type to preprocessors::
-
-    STATICLINK_PREPROCESSORS = {
-      'css': 'less',
-    }
-- ``STATICLINK_CLIENT_COMPILERS`` - A dictionary mapping script type to the URLs or client-side compilation scripts::
-
-    STATICLINK_CLIENT_COMPILERS = {
-        'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
-    }
-
-- ``STATICLINK_DEBUG`` - This option allows you to enable or disable debug mode for different script types::
-
-    STATICLINK_DEBUG = {
-       'css': False,
-       'js': True,
-    }
-
-- ``STATICLINK_FILE_MAP`` - A dictionary mapping file extensions to directory. If it is not set, it will default to a directory of the same name as the file extension::
-
-    STATICLINK_FILE_MAP = {
-       'js': 'scripts',
-       'less': 'precompiled',
-    }
-
-- ``STATICLINK_VERSION`` - A unique version number to append to the static file URLs for cache-busting. Defaults to current time stamp.
+The extension is highly configurable, see :ref:`staticlink settings <gn-django-settings-staticlink>`.
 
 As example of this in action can be found in the ``simple`` example with the ``static-link-extnesion`` slug.
 
