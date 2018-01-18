@@ -9,9 +9,8 @@ var util = require('gulp-util');
 var execSync = require('child_process').execSync;
 var merge = require('merge-stream');
 
-var compilations = JSON.parse(execSync('python manage.py get_less_compilations'));
-
 gulp.task('compile', function () {
+  var compilations = JSON.parse(execSync('python manage.py get_less_compilations'));
   var l = less({});
   l.on('error',function(e){
     console.log(e);
@@ -37,6 +36,7 @@ gulp.task('compile', function () {
 });
 
 gulp.task('watch', function () {
+  var compilations = JSON.parse(execSync('python manage.py get_less_compilations'));
   var watchLocations = [];
   for (var i = 0; i < compilations.length; i++) {
     watchLocations.push(compilations[i]['watch']);
