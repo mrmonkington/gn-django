@@ -71,3 +71,8 @@ settings file.
 Settings contained in ``app_settings.py`` must be used in a final settings file
 explicitly, there is no automatic mechanism for including them in the settings
 namespace.
+
+Environment Overridable Settings
+--------------------------------
+
+Be sure to also read up on :ref:`environment overridable settings <gn-django-environment-overridable-settings>`.
