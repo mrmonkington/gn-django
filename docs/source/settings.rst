@@ -70,7 +70,17 @@ settings file.
 
 Settings contained in ``app_settings.py`` must be used in a final settings file
 explicitly, there is no automatic mechanism for including them in the settings
-namespace.
+namespace. e.g.
+
+.. code:: python
+
+   # project settings.py
+
+   import gravity_core.app_settings
+   import barristan_admin.app_settings
+
+   LESS_COMPILATIONS = gravity_core.app_settings.LESS_COMPILATIONS + \
+        barristan_admin.app_settings.LESS_COMPILATIONS
 
 Environment Overridable Settings
 --------------------------------

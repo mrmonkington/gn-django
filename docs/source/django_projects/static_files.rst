@@ -49,6 +49,7 @@ and compiles accordingly.
 Within the ``compile`` command, the following happens:
 
 - ``python manage.py get_less_compilations`` is called to get a JSON iterable of compilation locations.
+  For more detail, refer to: :ref:`gn-django-commands-less-compilations`.
 - For each compilation location..
   - ``gulp.src()`` command collects files within the ``./static/less`` directory, excluding those in the ``modules`` and ``helpers`` subdirectory.
   - It is then piped to the ``less()`` command, which compiles them into CSS
