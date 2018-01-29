@@ -1,9 +1,7 @@
 - [ ] Is this Pull Request ready for review?
 - [ ] Do the tests pass?
 - [ ] Have the docs been updated?
-
-**Who would you like to review this pull request?**
-Enter their @username here.
+- [ ] Have any new settings been added?  Have they got comments?  Have they been added to the settings documentation page?
 
 **What does this Pull Request do?**
 Please explain what your request accomplishes.

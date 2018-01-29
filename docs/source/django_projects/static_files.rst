@@ -37,43 +37,23 @@ To watch your static files and compile automatically, run::
 This will print the process number for the watcher and then leave it running silently in the background.
 The behaviour of the tasks is defined in the ``gulpfile.js`` file.
 
-The ``gulpfile.js`` that comes with the binary looks like this (excluding the includes
-at the top)::
+To use the gulpfile properly, the ``LESS_COMPILATIONS`` setting should be defined. See :ref:`gn-django-settings`.
 
-  gulp.task('compile', function () {
-    var l = less({});
-    l.on('error',function(e){
-      console.log(e);
-      l.end();
-    });
-    return gulp.src([
-        './static/less/*.less',
-        '!./static/less/modules/**',
-        '!./static/less/helpers/**'
-      ])
-      .pipe(l)
-      .pipe(minify())
-      .pipe(autoprefixer({
-        browsers: ['last 10 versions']
-      }))
-      .pipe(gulp.dest('./static/css'))
-    ;
-  });
+Here's the standard ``gulpfile.js`` which we use: https://github.com/gamernetwork/gn-django/blob/develop/gn_django/bin/startproject/gulpfile.js
 
-  gulp.task('watch', function () {
-    gulp.watch('./static/less/*.less', ['compile']);
-  });
-
-The fluid interface should make this fairly easy to interpret. Two commands are defined,
+Two commands are defined,
 ``compile`` and ``watch``. The ``compile`` task does the hard work of compiling
 the stylesheets, while the ``watch`` task watches the static LESS files for changes
 and compiles accordingly.
 
 Within the ``compile`` command, the following happens:
 
-- ``gulp.src()`` command collects files within the ``./static/less`` directory, excluding those in the ``modules`` and ``helpers`` subdirectory.
-- It is then piped to the ``less()`` command, which compiles them into CSS
-- The compiled CSS is then minified by the ``minify()`` command
-- Browser prefixes (such as ``-webkit-``) are automatically added by the ``autoprefixer`` command
-- The compiled CSS files are saved to ``./static/css`` with names matching those of the original files
+- ``python manage.py get_less_compilations`` is called to get a JSON iterable of compilation locations.
+  For more detail, refer to: :ref:`gn-django-commands-less-compilations`.
+- For each compilation location..
+  - ``gulp.src()`` command collects files within the ``./static/less`` directory, excluding those in the ``modules`` and ``helpers`` subdirectory.
+  - It is then piped to the ``less()`` command, which compiles them into CSS
+  - The compiled CSS is then minified by the ``minify()`` command
+  - Browser prefixes (such as ``-webkit-``) are automatically added by the ``autoprefixer`` command
+  - The compiled CSS files are saved to ``./static/css`` with names matching those of the original files
 - You have an uncle named Bob

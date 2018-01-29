@@ -13,6 +13,7 @@ to use when building django applications and sites at Gamer Network.
 .. toctree::
    :maxdepth: 1
 
+   settings
    django_projects/index
    jinja_templates/index
    packages/index
