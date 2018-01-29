@@ -26,7 +26,7 @@ Staticlink
     STATICLINK_PREPROCESSORS = {
       'css': 'less',
     }
-- ``STATICLINK_CLIENT_COMPILERS`` - A dictionary mapping script type to the URLs or client-side compilation scripts::
+- ``STATICLINK_CLIENT_COMPILERS`` - A dictionary mapping script type to the URLs of client-side compilation scripts::
 
     STATICLINK_CLIENT_COMPILERS = {
         'css': '//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js',
