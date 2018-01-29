@@ -6,7 +6,7 @@ long_description = open(BASE_DIR + '/README.rst').read()
 
 setup(
     name='gn-django',
-    version='1.5.1',
+    version='1.5.2',
     url='https://github.com/gamernetwork/gn-django',
     description='Collection of tools and patterns for Gamer Network django apps/projects.',
     long_description=long_description,
