@@ -6,6 +6,7 @@ from selenium.common.exceptions import StaleElementReferenceException, InvalidSe
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
+from splinter import Browser as SplinterBrowser
 
 def wait_for(condition_function, *args, **kwargs):
     start_time = time.time() 
@@ -164,56 +165,18 @@ class BrowserManager:
         width, height = dimensions
         browser = self._get_instantiated_browser(width, height, capabilities)
         return browser
-    
-    
-class PersistentBrowserManager(BrowserManager):
-    """
-    Much like the standard BrowserManager, but attempts to reuse 
-    browser instances by reusing existing browsers which match a particular
-    set of capabilities.
-    """
-    
-    def __init__(self):
-        self._browsers = {}
 
-    def _hash_capabilities(self, capabilities):
-        return hash(frozenset(capabilities.items()))
+class SplinterBrowserManager(BrowserManager):
 
-    def _get_dimensions_and_capabilities(self, capabilities, test_name):
-        name = capabilities['browserName'] + ' ' + capabilities['screenResolution']
-        dimensions, capabilities = super()._get_dimensions_and_capabilities(capabilities, test_name)
-        capabilities['name'] = name
-        return (dimensions, capabilities)
-
-    def get_browser(self, capabilities, test_name):
-        """
-        Get an instantiated browser, given a set of capabilities.
-
-        Args:
-          * ``capabilities`` - dict - Selenium capabilities dictionary;
-            http://selenium-python.readthedocs.io/api.html#desired-capabilities
-          * ``test_name`` - string - test name for the current test case.
-
-        Returns:
-          An instantiated selenium browser.
-        """
-        capability_hash = self._hash_capabilities(capabilities)
-        dimensions, capabilities = self._get_dimensions_and_capabilities(capabilities, test_name)
-        browser = self._browsers.get(capability_hash)
-        if browser:
-            browser.delete_all_cookies()
-        else:
-            width, height = dimensions
-            browser = self._get_instantiated_browser(width, height, capabilities)
-            self._browsers[capability_hash] = browser
+    def _get_instantiated_browser(self, width, height, capabilities):
+        element_scroll_behavior = capabilities.get('elementScrollBehavior')
+        browser = SplinterBrowser(driver_name="remote",
+            url="http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
+            browser=capabilities["browserName"],
+            **capabilities)
+        browser.driver.implicitly_wait(1)
+        browser.driver.set_window_size(width, height)
         return browser
-
-    def cleanup(self):
-        for browser in self._browsers.values():
-            browser.quit()
-
-if hasattr(settings, "SELENIUM_PERSISTENT_BROWSERS") and settings.SELENIUM_PERSISTENT_BROWSERS:
-    browser_manager = PersistentBrowserManager()
-    atexit.register(browser_manager.cleanup)
-else:
-    browser_manager = BrowserManager()
+    
+browser_manager = BrowserManager()
+splinter_browser_manager = SplinterBrowserManager()

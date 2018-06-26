@@ -75,12 +75,6 @@ test application.  If you're running everything locally, this will just be
 ``'localhost'``.  If you're running through docker containers, it's likely to
 be the name of your django app container.
 
-``SELENIUM_PERSISTENT_BROWSERS`` - boolean - If this is set to ``True``, 
-test cases will attempt to reuse existing browser instances as much as possible,
-otherwise a browser instance will be spun up for each test case.  This can be
-handy for running test cases quickly as spinning up a new browser instance
-is time consuming.
-
 ``SELENIUM_RUN_FULL_SUITE`` - boolean - All acceptance test cases will run 
 if this is set to ``True``.  Otherwise, only chrome desktop test cases
 will be run.
