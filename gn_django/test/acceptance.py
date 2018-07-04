@@ -26,6 +26,7 @@ class AcceptanceTestCase(StaticLiveServerTestCase):
     Subclasses of AcceptanceTestCase can define class attributes as follows:
      * ``browser_name`` - 'chrome' or 'firefox'
      * ``resolution`` - String of format '1920x1080'
+     * ``use_splinter`` - Boolean True or False - defaults to False
     """
 
     browser_name = 'chrome'
@@ -71,6 +72,9 @@ def build_test_cases(name_prefix, test_mixins, browsers, resolutions, module_nam
       * ``resolutions`` - iterable - Iterable of resolution labels.
       * ``module_name`` - string - Name of the module to define test case
         classes on.
+      * ``use_splinter`` - boolean - Whether to use splinter or not for browser
+        instances, defaults to False.
+        
 
     Returns:
       None.  Test cases are defined on the given python module.
