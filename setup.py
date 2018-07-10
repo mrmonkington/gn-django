@@ -15,7 +15,7 @@ setup(
         "django-jinja==2.3.0",
     ],
     extras_require={
-        'selenium': ['selenium==3.3.1'],
+        'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
         'autocomplete': ['django-autocomplete-light==3.2.9'],
     },
     include_package_data=True,

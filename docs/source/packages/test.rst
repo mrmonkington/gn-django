@@ -21,6 +21,18 @@ test case class, namely ``browser_name`` and ``resolution``.  A subclass of
 .. autoclass:: gn_django.test.acceptance.AcceptanceTestCase
    :members:
 
+.. note::
+
+    **Splinter or raw selenium**
+    
+    You should set a class attribute ``use_splinter=True`` on the ``AcceptanceTestCase``
+    subclass - this will mean that ``self.browser`` is a browser instance provided
+    by the splinter library.  http://splinter.readthedocs.io/en/latest/index.html
+    Splinter is a very helpful library which provides a lot of convenience methods
+    on top of the standard selenium API.  It's generally a much better interface
+    for quickly writing test cases.
+
+
 Actually, a set of tests are generally applicable to a multitude of
 browser/resolution combinations.  To avoid duplication of test code or heavy
 boilerplate, a helper function ``build_test_cases()`` is supplied.
@@ -38,12 +50,24 @@ The concrete classes can then be built with use of ``build_test_cases()`` -
 which combines the mixins specified for each permutation of browser/resolution
 supplied.
 
+.. note::
+
+    **Forcing splinter**
+
+    If you're using the ``build_test_cases()`` function, you can enforce the
+    use of splinter by setting a kwarg ``use_splinter=True`` when calling the
+    function.
+    
+
 Selenium
 ^^^^^^^^
 
+**Deprecated: It's strongly advised to use splinter (``use_splinter=True``) as
+opposed to using our extended functionality for raw selenium.**
+
 gn-django supplies some helper functionality for using the selenium webdriver API.
 
-Browser instances available on ``AcceptanceTestCase`` classes are instances
+By default, browser instances available on ``AcceptanceTestCase`` classes are instances
 of ``GNRemote``:
 
 .. autoclass:: gn_django.test.selenium.GNRemote
@@ -74,12 +98,6 @@ to drive browsers.
 test application.  If you're running everything locally, this will just be 
 ``'localhost'``.  If you're running through docker containers, it's likely to
 be the name of your django app container.
-
-``SELENIUM_PERSISTENT_BROWSERS`` - boolean - If this is set to ``True``, 
-test cases will attempt to reuse existing browser instances as much as possible,
-otherwise a browser instance will be spun up for each test case.  This can be
-handy for running test cases quickly as spinning up a new browser instance
-is time consuming.
 
 ``SELENIUM_RUN_FULL_SUITE`` - boolean - All acceptance test cases will run 
 if this is set to ``True``.  Otherwise, only chrome desktop test cases

@@ -7,7 +7,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from gn_django.url.utils import convert_to_camelcase
-from .selenium import GNRemote, browser_manager
+from .selenium import GNRemote, browser_manager, splinter_browser_manager
 
 RESOLUTIONS = {
     'desktop': '1920x1080',
@@ -26,11 +26,13 @@ class AcceptanceTestCase(StaticLiveServerTestCase):
     Subclasses of AcceptanceTestCase can define class attributes as follows:
      * ``browser_name`` - 'chrome' or 'firefox'
      * ``resolution`` - String of format '1920x1080'
+     * ``use_splinter`` - Boolean True or False - defaults to False
     """
 
     browser_name = 'chrome'
     resolution = RESOLUTIONS['desktop']
     element_scroll_behavior = 'bottom'
+    use_splinter = False
 
     @classmethod
     def setUpClass(cls):
@@ -41,23 +43,22 @@ class AcceptanceTestCase(StaticLiveServerTestCase):
             capabilities = DesiredCapabilities.FIREFOX.copy()
             capabilities['elementScrollBehavior'] = cls.element_scroll_behavior
         capabilities['screenResolution'] = cls.resolution
-        cls.browser = browser_manager.get_browser(capabilities, test_name=cls.__name__)
+        if cls.use_splinter:
+            cls.browser = splinter_browser_manager.get_browser(capabilities, test_name=cls.__name__)
+        else:
+            cls.browser = browser_manager.get_browser(capabilities, test_name=cls.__name__)
         return super().setUpClass()
 
     @classmethod
     def tearDownClass(cls):
-        if hasattr(settings, "SELENIUM_PERSISTENT_BROWSERS") and settings.SELENIUM_PERSISTENT_BROWSERS:
-            pass
-        else:
-            cls.browser.quit()
-            
+        cls.browser.quit()
             
 
 def run_full_suite():
     run_full = hasattr(settings, 'SELENIUM_RUN_FULL_SUITE') and settings.SELENIUM_RUN_FULL_SUITE
     return [run_full, "Skipping minor selenium tests"]
 
-def build_test_cases(name_prefix, test_mixins, browsers, resolutions, module_name):
+def build_test_cases(name_prefix, test_mixins, browsers, resolutions, module_name, use_splinter=False):
     """
     Builds a set of concrete AcceptanceTestCase classes, given mixin classes 
     of test methods, browser/resolutions that should be run
@@ -71,6 +72,9 @@ def build_test_cases(name_prefix, test_mixins, browsers, resolutions, module_nam
       * ``resolutions`` - iterable - Iterable of resolution labels.
       * ``module_name`` - string - Name of the module to define test case
         classes on.
+      * ``use_splinter`` - boolean - Whether to use splinter or not for browser
+        instances, defaults to False.
+        
 
     Returns:
       None.  Test cases are defined on the given python module.
@@ -97,13 +101,16 @@ def build_test_cases(name_prefix, test_mixins, browsers, resolutions, module_nam
     test_cases = []
     for browser in browsers:
         for resolution in resolutions:
-            test_parents = tuple(test_mixins + [AcceptanceTestCase])
+            base_classes = [AcceptanceTestCase]
+            test_parents = tuple(test_mixins + base_classes)
             test_case_name = ' '.join([browser, resolution, 'Test Case'])
             test_case_name = name_prefix + convert_to_camelcase(test_case_name)
             class_attrs = {
                 'browser_name': browser,
                 'resolution': RESOLUTIONS[resolution],
             }
+            if use_splinter:
+                class_attrs['use_splinter'] = True
             test_case = type(test_case_name, test_parents, class_attrs)
             test_cases.append(test_case)
             # Skip non-major test cases if run_full_suite() evaluates to false
