@@ -35,7 +35,6 @@ class SearchableQuerySetMixin:
         return qs.distinct()
 
     def _get_search_terms(self, search_term):
-        # TODO genericise model searching in GN Django
         phrase_pattern = re.compile(r'\"[^\"]+\"')
         phrases = re.findall(phrase_pattern, search_term)
         for phrase in phrases:
