@@ -6,6 +6,10 @@ from django.utils.translation import gettext_lazy as _
 from .exceptions import ImproperlyConfigured
 
 class SearchableQuerySetMixin:
+    """
+    Mixin for query sets to extend. This adds some configurable search functionality
+    to query sets.
+    """
     ignored_words = ['the', 'and']
     min_length = 3
 
