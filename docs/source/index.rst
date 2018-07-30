@@ -25,3 +25,4 @@ to use when building django applications and sites at Gamer Network.
 
    orm_extensions/fields
    orm_extensions/validators
+   orm_extensions/models
