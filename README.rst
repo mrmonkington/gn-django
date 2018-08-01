@@ -49,5 +49,6 @@ Tests
 To run the tests: 
 
 * Clone the github repository.
-* ``pip install -r requirements.txt`` in to a python3.5 (or greater) virtualenv.
-* Run ``./do tests`` in the project root.
+* Set up a virtual environment with ``virtualenv -p python3 /path/to/environment``
+* Activate the environment with ``source /path/to/environment/bin/activate``
+* Run ``tox``
