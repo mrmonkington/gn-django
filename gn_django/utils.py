@@ -1,6 +1,6 @@
 from django.utils.text import slugify
 from django.core import exceptions
-import sys, os, re
+import sys, os, re, html
 
 def is_sphinx_autodoc_running():
     """
@@ -36,3 +36,17 @@ def unique_object_slug(obj, source, slug_field='slug', limit=10000):
         current_slug = '%s-%s' % (base_slug, i)
 
     return False
+
+def htmlify_content(content):
+    """
+    Replace URLs with links and new lines with ``<br />`` tags, and HTML escape everything else.
+    To output in templates, you will need to use the ``safe`` filter.
+    """
+    url_pattern = re.compile(r'(https?)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?')
+    content = html.escape(content)
+    content = re.sub(
+        url_pattern,
+        lambda c: '<a href="%s" target="_blank">%s</a>' % (c.group(0),c.group(0)),
+        content
+    )
+    return '<br />'.join(content.split('\n'))
