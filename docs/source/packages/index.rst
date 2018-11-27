@@ -15,3 +15,4 @@ GN Django includes a number of packages to provide common reusable code for buil
    template
    test
    db
+   decorators
