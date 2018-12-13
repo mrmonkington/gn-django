@@ -29,4 +29,6 @@ urlpatterns = [
     url(r'^archive', view_registry.get('core:ArchiveView')),
     url(r'^about', view_registry.get('core:AboutView')),
     url(r'^article', view_registry.get('content:ArticleView')),
+    url(r'^csv-link', view_registry.get('content:CsvDownloadLink')),
+    url(r'^csv-download', view_registry.get('content:CsvDownload')),
 ]
