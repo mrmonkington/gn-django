@@ -11,11 +11,6 @@ class CsvDownloadResponseTest(TestCase):
             ('Helix', ''),
         )
         response, writer = csv_download_response(('First Name', 'Second Name'), data, 'arms-roster')
-        expected_content = """First Name,Second Name
-Byte,& Barq
-Dr,Coyle
-Hedlok,
-Helix,
-"""
-        self.assertEqual(response.content_type, 'text/csv')
-        self.assertEqual(response.content.decode('utf-8'), expected_content)
+        expected_content = b"First Name,Second Name\r\nByte,& Barq\r\nDr,Coyle\r\nHedlok,\r\nHelix,\r\n"
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response.content, expected_content)
