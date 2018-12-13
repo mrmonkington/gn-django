@@ -4,7 +4,7 @@ from gn_django.utils import csv_download_response
 
 class CsvDownloadResponseTest(TestCase):
     def test_csv_response(self):
-        self.data = (
+        data = (
             ('Byte', '& Barq'),
             ('Dr', 'Coyle'),
             ('Hedlok', ''),
