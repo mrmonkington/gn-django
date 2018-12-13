@@ -81,5 +81,5 @@ def csv_download_response(columns, data, filename, include_date=True):
 
     for row in data:
         writer.writerow(row)
-    print(response.content.decode('utf-8'))
+
     return (response, writer)
