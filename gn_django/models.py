@@ -53,6 +53,11 @@ class LazyAttributes(MutableMapping):
 
 class LazyAttributesMixin:
     """
+    Mixin for models to allow for overridable attributes. The top level class should
+    declare its attributes under `self.attributes`. Every non-parent class
+    should declare the attributes under `self.override_attributes`. Non-parent classes
+    should call `_setup_attributes()` within its `__init__()` method. Note, this mixin
+    cannot declare its own `__init__()` method as this will break Django models.
     """
 
     parent = None
