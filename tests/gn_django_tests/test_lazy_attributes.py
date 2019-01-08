@@ -71,7 +71,7 @@ class TestLazyAttributes(TestCase):
             'e': 'ee',
         }
         self.assertEqual(self.grandchild.get_all_attributes(), expected)
-        self.assertEqual(self.grandchild.get_all_attributes(as_json=True), json.dumps(expected, indent=True))
+        self.assertEqual(json.loads(self.grandchild.get_all_attributes(as_json=True)), expected)
 
     def test_get_inherited_attributes(self):
         expected = {
@@ -79,4 +79,4 @@ class TestLazyAttributes(TestCase):
             'b': 'BEE',
         }
         self.assertEqual(self.grandchild.get_inherited_attributes(), expected)
-        self.assertEqual(self.grandchild.get_inherited_attributes(as_json=True), json.dumps(expected, indent=True))
+        self.assertEqual(json.loads(self.grandchild.get_inherited_attributes(as_json=True)), expected)
