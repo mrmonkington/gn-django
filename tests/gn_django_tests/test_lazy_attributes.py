@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from gn_django.models import LazyAttributes, LazyAttributesMixin
 
@@ -27,7 +28,8 @@ class MockAttributesGrandchild(LazyAttributesMixin):
     parent = child
     override_attributes = {
         'c': 'si',
-        'd': 'di'
+        'd': 'di', 
+        'e': 'ee',
     }
 
     def __init__(self):
@@ -57,3 +59,24 @@ class TestLazyAttributes(TestCase):
         self.assertEqual(self.parent.attributes['d'], 'dd')
         self.assertEqual(self.child.attributes['d'], 'dd')
         self.assertEqual(self.grandchild.attributes['d'], 'di')
+
+        self.assertEqual(self.grandchild.attributes['e'], 'ee')
+
+    def test_get_all_attributes(self):
+        expected = {
+            'a': 'aa',
+            'b': 'BEE',
+            'c': 'si',
+            'd': 'di',
+            'e': 'ee',
+        }
+        self.assertEqual(self.grandchild.get_all_attributes(), expected)
+        self.assertEqual(self.grandchild.get_all_attributes(as_json=True), json.dumps(expected, indent=True))
+
+    def test_get_inherited_attributes(self):
+        expected = {
+            'a': 'aa',
+            'b': 'BEE',
+        }
+        self.assertEqual(self.grandchild.get_inherited_attributes(), expected)
+        self.assertEqual(self.grandchild.get_inherited_attributes(as_json=True), json.dumps(expected, indent=True))
