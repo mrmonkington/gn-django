@@ -3,11 +3,11 @@
 if [ $1 = "tests" ]; then
 	cd tests/gn_django_tests
 	python manage.py test .
-    exit $?
+	exit $?
 fi
 
 if [ $1 = "coverage" ]; then
-    python --version
+	python --version
 	coverage erase
 	coverage run tests/gn_django_tests/manage.py test tests/gn_django_tests
 	coverage report

@@ -7,4 +7,6 @@ class ContentConfig(GNAppConfig):
     views = {
         'core:AboutView': views.AboutView,
         'content:ArticleView': views.ArticleView,
+        'content:CsvDownloadLink': views.CsvDownloadLink,
+        'content:CsvDownload': views.CsvDownload,
     }
