@@ -53,16 +53,16 @@ def htmlify_content(content):
     )
     return '<br />'.join(content.split('\n'))
 
-def csv_download_response(columns, data, filename, include_date=True):
+def csv_download_response(column_headings, data, filename, include_date=True):
     """
     Put data into a CSV download response
 
     Args:
-        - ``columns``       - A tuple of column headings
-        - ``data``          - An iterable of data. Each value should be tuple of values aligning with
-                              the columns given.
-        - ``filename``      - The filename without the `.csv` file extension
-        - ``include_date``  - If true, the filename will be appended with a datetime string
+        - ``column_headings``       - A tuple of column headings
+        - ``data``                  - An iterable of data. Each value should be tuple of values aligning with
+                                    the columns given.
+        - ``filename``              - The filename without the `.csv` file extension
+        - ``include_date``          - If true, the filename will be appended with a datetime string
 
     Returns:
         - A tuple containing an ``HttpResponse`` object to be returned by the view, and the
@@ -79,7 +79,7 @@ def csv_download_response(columns, data, filename, include_date=True):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     writer = csv.writer(response)
-    writer.writerow(columns)
+    writer.writerow(column_headings)
 
     for row in data:
         writer.writerow(row)
