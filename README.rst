@@ -29,8 +29,7 @@ jinja templating environment provided by gn-django.
 Documentation
 -------------
 
-gn-django's documentation can be found on readthedocs.com 
-`here <https://gamer-network-gn-django.readthedocs-hosted.com/en/latest/>`_.
+gn-django's documentation can be found here: https://gn-docs-propjoe.dev.gamer-network.net/subprojects/gn-django/index.html
 
 Getting Started
 ---------------
