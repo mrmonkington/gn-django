@@ -58,9 +58,11 @@ def csv_download_response(columns, data, filename, include_date=True):
     Put data into a CSV download response
 
     Args:
-        - ``columns`` - A tuple of column headings
-        - ``data`` - An iterable of data. Each value should be tuple of values aligning with
-                     the columns given.
+        - ``columns``       - A tuple of column headings
+        - ``data``          - An iterable of data. Each value should be tuple of values aligning with
+                              the columns given.
+        - ``filename``      - The filename without the `.csv` file extension
+        - ``include_date``  - If true, the filename will be appended with a datetime string
 
     Returns:
         - A tuple containing an ``HttpResponse`` object to be returned by the view, and the
