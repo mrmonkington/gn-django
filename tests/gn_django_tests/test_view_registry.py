@@ -71,3 +71,4 @@ class TestViewRegistry(TestCase):
         # in the `content` app
         about_response = self.client.get('/about')
         self.assertTrue("About from app: content" in about_response.content.decode('utf-8'))
+
