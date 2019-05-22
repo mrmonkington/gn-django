@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM docker.gamer-network.net/python-node:3.6-6.17.0
 
 ARG DOCKER_UID
 ARG ENV=test
