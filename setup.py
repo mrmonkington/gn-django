@@ -16,7 +16,8 @@ setup(
     ],
     extras_require={
         'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
-        'autocomplete': ['django-autocomplete-light==3.2.10'],
+        'autocomplete': ['django-autocomplete-light>=3.3,<4.0.0'],
+
     },
     include_package_data=True,
     author='Brendan Smith',
