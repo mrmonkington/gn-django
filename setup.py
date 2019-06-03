@@ -6,9 +6,10 @@ long_description = open(BASE_DIR + '/README.rst').read()
 
 setup(
     name='gn-django',
-    version='1.9.0',
+    version='2.0',
     url='https://github.com/gamernetwork/gn-django',
-    description='Collection of tools and patterns for Gamer Network django apps/projects.',
+    description=("Collection of tools and patterns for Gamer Network django "
+            "apps/projects."),
     long_description=long_description,
     install_requires=[
         "django>=2.2,<2.3",
@@ -16,7 +17,8 @@ setup(
     ],
     extras_require={
         'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
-        'autocomplete': ['django-autocomplete-light==3.2.9'],
+        'autocomplete': ['django-autocomplete-light>=3.3,<4.0.0'],
+
     },
     include_package_data=True,
     author='Brendan Smith',
