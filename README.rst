@@ -29,8 +29,7 @@ jinja templating environment provided by gn-django.
 Documentation
 -------------
 
-gn-django's documentation can be found on readthedocs.com 
-`here <https://gamer-network-gn-django.readthedocs-hosted.com/en/latest/>`_.
+gn-django's documentation can be found here: https://gn-docs-propjoe.dev.gamer-network.net/subprojects/gn-django/index.html
 
 Getting Started
 ---------------
@@ -52,3 +51,12 @@ To run the tests:
 * Set up a virtual environment with ``virtualenv -p python3 /path/to/environment``
 * Activate the environment with ``source /path/to/environment/bin/activate``
 * Run ``tox``
+
+Running the test application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Install docker following the instructions here; https://github.com/gamernetwork/devops/wiki/Using-Docker-for-Platform-Projects
+* Run ``cp tests/gn_django_tests/project/settings/local.py.example tests/gn_django_tests/project/settings/local.py`` and adjust any settings if necessary
+* Run ``cp .env.example .env`` and adjust if necessary
+* Run ``cp docker-compose.override.yml.example docker-compose.override.yml`` and adjust if necessary
+* Run ``docker-compose up -d`` to bring up the container and access it in the browser at ``127.0.0.1:11091`` assuming you haven't changed the port number

@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  gndjango.web:
+    volumes:
+      - .:/code
+    user: "${DOCKER_UID}:${DOCKER_UID}"
+    build:
+      args:
+        - ENV=dev
+        - DOCKER_UID=${DOCKER_UID}
+    ports:
+      - "127.0.0.1:11091:8000"

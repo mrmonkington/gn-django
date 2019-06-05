@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  gndjango.web:
+    user: "${DOCKER_UID}:${DOCKER_UID}"
+    build: 
+      context: .
+      dockerfile: .docker/Dockerfile
+      args:
+        - ENV=test
+        - DOCKER_UID=${DOCKER_UID}
