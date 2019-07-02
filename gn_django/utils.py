@@ -53,6 +53,13 @@ def htmlify_content(content):
     )
     return '<br />'.join(content.split('\n'))
 
+def camelize(string):
+    """
+    Converts snake_case to CamelCase by replacing underscores and spaces with empty
+    strings and capitalizing each word. Is not very clever and ignores spaces.
+    """
+    return ''.join(w.capitalize() for w in re.split(r'[^a-zA-Z0-9]+', string.lower()))
+
 def csv_download_response(column_headings, data, filename, include_date=True):
     """
     Put data into a CSV download response
