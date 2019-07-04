@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import BooleanField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from .validators import YoutubeValidator
@@ -12,15 +13,19 @@ class YoutubeField(models.CharField):
     default_validators = [YoutubeValidator()]
 
 
-class UniqueBooleanField(BooleanField):
+class UniquelyTrueBooleanField(BooleanField):
     """
     Like a ``BooleanField`` except there can be only one row in the table with
-    a value of ``True``.
+    a value of ``True``. There can be no rows with a value of ``False``.
     """
     def pre_save(self, model_instance, add):
         objects = model_instance.__class__.objects
         if objects.filter(**{self.attname: True}).exists():
             raise ValueError(f'{self.name} cannot be `True` for more than '
                              f'one {self.model.__name__}')
-        return getattr(model_instance, self.attname)
+        value = getattr(model_instance, self.attname)
+        if not value:
+            raise ValueError(f'`UniquelyTrueBooleanField` cannot be `False`. '
+                             'Can only be `True` or `null`.')
+        return True
 
