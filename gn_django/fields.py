@@ -10,3 +10,17 @@ class YoutubeField(models.CharField):
     """
 
     default_validators = [YoutubeValidator()]
+
+
+class UniqueBooleanField(BooleanField):
+    """
+    Like a ``BooleanField`` except there can be only one row in the table with
+    a value of ``True``.
+    """
+    def pre_save(self, model_instance, add):
+        objects = model_instance.__class__.objects
+        if objects.filter(**{self.attname: True}).exists():
+            raise ValueError(f'{self.name} cannot be `True` for more than '
+                             f'one {self.model.__name__}')
+        return getattr(model_instance, self.attname)
+

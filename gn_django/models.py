@@ -1,7 +1,7 @@
 import re, json
 from collections.abc import MutableMapping
-from django.db.models import Q
-from django.core.exceptions import ValidationError
+from django.db.models import Q, BooleanField
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .exceptions import ImproperlyConfigured
@@ -198,3 +198,4 @@ class SearchableQuerySetMixin:
         terms = [t for t in terms if len(t) >= self.min_length and t not in self.ignored_words]
         terms = set(phrases + terms)
         return terms
+
