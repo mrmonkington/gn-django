@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jinja',
-    'tests.gn_django_tests',
     'core',
     'content',
 ]

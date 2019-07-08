@@ -1,7 +1,7 @@
 import re, json
 from collections.abc import MutableMapping
-from django.db.models import Q, BooleanField
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import Q
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .exceptions import ImproperlyConfigured
