@@ -92,3 +92,11 @@ def csv_download_response(column_headings, data, filename, include_date=True):
         writer.writerow(row)
 
     return (response, writer)
+
+def all_subclasses(cls):
+    """
+    Gets all subclasses of a class.
+    """
+    return set(cls.__subclasses__()).union(
+        [s for c in cls.__subclasses__() for s in all_subclasses(c)])
+

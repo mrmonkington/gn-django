@@ -198,3 +198,4 @@ class SearchableQuerySetMixin:
         terms = [t for t in terms if len(t) >= self.min_length and t not in self.ignored_words]
         terms = set(phrases + terms)
         return terms
+

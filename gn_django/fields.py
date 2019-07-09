@@ -10,3 +10,4 @@ class YoutubeField(models.CharField):
     """
 
     default_validators = [YoutubeValidator()]
+
