@@ -2,8 +2,8 @@ import unittest
 
 from gn_django.utils import camelize
 
-class TestCamelize(unittest.TestCase):
 
+class TestCamelize(unittest.TestCase):
     def test_camelize_from_snek(self):
         self.assertEqual('IAmACamel', camelize('i_am_a_camel'))
 

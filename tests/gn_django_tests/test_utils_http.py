@@ -2,7 +2,8 @@ from django.test import TestCase
 
 from gn_django.utils import csv_download_response
 
-class CsvDownloadResponseTest(TestCase):
+
+class CSVDownloadResponseTest(TestCase):
     def test_csv_response(self):
         data = (
             ('Byte', '& Barq'),

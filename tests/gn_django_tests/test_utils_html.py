@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from gn_django.utils import htmlify_content
 
+
 class TestHtmlifyContent(TestCase):
     def test_url_parse(self):
         content = "http://example.com"
