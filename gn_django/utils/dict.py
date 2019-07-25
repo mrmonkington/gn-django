@@ -73,7 +73,7 @@ def flatten_dict(data, prefix=''):
         if isinstance(value, (dict, list, set, tuple)):
             flattened.update(flatten_dict(
                 data=value if isinstance(value, dict) else dict(enumerate(value)),
-                prefix=(prefix + key + '__') if prefix is not None else None
+                prefix=('%s%s__' % (prefix, key)) if prefix is not None else None
             ))
         else:
             flattened['%s%s' % (prefix if prefix is not None else '', key)] = value
