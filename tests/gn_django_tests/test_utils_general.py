@@ -4,7 +4,6 @@ from gn_django.utils import all_subclasses
 
 
 class TestAllSubclasses(TestCase):
-
     def test_gets_subclass_of_direct_parent_class(self):
         """
         Gets a class if it is a direct child of the parent class.
@@ -54,4 +53,3 @@ class TestAllSubclasses(TestCase):
 
         subclasses = list(all_subclasses(Parent))
         self.assertEqual(len(subclasses), 0)
-
