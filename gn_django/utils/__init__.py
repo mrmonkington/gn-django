@@ -1,3 +1,4 @@
+from .dict import *
 from .general import *
 from .html import *
 from .http import *
