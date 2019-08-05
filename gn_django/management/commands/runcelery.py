@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def start_celery(app):
-        subprocess.call(shlex.split(f'celery worker -l info -A {app}'))
+        subprocess.call(shlex.split(f'celery worker -l info -A {app} -B'))
 
     @staticmethod
     def stop_celery():
