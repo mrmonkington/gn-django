@@ -31,7 +31,7 @@ def render_from_string(template_string, context):
     Return:
       The rendered template string
     """
-    path = Environment().from_string(template_string).render(context)
+    return Environment().from_string(template_string).render(context)
 
 def get_template_dir_for_app(app_name):
     """
