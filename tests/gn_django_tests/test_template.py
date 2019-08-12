@@ -500,3 +500,10 @@ class TestTemplateUtils(TestCase):
     def test_render_to_string(self):
         rendered = utils.render_to_string("site.j2", {'site': 'eurogamer', 'namespace': 'core'})
         self.assertEquals(rendered, "Site: eurogamer\nNamespace: core")
+
+    def test_render_from_string(self):
+        rendered = utils.render_from_string('<p>{{ foo }} {{ bar }}</p>', {
+            'foo': 'Dr',
+            'bar': 'Eggman'
+        })
+        self.assertEquals(rendered, '<p>Dr Eggman</p>')
