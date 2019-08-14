@@ -1,6 +1,7 @@
 import os
 
 from django.template import loader
+from jinja2.environment import Environment
 
 def render_to_string(template, context, request=None, using=None):
     """
@@ -18,6 +19,19 @@ def render_to_string(template, context, request=None, using=None):
       The rendered template string.
     """
     return loader.render_to_string(template, context=context, request=request, using=using)
+
+def render_from_string(template_string, context):
+    """
+    Shortcut for using simple strings as templates, e.g. '<p>{{ foo }}</p>'
+
+    Args:
+      * `template_string` - string - the string to use as a template
+      * `context` - mapping - the template context
+
+    Return:
+      The rendered template string
+    """
+    return Environment().from_string(template_string).render(context)
 
 def get_template_dir_for_app(app_name):
     """
