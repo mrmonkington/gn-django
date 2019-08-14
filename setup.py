@@ -14,6 +14,7 @@ setup(
     install_requires=[
         "django>=2.2,<2.3",
         "django-jinja==2.3.0",
+        "pytz",
     ],
     extras_require={
         'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
