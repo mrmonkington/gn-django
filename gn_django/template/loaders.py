@@ -8,7 +8,10 @@ from collections import OrderedDict
 from django.utils import six
 from django.utils.module_loading import import_string
 from django.core.exceptions import ImproperlyConfigured
-from jinja2.loaders import BaseLoader, TemplateNotFound, iteritems, FileSystemLoader
+from django.conf import settings
+from jinja2.loaders import BaseLoader, TemplateNotFound, iteritems, FileSystemLoader as BaseFileSystemLoader, split_template_path
+from jinja2.utils import open_if_exists
+from os import path
 import re
 
 """
@@ -231,6 +234,7 @@ class HierarchyLoader(BaseLoader):
         """
         # Identify the loading mode from the template identifier
         loading_mode = self.identify_loading_mode(template)
+
         loading_method = getattr(self, "get_%s_source" % loading_mode)
         tried = []
         template_source = None
@@ -253,6 +257,31 @@ class HierarchyLoader(BaseLoader):
             for template in loader.list_templates():
                 result.append(prefix + self.delimiter + template)
         return result
+
+class FileSystemLoader(BaseFileSystemLoader):
+    def get_source(self, environment, template):
+        pieces = split_template_path(template)
+        for searchpath in self.searchpath:
+            filename = path.join(searchpath, *pieces)
+            f = open_if_exists(filename)
+            if f is None:
+                continue
+            try:
+                contents = f.read().decode(self.encoding)
+            finally:
+                f.close()
+
+            mtime = path.getmtime(filename)
+
+            def uptodate():
+                if settings.DEBUG:
+                    return False
+                try:
+                    return path.getmtime(filename) == mtime
+                except OSError:
+                    return False
+            return contents, filename, uptodate
+        raise TemplateNotFound(template)
 
 def get_hierarchy_loader(directories):
     """
