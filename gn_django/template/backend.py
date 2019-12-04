@@ -12,7 +12,7 @@ from django_jinja.backend import Jinja2 as DjangoJinja2
 from django_jinja import builtins as dj_jinja_builtins
 from django_jinja.contrib._humanize.templatetags._humanize import ordinal, intcomma, intword, apnumber, naturalday, naturaltime
 
-from .extensions import SpacelessExtension, IncludeWithExtension, StaticLinkExtension
+from .extensions import SpacelessExtension, IncludeWithExtension, StaticLinkExtension, IncludeRawExtension
 from .globals import randint
 
 class Environment(jinja2.Environment):
@@ -212,4 +212,5 @@ class Jinja2(DjangoJinja2):
         base_extensions.append(SpacelessExtension)
         base_extensions.append(IncludeWithExtension)
         base_extensions.append(StaticLinkExtension)
+        base_extensions.append(IncludeRawExtension)
         return base_extensions
