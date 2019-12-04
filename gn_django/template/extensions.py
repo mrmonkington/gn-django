@@ -246,8 +246,8 @@ class IncludeRawExtension(Extension):
 
     def _get_file(self, path, caller):
         """
-        Render link tags for stylesheets. If debug mode is enabled this will be
-        the uncompiled version of the file.
+        Check if a file exists an the specified path, and if so then open it and
+        render the contents.
 
         Params:
             - `path` - The path to the file
