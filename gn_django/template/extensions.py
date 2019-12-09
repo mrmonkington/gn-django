@@ -2,6 +2,7 @@ from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
 from django.conf import settings as dj_settings
 from django.core import exceptions
+from django.utils.safestring import mark_safe
 
 import re, time, os
 
@@ -264,4 +265,4 @@ class IncludeRawExtension(Extension):
                     f.close()
                     break
 
-        return self.environment.from_string(output).render()
+        return output

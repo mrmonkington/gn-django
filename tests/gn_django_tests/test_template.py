@@ -16,6 +16,7 @@ from gn_django.template.loaders import file_system_loaders
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 class TestJinja2(TestCase):
     """
     Tests for the Jinja2 class.
@@ -164,6 +165,23 @@ class TestJinja2(TestCase):
         expected = jinja.get_template('include_expected.j2').render().strip()
 
         self.assertEquals(result, expected)
+
+    def test_include_raw_extension(self):
+        template_dir = os.path.join(BASE_DIR, "test_files", "include_raw_templates")
+
+        with self.settings(STATICFILES_DIRS=[template_dir]):
+            jinja_config = self.get_jinja_config()
+            jinja_config['DIRS'].append(template_dir)
+            jinja = Jinja2(jinja_config)
+
+            result = jinja.get_template('include.j2').render().strip()
+
+            expected_path = os.path.join(template_dir, "include_expected.html")
+            f = open(expected_path, 'r')
+            expected = f.read().strip()
+            f.close()
+
+            self.assertEquals(result, expected)
 
 class TestHierarchyLoader(TestCase):
     """
