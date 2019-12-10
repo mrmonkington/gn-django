@@ -2,8 +2,9 @@ from jinja2 import nodes, exceptions, runtime, environment
 from jinja2.ext import Extension
 from django.conf import settings as dj_settings
 from django.core import exceptions
+from django.utils.safestring import mark_safe
 
-import re, time
+import re, time, os
 
 class SpacelessExtension(Extension):
     """
@@ -222,3 +223,46 @@ class StaticLinkExtension(Extension):
         if hasattr(dj_settings, 'STATICLINK_VERSION'):
             return dj_settings.STATICLINK_VERSION
         return "latest"
+
+class IncludeRawExtension(Extension):
+    """
+    Extension for outputting the contents of a static file without parsing it
+    (useful for CSS).
+
+    Usage:
+        ``{% include_raw 'path/to/file.css' %}``
+
+    Params:
+        - `path/to/file.css` - Relative path to the file within a directory
+           defined in the `STATICFILES_DIRS` setting.
+    """
+
+    tags = set(['include_raw'])
+
+    def parse(self, parser):
+        first = parser.parse_expression()
+        path = parser.parse_expression()
+        call = self.call_method('_get_file', [path], lineno=first.lineno)
+        return nodes.CallBlock(call, [], [], [], lineno=first.lineno)
+
+    def _get_file(self, path, caller):
+        """
+        Check if a file exists an the specified path, and if so then open it and
+        render the contents.
+
+        Params:
+            - `path` - The path to the file
+            - `caller` - Required by Jinja
+        """
+        output = ''
+
+        if hasattr(dj_settings, 'STATICFILES_DIRS'):
+            for static_dir in dj_settings.STATICFILES_DIRS:
+                fp = os.path.join(static_dir, path)
+                if os.path.isfile(fp):
+                    f = open(fp, 'r')
+                    output = f.read()
+                    f.close()
+                    break
+
+        return output

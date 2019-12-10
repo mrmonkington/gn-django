@@ -1,0 +1,24 @@
+<h1><code>include_raw</code> test</h1>
+
+<p class="red">This text is red</p>
+
+<style>
+body {
+  background: papayawhip;
+}
+
+.red {
+  color: red;
+}
+
+#some-id {
+  color: green;
+}
+
+/* This is to make sure the template isn't being parsed by Jinja2 - it would
+   throw an error due to the '{#' appearing to be an unclosed comment */
+@media only screen and (max-width: 1260px) {#some-id{color: rebeccapurple;}}
+
+</style>
+
+<div id="some-id">This text is not</div>
