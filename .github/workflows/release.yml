@@ -1,0 +1,40 @@
+name: Release package
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - name: Determine package full name
+      run: echo ::set-env name=PKG_FULLNAME::$(python setup.py --fullname)
+    - name: Determine package version
+      run: echo ::set-env name=PKG_VERSION::$(python setup.py --version)
+    - name: Create source distribution
+      run: python setup.py sdist
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.PKG_VERSION }}
+        release_name: ${{ env.PKG_VERSION }}
+        draft: false
+        prerelease: false
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/${{ env.PKG_FULLNAME }}.tar.gz
+        asset_name: ${{ env.PKG_FULLNAME }}.tar.gz
+        asset_content_type: application/gzip
+    - name: Upload package to Gemfury
+      run: curl -F package=@dist/${{ env.PKG_FULLNAME }}.tar.gz https://${{ secrets.FURY_AUTH }}@push.fury.io/gamernetwork/
