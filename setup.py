@@ -28,6 +28,10 @@ setup(
     include_package_data=True,
     author='Gamer Network',
     author_email='tech@gamer-network.net',
-    scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
+    scripts=[
+        'gn_django/bin/gn_django',
+        'gn_django/bin/depstatus',
+        'gn_django/bin/draft-release',
+    ],
     packages = find_packages(exclude=('tests', 'examples')),
 )
