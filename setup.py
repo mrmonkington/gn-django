@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 try:
     from gn_django import __version__
 except ImportError:
-    __version__ = 'dev'
+    __version__ = '0.0.0'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 long_description = open(BASE_DIR + '/README.rst').read()
