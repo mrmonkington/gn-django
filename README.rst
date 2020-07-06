@@ -37,7 +37,7 @@ Getting Started
 To use gn-django in a django project, just install it with pip in a python3.5 (or greater)
 virtualenv:
 
-``pip install gn-django --index-url https://pypi.gamer-network.net/gamernetwork/dev/+simple/``
+``pip install gn-django --index-url https://pypi.fury.io/gamernetwork/``
 
 You may want to follow the instructions on 
 `starting a django project <https://gamer-network-gn-django.readthedocs-hosted.com/en/brendan-builder-binary/django_projects/starting_a_project.html>`_.
