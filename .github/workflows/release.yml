@@ -37,7 +37,7 @@ jobs:
         asset_name: ${{ env.PKG_FULLNAME }}.tar.gz
         asset_content_type: application/gzip
     - name: Upload package to Gemfury
-      run: curl -F package=@dist/${{ env.PKG_FULLNAME }}.tar.gz https://${{ secrets.FURY_AUTH }}@push.fury.io/gamernetwork/
+      run: curl -F package=@dist/${{ env.PKG_FULLNAME }}.tar.gz https://${{ secrets.FURY_AUTH_PUSH }}@push.fury.io/gamernetwork/
     - name: Slack notification
       uses: rtCamp/action-slack-notify@v2.0.2
       env:
