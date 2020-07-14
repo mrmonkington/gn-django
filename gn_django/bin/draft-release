@@ -1,0 +1,173 @@
+#!/usr/bin/env python3
+"""
+Create a new module release version.
+
+This script makes a load of assumptions about how your module is structured,
+and so it will only work if you're following a particular structure:
+* Single code repository, hosted on GitHub, containing a single Python module
+* Using setup.py distutils with version defined in <module>/__init.py as __version__
+* Releases are merged from 'develop' branch to 'master' (can override main() to change this)
+* Using major.minor.patch semantic version numbers
+"""
+import argparse
+import os
+import re
+import subprocess
+import sys
+from fileinput import FileInput
+from importlib import import_module
+from urllib.parse import urlencode
+
+from setuptools import find_packages
+
+
+def assert_branch_merged(branch):
+    """
+    Exit the program if given branch (on origin) has not been fully merged with
+    HEAD.
+    """
+    merge_base = subprocess.check_output(['git', 'merge-base', f'origin/{branch}', 'HEAD'])
+    origin_hash = subprocess.check_output(['git', 'rev-parse', f'origin/{branch}'])
+    if merge_base != origin_hash:
+        print(f'Your {branch} branch is outdated with origin/{branch}. '
+              f'Pull (or merge) changes and try again.', file=sys.stderr)
+        sys.exit(1)
+
+
+def assert_directory_clean():
+    """
+    Exit the program if there are unstaged changes in the working directory.
+    """
+    unstaged_stuff = [
+        line for line in
+        subprocess.check_output(['git', 'status', '--porcelain']).splitlines()
+        if not line.strip().startswith(b'??')
+    ]
+    if unstaged_stuff:
+        print('You have unstaged changes. Please commit or stash them.', file=sys.stderr)
+        sys.exit(1)
+
+
+def assert_on_branch(branch):
+    """
+    Exit the program if the given `branch` is not currently checked out.
+    """
+    git_rev = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+    if git_rev.strip().decode() != branch:
+        print(f'You need to be on the {branch} branch, numpty.', file=sys.stderr)
+        sys.exit(1)
+
+
+def determine_module(expected_version):
+    """
+    Find the module where __version__ is defined.
+    """
+    for package in filter(lambda p: '.' not in p, find_packages(exclude=('project',))):
+        try:
+            version = import_module(package).__version__
+        except (AttributeError, ImportError):
+            pass
+        else:
+            if version == expected_version:
+                return package
+    return None
+
+
+def main(from_branch='develop', to_branch='master'):
+    # Parse command-line arguments.
+    parser = argparse.ArgumentParser(description='Create a new release version.')
+    parser.add_argument('part', type=str, choices=('major', 'minor', 'patch'),
+                        help='part of the version to be bumped')
+    parser.add_argument('-n', '--dry-run', action='store_true',
+                        help='make no changes, just show what version bump would be')
+    args = parser.parse_args()
+
+    if not os.path.isfile('setup.py'):
+        print(
+            'Unable to locate setup.py. You must run this script from the '
+            'root of the repository.',
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    try:
+        repo = re.match(
+            r'.*github\.com[:/](gamernetwork/.+?)(/|\.git)?$',
+            subprocess.check_output(['git', 'remote', 'get-url', 'origin']).decode(),
+        )[1]
+    except TypeError:
+        print(
+            'Unable to determine repository name. Are you in the correct '
+            'directory?',
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    old_version = subprocess.check_output(
+        [sys.executable, 'setup.py', '--version']
+    ).decode().strip()
+    if not re.match(r'^\d+\.\d+\.\d+$', old_version):
+        print('Unable to read module version.', file=sys.stderr)
+        sys.exit(1)
+
+    module_name = determine_module(old_version)
+    if not module_name:
+        print('Unable to find __version__ in module.', file=sys.stderr)
+        sys.exit(1)
+
+    # Perform environment checks.
+    assert_on_branch(from_branch)
+    assert_directory_clean()
+    subprocess.run(['git', 'fetch', 'origin'])
+    for branch in [from_branch, to_branch]:
+        assert_branch_merged(branch)
+
+    # Increase the version number
+    major, minor, patch = (int(x) for x in old_version.split('.'))
+
+    if args.part == 'major':
+        major += 1
+        minor = 0
+        patch = 0
+    elif args.part == 'minor':
+        minor += 1
+        patch = 0
+    elif args.part == 'patch':
+        patch += 1
+
+    new_version = f'{major}.{minor}.{patch}'
+
+    if args.dry_run:
+        # Just output the details.
+        print(f'Bump version: {old_version} → {new_version}')
+        print(f'Will commit and push a version change to origin/{from_branch}')
+    else:
+        # Write new version to __init__.py
+        init_file = os.path.join(module_name, '__init__.py')
+        with FileInput(init_file, inplace=True) as file:
+            for line in file:
+                print(line.replace(
+                    f"__version__ = '{old_version}'",
+                    f"__version__ = '{new_version}'",
+                ), end='')
+
+        # Commit and push.
+        subprocess.run(['git', 'commit', '-m', f'Bump version: {old_version} → {new_version}', init_file])
+        subprocess.run(['git', 'push', 'origin', from_branch])
+
+        # Tell the user what to do next.
+        url = f'https://github.com/{repo}/compare/{to_branch}...{from_branch}?' + urlencode({
+            'quick_pull': 1,
+            'title': f'Version {new_version}',
+            'body': f'New {args.part} version: **{new_version}** (from {old_version}).',
+        })
+
+        print(f'\n*** Ready to create a PR for version {new_version} on GitHub ***\n')
+        print(url + '\n')
+        subprocess.run(['open', url])
+
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()

@@ -7,5 +7,6 @@ services:
       context: .
       dockerfile: .docker/Dockerfile
       args:
-        - ENV=test
         - DOCKER_UID=${DOCKER_UID}
+        - ENV=test
+        - FURY_AUTH

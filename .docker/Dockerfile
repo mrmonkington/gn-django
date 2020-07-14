@@ -2,7 +2,10 @@ FROM docker.gamer-network.net/python-node:3.6-6.17.0
 
 ARG DOCKER_UID
 ARG ENV=test
+ARG FURY_AUTH
+
 ENV ENV=${ENV}
+ENV FURY_AUTH=$FURY_AUTH
 
 RUN useradd -u ${DOCKER_UID} -ms /bin/bash app
 RUN chmod -R 777 /home/app
