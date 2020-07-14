@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 
 if [ $1 = "tests" ]; then
-	cd tests/gn_django_tests
-	python manage.py test .
+	python3 tests/gn_django_tests/manage.py test --settings=project.settings.test tests/gn_django_tests
 	exit $?
 fi
 
 if [ $1 = "coverage" ]; then
 	python --version
 	coverage erase
-	coverage run tests/gn_django_tests/manage.py test tests/gn_django_tests
+	coverage run tests/gn_django_tests/manage.py test --settings=project.settings.test tests/gn_django_tests
 	coverage report
 	coverage html
 fi

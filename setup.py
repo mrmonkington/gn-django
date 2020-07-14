@@ -1,12 +1,17 @@
 import os
 from setuptools import setup, find_packages
 
+try:
+    from gn_django import __version__
+except ImportError:
+    __version__ = '0.0.0'
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 long_description = open(BASE_DIR + '/README.rst').read()
 
 setup(
     name='gn-django',
-    version='2.8.1',
+    version=__version__,
     url='https://github.com/gamernetwork/gn-django',
     description=("Collection of tools and patterns for Gamer Network django "
             "apps/projects."),
@@ -23,6 +28,10 @@ setup(
     include_package_data=True,
     author='Gamer Network',
     author_email='tech@gamer-network.net',
-    scripts = ['gn_django/bin/gn_django', 'gn_django/bin/depstatus'],
+    scripts=[
+        'gn_django/bin/gn_django',
+        'gn_django/bin/depstatus',
+        'gn_django/bin/draft-release',
+    ],
     packages = find_packages(exclude=('tests', 'examples')),
 )

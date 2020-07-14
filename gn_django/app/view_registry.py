@@ -77,7 +77,8 @@ def get(view_label):
     def _get_view(*args, **kwargs):
         initialise_view_registry()
         try:
-            return _registry[app][view_name](*args, **kwargs)
+            view = _registry[app][view_name]
         except KeyError:
             raise KeyError("No class based view is registered for the label '%s'.  Is the app in INSTALLED_APPS?" % view_label)
+        return view(*args, **kwargs)
     return _get_view
