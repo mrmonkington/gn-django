@@ -11,6 +11,7 @@ and so it will only work if you're following a particular structure:
 """
 import argparse
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -171,7 +172,10 @@ def main(from_branch='develop', to_branch='master'):
 
         print(f'\n*** Ready to create a PR for version {new_version} on GitHub ***\n')
         print(url + '\n')
-        subprocess.run(['open', url])
+        if platform.system() == 'Darwin':
+            subprocess.run(['open', url])
+        else:
+            subprocess.run(['xdg-open', url])
 
     sys.exit(0)
 
