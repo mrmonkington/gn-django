@@ -63,14 +63,11 @@ def determine_module(expected_version):
     """
     Find the module where __version__ is defined.
     """
-    for package in filter(lambda p: '.' not in p, find_packages(exclude=('project',))):
-        try:
-            version = import_module(package).__version__
-        except (AttributeError, ImportError):
-            pass
-        else:
-            if version == expected_version:
-                return package
+    for module_name in filter(lambda p: '.' not in p, find_packages(exclude=('project',))):
+        filename = os.path.join(module_name, '__init__.py')
+        with open(filename) as file:
+            if f"__version__ = '{expected_version}'" in file.read():
+                return module_name
     return None
 
 
