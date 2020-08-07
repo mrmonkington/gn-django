@@ -5,12 +5,13 @@ Create a new module release version.
 This script makes a load of assumptions about how your module is structured,
 and so it will only work if you're following a particular structure:
 * Single code repository, hosted on GitHub, containing a single Python module
-* Using setup.py distutils with version defined in <module>/__init.py as __version__
+* Using setup.py distutils with version defined in-file or in <module>/__init.py as __version__
 * Releases are merged from 'develop' branch to 'master' (can override main() to change this)
 * Using major.minor.patch semantic version numbers
 """
 import argparse
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -62,14 +63,11 @@ def determine_module(expected_version):
     """
     Find the module where __version__ is defined.
     """
-    for package in filter(lambda p: '.' not in p, find_packages(exclude=('project',))):
-        try:
-            version = import_module(package).__version__
-        except (AttributeError, ImportError):
-            pass
-        else:
-            if version == expected_version:
-                return package
+    for module_name in filter(lambda p: '.' not in p, find_packages(exclude=('project',))):
+        filename = os.path.join(module_name, '__init__.py')
+        with open(filename) as file:
+            if f"__version__ = '{expected_version}'" in file.read():
+                return module_name
     return None
 
 
@@ -110,11 +108,6 @@ def main(from_branch='develop', to_branch='master'):
         print('Unable to read module version.', file=sys.stderr)
         sys.exit(1)
 
-    module_name = determine_module(old_version)
-    if not module_name:
-        print('Unable to find __version__ in module.', file=sys.stderr)
-        sys.exit(1)
-
     # Perform environment checks.
     assert_on_branch(from_branch)
     assert_directory_clean()
@@ -142,17 +135,29 @@ def main(from_branch='develop', to_branch='master'):
         print(f'Bump version: {old_version} → {new_version}')
         print(f'Will commit and push a version change to origin/{from_branch}')
     else:
-        # Write new version to __init__.py
-        init_file = os.path.join(module_name, '__init__.py')
-        with FileInput(init_file, inplace=True) as file:
-            for line in file:
-                print(line.replace(
-                    f"__version__ = '{old_version}'",
-                    f"__version__ = '{new_version}'",
-                ), end='')
+        module_name = determine_module(old_version)
+        if module_name:
+            # Write new version to __init__.py
+            filename = os.path.join(module_name, '__init__.py')
+            with FileInput(filename, inplace=True) as file:
+                for line in file:
+                    print(line.replace(
+                        f"__version__ = '{old_version}'",
+                        f"__version__ = '{new_version}'",
+                    ), end='')
+        else:
+            # Write new version to setup.py
+            filename = 'setup.py'
+            with FileInput(filename, inplace=True) as file:
+                for line in file:
+                    print(re.sub(
+                        fr"^(\s+)version='{old_version}',$",
+                        fr"\1version='{new_version}',",
+                        line,
+                    ), end='')
 
         # Commit and push.
-        subprocess.run(['git', 'commit', '-m', f'Bump version: {old_version} → {new_version}', init_file])
+        subprocess.run(['git', 'commit', '-m', f'Bump version: {old_version} → {new_version}', filename])
         subprocess.run(['git', 'push', 'origin', from_branch])
 
         # Tell the user what to do next.
@@ -164,7 +169,10 @@ def main(from_branch='develop', to_branch='master'):
 
         print(f'\n*** Ready to create a PR for version {new_version} on GitHub ***\n')
         print(url + '\n')
-        subprocess.run(['open', url])
+        if platform.system() == 'Darwin':
+            subprocess.run(['open', url])
+        else:
+            subprocess.run(['xdg-open', url])
 
     sys.exit(0)
 
