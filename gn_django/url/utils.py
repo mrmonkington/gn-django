@@ -16,6 +16,19 @@ def strip_query_string(url):
     p = urlparse.urlparse(url)
     return '%s://%s%s' % (p.scheme, p.netloc, p.path)
 
+def add_protocol(url, protocol='http'):
+    """
+    Checks if a URL has a protocol and adds one if it doesn't.
+
+    Args:
+      - `protocol` - string - The protocol to add to the URL, defaults to `http`
+    """
+    pattern = re.compile(r'^[a-z]+\:\/\/')
+    if re.search(pattern, url):
+        return url
+    url = url.lstrip(':/.')
+    return '%s://%s' % (protocol, url)
+
 def add_params_to_url(url, **params):
     """
     Reliably add a dictionary of GET parameters to a url string.

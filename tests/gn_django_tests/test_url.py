@@ -27,6 +27,14 @@ class TestUrlUtils(unittest.TestCase):
         stripped = utils.strip_protocol(url)
         self.assertEqual('www.example.com', stripped)
 
+    def test_add_protocol(self):
+        self.assertEqual('http://www.example.com', utils.add_protocol('www.example.com'))
+        self.assertEqual('http://www.example.com', utils.add_protocol('http://www.example.com'))
+        self.assertEqual('https://www.example.com', utils.add_protocol('https://www.example.com'))
+        self.assertEqual('ftp://www.example.com', utils.add_protocol('ftp://www.example.com'))
+        self.assertEqual('https://www.example.com', utils.add_protocol('www.example.com', 'https'))
+        self.assertEqual('http://www.example.com', utils.add_protocol('//www.example.com'))
+
     def test_add_params_to_url_with_no_params(self):
         url = "/a/b/c"
         url_with_params = utils.add_params_to_url(url, foo="bar", baz="woo")
