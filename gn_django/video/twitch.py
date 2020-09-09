@@ -15,7 +15,7 @@ def get_channel(url):
     """
     if 'twitch' in url:
         match = re.search(
-            r'^https?://(?:www\.)?twitch\.tv/([A-Za-z0-9]{3,25})/?(?:\?.*)?$',
+            r'^https?://(?:www\.)?twitch\.tv/([A-Za-z0-9][A-Za-z0-9_]{2,24})/?(?:\?.*)?$',
             url,
         )
         if match:
