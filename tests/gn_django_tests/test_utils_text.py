@@ -1,6 +1,6 @@
 import unittest
 
-from gn_django.utils import camelize
+from gn_django.utils import camelize, remove_emojis
 
 
 class TestCamelize(unittest.TestCase):
