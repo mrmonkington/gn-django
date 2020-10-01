@@ -1,3 +1,4 @@
+from django.db.models import Model
 from django.utils.text import slugify
 
 from . import all_subclasses
@@ -9,7 +10,13 @@ def unique_object_slug(obj, source, slug_field='slug', limit=10000):
     converting an article title of 'Bloodborne 2 Announced' to 'bloodborne-2-announced'.
     If the slug is already taken it will append a numeric value, i.e. 'bloodborne-2-announced-1'
     """
-    model = obj.__class__
+    if isinstance(obj, Model):
+        model = obj.__class__
+    elif issubclass(obj, Model):
+        model = obj
+    else:
+        raise Exception('Object is not a model or model class: %s' % repr(obj))
+
     base_slug = slugify(source)
     current_slug = base_slug
     search = '%s__startswith' % slug_field
