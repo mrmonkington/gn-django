@@ -15,7 +15,7 @@ def unique_object_slug(obj, source, slug_field='slug', limit=10000):
     elif issubclass(obj, Model):
         model = obj
     else:
-        raise Exception('Object is not a model or model class: %s' % repr(obj))
+        raise ValueError('Object is not a model or model class: %s' % repr(obj))
 
     base_slug = slugify(source)
     current_slug = base_slug
