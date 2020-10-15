@@ -1,50 +1,48 @@
+from functools import partial
 from itertools import groupby
+from operator import attrgetter
+
 from django.forms.models import (
     ModelChoiceIterator, ModelChoiceField, ModelMultipleChoiceField
 )
 
 
-class Grouped:
-    def __init__(self, queryset, group_by_field,
-                 group_label=None, *args, **kwargs):
-        """
-        ``group_by_field`` is the name of a field on the model to use as
-                           an optgroup.
-        ``group_label`` is a function to return a label for each optgroup.
-        """
-        super(Grouped, self).__init__(queryset, *args, **kwargs)
-        self.group_by_field = group_by_field
-        if group_label is None:
-            self.group_label = lambda group: group
-        else:
-            self.group_label = group_label
-
-    def _get_choices(self):
-        if hasattr(self, '_choices'):
-            return self._choices
-        return GroupedModelChoiceIterator(self)
-
-
 class GroupedModelChoiceIterator(ModelChoiceIterator):
+    def __init__(self, field, groupby):
+        self.groupby = groupby
+        super().__init__(field)
+
     def __iter__(self):
         if self.field.empty_label is not None:
-            yield ("", self.field.empty_label)
-        queryset = self.queryset.all()
+            yield ('', self.field.empty_label)
+        queryset = self.queryset
+        # Can't use iterator() when queryset uses prefetch_related()
         if not queryset._prefetch_related_lookups:
             queryset = queryset.iterator()
-        for group, choices in groupby(
-                self.queryset,
-                key=lambda row: getattr(row, self.field.group_by_field)
-        ):
-            yield (
-                None,
-                [self.choice(ch) for ch in choices]
+        for group, objs in groupby(queryset, self.groupby):
+            yield (group, [self.choice(obj) for obj in objs])
+
+
+class BaseGroupedModelChoiceField:
+
+    def __init__(self, *args, group_by_field, **kwargs):
+        if isinstance(group_by_field, str):
+            group_by_field = attrgetter(group_by_field)
+        elif not callable(group_by_field):
+            raise TypeError(
+                'group_by_field must either be a str or a callable accepting '
+                'a single argument'
             )
+        self.iterator = partial(
+            GroupedModelChoiceIterator,
+            groupby=group_by_field
+        )
+        super().__init__(*args, **kwargs)
 
 
-class GroupedModelChoiceField(Grouped, ModelChoiceField):
-    choices = property(Grouped._get_choices, ModelChoiceField._set_choices)
+class GroupedModelChoiceField(BaseGroupedModelChoiceField, ModelChoiceField):
+    pass
 
 
-class GroupedModelMultiChoiceField(Grouped, ModelMultipleChoiceField):
-    choices = property(Grouped._get_choices, ModelMultipleChoiceField._set_choices)
+class GroupedModelMultiChoiceField(BaseGroupedModelChoiceField, ModelMultipleChoiceField):
+    pass
