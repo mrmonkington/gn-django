@@ -82,3 +82,16 @@ def get(view_label):
             raise KeyError("No class based view is registered for the label '%s'.  Is the app in INSTALLED_APPS?" % view_label)
         return view(*args, **kwargs)
     return _get_view
+
+
+def view_is_in_registry(view_label):
+    """
+    Check if a view with the given label exists in the view registry.
+
+    Args:
+      * `view_label` - string - view label of format
+        `'[app_name]:[view_class_name]'`
+    """
+    initialise_view_registry()
+    app, view_name = _process_view_label(view_label)
+    return bool(_registry.get(app, {}).get(view_name))
