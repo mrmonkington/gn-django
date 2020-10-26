@@ -33,9 +33,13 @@ def csv_download_response_dict(data, filename, include_date=True):
     """
     Same as `csv_download_response` but accepts a list of dicts as data. Does
     not require column headings.
+    Raises:
+        * `ValueError` if data is empty
     """
+    if not data:
+        raise ValueError('Data is empty')
+
     response = _format_csv_response(filename, include_date)
-    writer = csv.DictWriter(response, data[0].keys())
     writer.writeheader()
     for row in data:
         writer.writerow(row)

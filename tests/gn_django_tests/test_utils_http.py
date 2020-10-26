@@ -56,3 +56,8 @@ class CSVDownloadResponseTest(TestCase):
         expected_content = b"First Name,Second Name\r\nByte,& Barq\r\nDr,Coyle\r\nHedlok,\r\nHelix,\r\n"
         self.assertEqual(response['Content-Type'], 'text/csv')
         self.assertEqual(response.content, expected_content)
+
+    def test_csv_response_dict_data_empty(self):
+        data = []
+        with self.assertRaises(ValueError):
+            response, writer = csv_download_response_dict(data, 'arms-roster')
