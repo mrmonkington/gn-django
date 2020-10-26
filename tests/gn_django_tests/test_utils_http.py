@@ -61,3 +61,21 @@ class CSVDownloadResponseTest(TestCase):
         data = []
         with self.assertRaises(ValueError):
             response, writer = csv_download_response_dict(data, 'arms-roster')
+
+    def test_csv_response_dict_irregular_dicts(self):
+        data = [
+            {
+                'First Name': 'Byte',
+            },
+            {
+                'Second Name': 'Coyle',
+            },
+            {
+                'First Name': 'Hedlok',
+                'Second Name': '',
+            },
+        ]
+        response, writer = csv_download_response_dict(data, 'arms-roster')
+        expected_content = b"First Name,Second Name\r\nByte,\r\n,Coyle\r\nHedlok,\r\n"
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response.content, expected_content)
