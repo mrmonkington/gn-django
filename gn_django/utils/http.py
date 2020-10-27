@@ -21,6 +21,39 @@ def csv_download_response(column_headings, data, filename, include_date=True):
           CSV writer contains the response object so any changes made to the CSV will automatically
           be added to the returned response object.
     """
+    response = _format_csv_response(filename, include_date)
+    writer = csv.writer(response)
+    writer.writerow(column_headings)
+    for row in data:
+        writer.writerow(row)
+    return (response, writer)
+
+
+def csv_download_response_dict(data, filename, include_date=True):
+    """
+    Same as `csv_download_response` but accepts a list of dicts as data. Does
+    not require column headings.
+
+    Note, columns are ordered alphabetically.
+
+    Raises:
+        * `ValueError` if data is empty
+    """
+    if not data:
+        raise ValueError('Data is empty')
+
+    # get headings
+    headings = sorted(set().union(*(d.keys() for d in data)))
+
+    response = _format_csv_response(filename, include_date)
+    writer = csv.DictWriter(response, headings)
+    writer.writeheader()
+    for row in data:
+        writer.writerow(row)
+    return (response, writer)
+
+
+def _format_csv_response(filename, include_date):
     if include_date:
         filename = '%s-%s.csv' % (filename, timezone.now().strftime('%Y-%m-%d-%H-%M-%S'))
     else:
@@ -29,10 +62,4 @@ def csv_download_response(column_headings, data, filename, include_date=True):
     # Build CSV
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
-    writer = csv.writer(response)
-    writer.writerow(column_headings)
-
-    for row in data:
-        writer.writerow(row)
-
-    return (response, writer)
+    return response
