@@ -1,6 +1,9 @@
+from unittest.mock import patch
+
+from django.db.models import QuerySet
 from django.test import TestCase
 
-from gn_django.utils import all_subclasses
+from gn_django.utils import all_subclasses, count
 
 
 class TestAllSubclasses(TestCase):
@@ -53,3 +56,14 @@ class TestAllSubclasses(TestCase):
 
         subclasses = list(all_subclasses(Parent))
         self.assertEqual(len(subclasses), 0)
+
+
+class TestCount(TestCase):
+    @patch('django.db.models.QuerySet.count')
+    def test_count_queryset(self, qs_count):
+        qs_count.return_value = 7
+        qs = QuerySet()
+        self.assertEqual(7, count(qs))
+
+    def test_count_iterable(self):
+        self.assertEqual(7, count([0, 1, 2, 3, 4, 5, 6]))
