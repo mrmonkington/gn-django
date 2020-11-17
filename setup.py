@@ -27,7 +27,7 @@ setup(
         'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
         'autocomplete': [
             'django-autocomplete-light>=3.3,<4.0.0',
-            'django-select2',
+            'django-select2>=7.4.2,<8.0',
         ],
     },
     include_package_data=True,
