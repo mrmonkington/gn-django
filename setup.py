@@ -13,17 +13,22 @@ setup(
     name='gn-django',
     version=__version__,
     url='https://github.com/gamernetwork/gn-django',
-    description=("Collection of tools and patterns for Gamer Network django "
-            "apps/projects."),
+    description=(
+        'Collection of tools and patterns for Gamer Network django '
+        'apps/projects.'
+    ),
     long_description=long_description,
     install_requires=[
-        "django>=2.2,<2.3",
-        "django-jinja==2.3.0",
-        "pytz",
+        'django>=2.2,<2.3',
+        'django-jinja==2.3.0',
+        'pytz',
     ],
     extras_require={
         'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
-        'autocomplete': ['django-autocomplete-light>=3.3,<4.0.0'],
+        'autocomplete': [
+            'django-autocomplete-light>=3.3,<4.0.0',
+            'django-select2>=7.4.2,<8.0',
+        ],
     },
     include_package_data=True,
     author='Gamer Network',
@@ -33,5 +38,5 @@ setup(
         'gn_django/bin/depstatus',
         'gn_django/bin/draft-release',
     ],
-    packages = find_packages(exclude=('tests', 'examples')),
+    packages=find_packages(exclude=('tests', 'examples')),
 )
