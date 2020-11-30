@@ -1,0 +1,29 @@
+name: Unit tests
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - uses: actions/checkout@v2
+      - name: Load cached dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install/Update dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools tblib wheel
+          pip install --upgrade --upgrade-strategy eager -e .[autocomplete,selenium]
+        env:
+          FURY_AUTH: ${{ secrets.FURY_AUTH_PULL }}
+      - name: Run tests
+        run: python tests/gn_django_tests/manage.py test --settings=project.settings.test tests/gn_django_tests --failfast --parallel
