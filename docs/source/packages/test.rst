@@ -94,6 +94,9 @@ to only run the other test layers.
 ``SELENIUM_HUB_HOST`` - string - The hostname for the selenium hub instance used
 to drive browsers.
 
+``SELENIUM_HUB_PORT`` - int - The port number for the selenium hub instance used
+to drive browsers.
+
 ``SELENIUM_APP_HOST`` - string - The hostname which resolves to the django 
 test application.  If you're running everything locally, this will just be 
 ``'localhost'``.  If you're running through docker containers, it's likely to
