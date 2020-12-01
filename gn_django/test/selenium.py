@@ -137,8 +137,10 @@ class BrowserManager:
 
     def _get_instantiated_browser(self, width, height, capabilities):
         element_scroll_behavior = capabilities.get('elementScrollBehavior')
+        host = getattr(settings, 'SELENIUM_HUB_HOST', 'localhost')
+        port = getattr(settings, 'SELENIUM_HUB_PORT', 4444)
         kwargs = {
-            'command_executor': "http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
+            'command_executor': "http://%s:%d/wd/hub" % (host, port),
             'desired_capabilities': capabilities,
         }
         if element_scroll_behavior:
@@ -170,8 +172,10 @@ class SplinterBrowserManager(BrowserManager):
 
     def _get_instantiated_browser(self, width, height, capabilities):
         element_scroll_behavior = capabilities.get('elementScrollBehavior')
+        host = getattr(settings, 'SELENIUM_HUB_HOST', 'localhost')
+        port = getattr(settings, 'SELENIUM_HUB_PORT', 4444)
         browser = SplinterBrowser(driver_name="remote",
-            url="http://%s:4444/wd/hub" % settings.SELENIUM_HUB_HOST,
+            url="http://%s:%d/wd/hub" % (host, port),
             browser=capabilities["browserName"],
             **capabilities)
         browser.driver.implicitly_wait(1)
