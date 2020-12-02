@@ -137,10 +137,8 @@ class BrowserManager:
 
     def _get_instantiated_browser(self, width, height, capabilities):
         element_scroll_behavior = capabilities.get('elementScrollBehavior')
-        host = getattr(settings, 'SELENIUM_HUB_HOST', 'localhost')
-        port = getattr(settings, 'SELENIUM_HUB_PORT', 4444)
         kwargs = {
-            'command_executor': "http://%s:%d/wd/hub" % (host, port),
+            'command_executor': self._get_hub_url(),
             'desired_capabilities': capabilities,
         }
         if element_scroll_behavior:
@@ -149,8 +147,18 @@ class BrowserManager:
         browser.implicitly_wait(1)
         browser.set_window_size(width, height)
         return browser
-        
-        
+
+    def _get_hub_url(self):
+        """
+        Returns the URL of the Selenium Hub server.
+        """
+        url = getattr(settings, 'SELENIUM_HUB_URL', None)
+        if url:
+            return url
+        host = getattr(settings, 'SELENIUM_HUB_HOST', 'localhost')
+        port = getattr(settings, 'SELENIUM_HUB_PORT', 4444)
+        return 'http://%s:%d/wd/hub' % (host, port)
+
     def get_browser(self, capabilities, test_name):
         """
         Get an instantiated browser, given a set of capabilities.
@@ -168,19 +176,19 @@ class BrowserManager:
         browser = self._get_instantiated_browser(width, height, capabilities)
         return browser
 
-class SplinterBrowserManager(BrowserManager):
 
+class SplinterBrowserManager(BrowserManager):
     def _get_instantiated_browser(self, width, height, capabilities):
-        element_scroll_behavior = capabilities.get('elementScrollBehavior')
-        host = getattr(settings, 'SELENIUM_HUB_HOST', 'localhost')
-        port = getattr(settings, 'SELENIUM_HUB_PORT', 4444)
-        browser = SplinterBrowser(driver_name="remote",
-            url="http://%s:%d/wd/hub" % (host, port),
-            browser=capabilities["browserName"],
-            **capabilities)
+        browser = SplinterBrowser(
+            driver_name='remote',
+            url=self._get_hub_url(),
+            browser=capabilities['browserName'],
+            **capabilities,
+        )
         browser.driver.implicitly_wait(1)
         browser.driver.set_window_size(width, height)
         return browser
-    
+
+
 browser_manager = BrowserManager()
 splinter_browser_manager = SplinterBrowserManager()
