@@ -133,7 +133,8 @@ class BrowserManager:
         dimensions[1] += height_offset
         capabilities['name'] = test_name
         capabilities['screenResolution'] = '2100x1200'
-        return (dimensions, capabilities)
+        capabilities.update(getattr(settings, 'SELENIUM_EXTRA_CAPABILITIES', {}))
+        return dimensions, capabilities
 
     def _get_instantiated_browser(self, width, height, capabilities):
         element_scroll_behavior = capabilities.get('elementScrollBehavior')
