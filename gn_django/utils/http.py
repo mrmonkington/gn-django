@@ -4,6 +4,23 @@ from django.http import HttpResponse
 from django.utils import timezone
 
 
+def determine_remote_ip(request):
+    """
+    Returns the client IP address for the HTTP request.
+
+    This function may return either an IPv4 or an IPv6 address. It may also
+    return `None` if an IP cannot be reliably determined (e.g. in a unit test).
+
+    Args:
+        * `request` - `HttpRequest`
+
+    Returns:
+        `str|None`
+    """
+    x_client_ip = request.headers.get('X-Client-Ip')
+    return x_client_ip if x_client_ip else request.META.get('REMOTE_ADDR')
+
+
 def csv_download_response(column_headings, data, filename, include_date=True):
     """
     Put data into a CSV download response
