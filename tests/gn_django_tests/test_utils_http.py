@@ -1,6 +1,29 @@
 from django.test import TestCase
 
-from gn_django.utils import csv_download_response, csv_download_response_dict
+from gn_django.utils import determine_remote_ip, csv_download_response, csv_download_response_dict
+
+
+class DetermineRemoteIPTest(TestCase):
+    def test_determine_remote_ip(self):
+        factory = RequestFactory()
+
+        # No appropriate data: returns the default IP.
+        request = factory.get('/')
+        self.assertEqual('127.0.0.1', determine_remote_ip(request))
+
+        # Test with X-Client-Ip header.
+        request = factory.get('/', HTTP_X_CLIENT_IP='123.4.56.7')
+        self.assertEqual('123.4.56.7', determine_remote_ip(request))
+
+        # Test with REMOTE_ADDR metadata.
+        request = factory.get('/', REMOTE_ADDR='2001:db8:ff02:aa1::')
+        self.assertEqual('2001:db8:ff02:aa1::', determine_remote_ip(request))
+
+        # Test with both X-Client-Ip and REMOTE_ADDR (the header takes precedence).
+        request = factory.get('/',
+                              HTTP_X_CLIENT_IP='123.4.56.7',
+                              REMOTE_ADDR='2001:db8:ff02:aa1::')
+        self.assertEqual('123.4.56.7', determine_remote_ip(request))
 
 
 class CSVDownloadResponseTest(TestCase):
