@@ -24,7 +24,10 @@ setup(
         'pytz',
     ],
     extras_require={
-        'selenium': ['selenium==3.3.1', 'splinter==0.8.0'],
+        'selenium': [
+            'selenium==3.141.0',
+            'splinter==0.14.0',
+        ],
         'autocomplete': [
             'django-autocomplete-light>=3.3,<4.0.0',
             'django-select2>=7.4.2,<8.0',
