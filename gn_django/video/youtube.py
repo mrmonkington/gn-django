@@ -1,6 +1,7 @@
 from urllib import parse
 import re
 
+
 def get_id(url):
     """
     Extract the 11 character ID from a YouTube URL. Checks that the URL
@@ -27,7 +28,8 @@ def get_id(url):
                     return match.group(0)
     return None
 
-def get_thumb(url, type = 'mqdefault'):
+
+def get_thumb(url, type='mqdefault'):
     """
     Get the YouTube thumbnail for a valid YouTube URL
     Args:
