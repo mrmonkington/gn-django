@@ -15,11 +15,10 @@ import platform
 import re
 import subprocess
 import sys
+from datetime import datetime
 from fileinput import FileInput
-from importlib import import_module
-from urllib.parse import urlencode
-
 from setuptools import find_packages
+from urllib.parse import urlencode
 
 
 def assert_branch_merged(branch):
@@ -135,6 +134,7 @@ def main(from_branch='develop', to_branch='master'):
         print(f'Bump version: {old_version} → {new_version}')
         print(f'Will commit and push a version change to origin/{from_branch}')
     else:
+        changed_files = []
         module_name = determine_module(old_version)
         if module_name:
             # Write new version to __init__.py
@@ -145,6 +145,7 @@ def main(from_branch='develop', to_branch='master'):
                         f"__version__ = '{old_version}'",
                         f"__version__ = '{new_version}'",
                     ), end='')
+            changed_files.append(filename)
         else:
             # Write new version to setup.py
             filename = 'setup.py'
@@ -155,9 +156,21 @@ def main(from_branch='develop', to_branch='master'):
                         fr"\1version='{new_version}',",
                         line,
                     ), end='')
+            changed_files.append(filename)
+        if os.path.isfile('CHANGELOG.md'):
+            # Set version in the changelog.
+            filename = 'CHANGELOG.md'
+            with FileInput(filename, inplace=True) as file:
+                for line in file:
+                    print(re.sub(
+                        r"^## \[Unreleased]$",
+                        f"## [Unreleased]\n\nNo changes.\n\n## [{new_version}] - {datetime.now().strftime('%Y-%m-%d')}",
+                        line,
+                    ), end='')
+            changed_files.append(filename)
 
         # Commit and push.
-        subprocess.run(['git', 'commit', '-m', f'Bump version: {old_version} → {new_version}', filename])
+        subprocess.run(['git', 'commit', '-m', f'Bump version: {old_version} → {new_version}', *changed_files])
         subprocess.run(['git', 'push', 'origin', from_branch])
 
         # Tell the user what to do next.
