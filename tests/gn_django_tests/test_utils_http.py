@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 
 from gn_django.utils import determine_remote_ip, csv_download_response, csv_download_response_dict
 
