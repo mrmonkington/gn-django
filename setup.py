@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'django>=2.2,<2.3',
         'django-jinja==2.3.0',
+        'hashids>=1.2,<1.3',
         'pytz',
     ],
     extras_require={

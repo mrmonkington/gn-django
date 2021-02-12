@@ -16,3 +16,19 @@ def qs_to_choices(qs, val_field=None, label_field=None):
         label = getattr(instance, label_field) if label_field else str(instance)
         choices.append([value, label])
     return choices
+
+def forms_valid(forms):
+    """
+    Validate multiple forms.
+
+    Args:
+        `forms` - `iterable` - a collection of form objects.
+
+    Returns:
+        `bool` - True if all forms passed in are valid.
+    """
+    valid = True
+    for f in forms:
+        if f:
+            valid = bool(valid and f.is_valid())
+    return valid
