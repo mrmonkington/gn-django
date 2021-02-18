@@ -1,7 +1,47 @@
+from contextlib import contextmanager
+
 from django.db.models import Model
 from django.utils.text import slugify
 
 from . import all_subclasses
+
+
+@contextmanager
+def autonow_off(*models):
+    """
+    Disable auto_now and auto_now_add on fields on the given model(s).
+
+    This is a context manager. You can use it to temporarily override the
+    automated behaviour of these auto-fields. Example usage:
+
+    with autonow_off(Article):
+        Article.objects.create(
+            …
+            created_at='2020-02-20 20:02:20',
+            updated_at='2020-09-21 22:23:24',
+        )
+    """
+    prior_state = []
+    for model in models:
+        prior_auto_now = {}
+        prior_auto_now_add = {}
+        for field in model._meta.get_fields():
+            if hasattr(field, 'auto_now'):
+                prior_auto_now[field.name] = field.auto_now
+                field.auto_now = False
+            if hasattr(field, 'auto_now_add'):
+                prior_auto_now_add[field.name] = field.auto_now_add
+                field.auto_now_add = False
+        prior_state.append((model, prior_auto_now, prior_auto_now_add))
+
+    try:
+        yield
+    finally:
+        for model, prior_auto_now, prior_auto_now_add in prior_state:
+            for name, value in prior_auto_now.items():
+                model._meta.get_field(name).auto_now = value
+            for name, value in prior_auto_now_add.items():
+                model._meta.get_field(name).auto_now_add = value
 
 
 def unique_object_slug(obj, source, slug_field='slug', limit=10000):
