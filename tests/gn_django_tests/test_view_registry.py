@@ -11,7 +11,7 @@ class TestViewRegistry(TestCase):
 
     def test_initialise_view_registry(self):
         """
-        Test the initialise_view_registry function successfully builds a 
+        Test the initialise_view_registry function successfully builds a
         view registry from a mocked apps config.
         """
         first_app = mock.Mock(spec=GNAppConfig)
@@ -32,7 +32,7 @@ class TestViewRegistry(TestCase):
                 'Article': second_app.views['content:Article'].as_view(),
             }
         }
-        with mock.patch.dict(view_registry._registry, {}):
+        with mock.patch.dict(view_registry._registry, {}, clear=True):
             with mock.patch("django.apps.apps.get_app_configs") as mocked_get_app_configs:
                 mocked_get_app_configs.return_value = mocked_app_config
                 view_registry.initialise_view_registry()
@@ -54,7 +54,7 @@ class TestViewRegistry(TestCase):
                 view_wrapper = view_registry.get('main:%s' % view_name)
                 called_view = view_wrapper()
                 self.assertEquals(view_func(), called_view)
-            
+
 
     def test_view_registry_in_project(self):
         """
