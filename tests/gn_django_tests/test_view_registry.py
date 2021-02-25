@@ -55,6 +55,21 @@ class TestViewRegistry(TestCase):
                 called_view = view_wrapper()
                 self.assertEquals(view_func(), called_view)
 
+    def test_get_wraps(self):
+        """
+        Test that views are wrapped, i.e. properties on the original view
+        function still exist on the registry version.
+        """
+        view_func = mock.Mock()
+        setattr(view_func, 'some_arbitary_attr', 'some_value')
+        with mock.patch.dict(view_registry._registry, {
+            'main': {'TestView': view_func},
+        }):
+            view_wrapper = view_registry.get('main:TestView')
+            self.assertEqual(
+                'some_value',
+                getattr(view_wrapper, 'some_arbitary_attr'),
+            )
 
     def test_view_registry_in_project(self):
         """
