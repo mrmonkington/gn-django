@@ -38,6 +38,31 @@ class TestViewRegistry(TestCase):
                 view_registry.initialise_view_registry()
                 self.assertEquals(view_registry._registry, expected_registry)
 
+    def test_initialise_view_registry_empty_app(self):
+        """
+        Test that a registered app with no views raises an exception.
+        """
+        first_app = mock.Mock(spec=GNAppConfig)
+        first_app.name = 'core'
+        first_app.views = {'core:Home': mock.Mock(spec=View)}
+        second_app = mock.Mock(spec=GNAppConfig)
+        second_app.name = 'content'
+        second_app.views = {}
+        mocked_app_config = [first_app, second_app]
+        with mock.patch.dict(view_registry._registry, {}, clear=True):
+            with mock.patch('django.apps.apps.get_app_configs') as mocked_get_app_configs:
+                mocked_get_app_configs.return_value = mocked_app_config
+                with self.assertRaises(Exception) as ctx:
+                    view_registry.initialise_view_registry()
+        self.assertEqual(
+            'No views were found in <class \'gn_django.app.app_config.GNAppConfig\'>. '
+            'This may indicate that views were initialised prematurely. Check '
+            'that you are not resolving URLs or any other actions that '
+            'initialise views before all apps are ready.',
+            str(ctx.exception),
+        )
+
+
     def test_get(self):
         """
         Test that views can be retrieved from the registry successfully.

@@ -58,7 +58,14 @@ def initialise_view_registry():
         return
     all_apps = apps.get_app_configs()
     for app in all_apps:
-        if isinstance(app, GNAppConfig) and app.views:
+        if isinstance(app, GNAppConfig):
+            if not app.views:
+                raise Exception(
+                    f'No views were found in {app.__class__}. This may indicate '
+                    'that views were initialised prematurely. Check that you '
+                    'are not resolving URLs or any other actions that '
+                    'initialise views before all apps are ready.'
+                )
             for label, view in app.views.items():
                 app, view_name = _process_view_label(label)
                 try:
