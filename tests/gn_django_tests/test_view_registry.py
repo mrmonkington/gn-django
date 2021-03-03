@@ -11,7 +11,7 @@ class TestViewRegistry(TestCase):
 
     def test_initialise_view_registry(self):
         """
-        Test the initialise_view_registry function successfully builds a
+        Test the initialise_view_registry function successfully builds a 
         view registry from a mocked apps config.
         """
         first_app = mock.Mock(spec=GNAppConfig)
@@ -32,36 +32,11 @@ class TestViewRegistry(TestCase):
                 'Article': second_app.views['content:Article'].as_view(),
             }
         }
-        with mock.patch.dict(view_registry._registry, {}, clear=True):
+        with mock.patch.dict(view_registry._registry, {}):
             with mock.patch("django.apps.apps.get_app_configs") as mocked_get_app_configs:
                 mocked_get_app_configs.return_value = mocked_app_config
                 view_registry.initialise_view_registry()
                 self.assertEquals(view_registry._registry, expected_registry)
-
-    def test_initialise_view_registry_empty_app(self):
-        """
-        Test that a registered app with no views raises an exception.
-        """
-        first_app = mock.Mock(spec=GNAppConfig)
-        first_app.name = 'core'
-        first_app.views = {'core:Home': mock.Mock(spec=View)}
-        second_app = mock.Mock(spec=GNAppConfig)
-        second_app.name = 'content'
-        second_app.views = {}
-        mocked_app_config = [first_app, second_app]
-        with mock.patch.dict(view_registry._registry, {}, clear=True):
-            with mock.patch('django.apps.apps.get_app_configs') as mocked_get_app_configs:
-                mocked_get_app_configs.return_value = mocked_app_config
-                with self.assertRaises(Exception) as ctx:
-                    view_registry.initialise_view_registry()
-        self.assertEqual(
-            'No views were found in <class \'gn_django.app.app_config.GNAppConfig\'>. '
-            'This may indicate that views were initialised prematurely. Check '
-            'that you are not resolving URLs or any other actions that '
-            'initialise views before all apps are ready.',
-            str(ctx.exception),
-        )
-
 
     def test_get(self):
         """
@@ -79,22 +54,7 @@ class TestViewRegistry(TestCase):
                 view_wrapper = view_registry.get('main:%s' % view_name)
                 called_view = view_wrapper()
                 self.assertEquals(view_func(), called_view)
-
-    def test_get_wraps(self):
-        """
-        Test that views are wrapped, i.e. properties on the original view
-        function still exist on the registry version.
-        """
-        view_func = mock.Mock()
-        setattr(view_func, 'some_arbitary_attr', 'some_value')
-        with mock.patch.dict(view_registry._registry, {
-            'main': {'TestView': view_func},
-        }):
-            view_wrapper = view_registry.get('main:TestView')
-            self.assertEqual(
-                'some_value',
-                getattr(view_wrapper, 'some_arbitary_attr'),
-            )
+            
 
     def test_view_registry_in_project(self):
         """

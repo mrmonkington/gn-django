@@ -1,6 +1,3 @@
-from collections import defaultdict
-from functools import wraps
-
 from django.views.generic.base import View
 from django.apps import apps
 
@@ -34,7 +31,7 @@ def _get_views_in_module(module):
     views = [
         module_dict[c] for c in module_dict.keys() if (
             type(module_dict[c]) == type and
-            issubclass(module_dict[c], View) and
+            issubclass(module_dict[c], View) and 
             module_dict[c].__module__ == module.__name__
         )
     ]
@@ -49,51 +46,42 @@ def _process_view_label(view_label):
 
 def initialise_view_registry():
     """
-    Goes through all installed apps which use GNAppConfig and have a non-empty
+    Goes through all installed apps which use GNAppConfig and have a non-empty 
     view registry and initialises the project's view registry.
 
-    Repeated calls will return the cached registry early if the global
+    Repeated calls will return the cached registry early if the global 
     view registry is already populated.
     """
     if _registry:
         return
-    registry = defaultdict(dict)
     all_apps = apps.get_app_configs()
     for app in all_apps:
-        if isinstance(app, GNAppConfig):
-            if not app.views:
-                raise Exception(
-                    f'No views were found in {app.__class__}. This may indicate '
-                    'that views were initialised prematurely. Check that you '
-                    'are not resolving URLs or any other actions that '
-                    'initialise views before all apps are ready.'
-                )
+        if isinstance(app, GNAppConfig) and app.views:
             for label, view in app.views.items():
-                app_name, view_name = _process_view_label(label)
-                registry[app_name][view_name] = view.as_view()
-    _registry.update(registry)
+                app, view_name = _process_view_label(label)
+                try:
+                    _registry[app][view_name] = view.as_view()
+                except KeyError:
+                    _registry[app] = {}
+                    _registry[app][view_name] = view.as_view()
 
 def get(view_label):
     """
-    Retrieve the view callable for the view label of format
+    Retrieve the view callable for the view label of format 
     ``'[app_name]:[view_class_name]'``
 
     Args:
       * ``view_label`` - string - view label of format `'[app_name]:[view_class_name]'`
     """
     app, view_name = _process_view_label(view_label)
-    initialise_view_registry()
-    view = _registry.get(app, {}).get(view_name)
-
-    def wrapped_view(*args, **kwargs):
-        if not view:
-            raise KeyError(
-                "No class based view is registered for the label '%s'.  Is "
-                "the app in INSTALLED_APPS?" % view_label
-            )
+    def _get_view(*args, **kwargs):
+        initialise_view_registry()
+        try:
+            view = _registry[app][view_name]
+        except KeyError:
+            raise KeyError("No class based view is registered for the label '%s'.  Is the app in INSTALLED_APPS?" % view_label)
         return view(*args, **kwargs)
-
-    return wraps(view)(wrapped_view)
+    return _get_view
 
 
 def view_is_in_registry(view_label):
